@@ -504,6 +504,66 @@ void DrawTycoonWallet() {
     CLOSE_DISPS(gPlayState->state.gfxCtx);
 }
 
+#ifdef ENABLE_ARCHIPELAGO
+// The Archipelago logo (its ring of six colored dots), built once at runtime
+// as vertex-colored discs so no custom texture/OTR asset is needed.
+static void DrawArchipelagoItem() {
+    static Vtx discVtx[6][7];
+    static bool vtxInitialized = false;
+    static const uint8_t discColors[6][3] = {
+        { 230, 50, 50 },  // red
+        { 240, 145, 35 }, // orange
+        { 235, 215, 50 }, // yellow
+        { 70, 200, 90 },  // green
+        { 65, 125, 235 }, // blue
+        { 165, 80, 210 }, // purple
+    };
+
+    if (!vtxInitialized) {
+        const float ringRadius = 14.0f;
+        const float discRadius = 6.5f;
+        for (int d = 0; d < 6; d++) {
+            float angle = (float)(M_PI / 2.0 + d * (M_PI / 3.0));
+            float cx = ringRadius * cosf(angle);
+            float cy = ringRadius * sinf(angle);
+            for (int v = 0; v < 7; v++) {
+                Vtx* vtx = &discVtx[d][v];
+                if (v == 0) {
+                    vtx->v.ob[0] = (s16)cx;
+                    vtx->v.ob[1] = (s16)cy;
+                } else {
+                    float va = (float)((v - 1) * (M_PI / 3.0));
+                    vtx->v.ob[0] = (s16)(cx + discRadius * cosf(va));
+                    vtx->v.ob[1] = (s16)(cy + discRadius * sinf(va));
+                }
+                vtx->v.ob[2] = 0;
+                vtx->v.flag = 0;
+                vtx->v.tc[0] = vtx->v.tc[1] = 0;
+                vtx->v.cn[0] = discColors[d][0];
+                vtx->v.cn[1] = discColors[d][1];
+                vtx->v.cn[2] = discColors[d][2];
+                vtx->v.cn[3] = 255;
+            }
+        }
+        vtxInitialized = true;
+    }
+
+    OPEN_DISPS(gPlayState->state.gfxCtx);
+    Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
+    MATRIX_FINALIZE_AND_LOAD(POLY_OPA_DISP++, gPlayState->state.gfxCtx);
+    gDPSetCombineMode(POLY_OPA_DISP++, G_CC_SHADE, G_CC_SHADE);
+    gSPClearGeometryMode(POLY_OPA_DISP++, G_LIGHTING | G_CULL_BACK);
+    for (int d = 0; d < 6; d++) {
+        gSPVertex(POLY_OPA_DISP++, (uintptr_t)discVtx[d], 7, 0);
+        for (int t = 0; t < 6; t++) {
+            gSP1Triangle(POLY_OPA_DISP++, 0, 1 + t, 1 + ((t + 1) % 6), 0);
+        }
+    }
+    gSPSetGeometryMode(POLY_OPA_DISP++, G_LIGHTING | G_CULL_BACK);
+    CLOSE_DISPS(gPlayState->state.gfxCtx);
+}
+#endif // ENABLE_ARCHIPELAGO
+
 void Rando::DrawItem(RandoItemId randoItemId, RandoCheckId randoCheckId, Actor* actor) {
     // Apply hilites with actor world pos before drawing
     if (actor != NULL) {
@@ -689,6 +749,11 @@ void Rando::DrawItem(RandoItemId randoItemId, RandoCheckId randoCheckId, Actor* 
         case RI_NONE:
         case RI_UNKNOWN:
             break;
+#ifdef ENABLE_ARCHIPELAGO
+        case RI_ARCHIPELAGO_ITEM:
+            DrawArchipelagoItem();
+            break;
+#endif
         default:
             GetItem_Draw(gPlayState, Rando::StaticData::Items[randoItemId].drawId);
             break;

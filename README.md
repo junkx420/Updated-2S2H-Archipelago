@@ -1,7 +1,30 @@
 [comment]: <> (Todo: Make Light Mode Image)
 [comment]: <> (Todo: Make Dark Mode Image)
 
-# 2 Ship 2 Harkinian
+# 2 Ship 2 Harkinian — Archipelago Edition
+
+This fork adds an [Archipelago](https://archipelago.gg) multiworld randomizer client to 2 Ship 2 Harkinian. It is fully compatible with the existing **"Majora's Mask Recompiled"** Archipelago world from [MMRecompRando](https://github.com/RecompRando/MMRecompRando): same apworld, same yaml options, same trackers — 2S2H players and Recomp players can even share a multiworld.
+
+> This entire integration was completely vibe coded with **Anthropic's Claude (Fable 5)**.
+
+See [INSTRUCTIONS.md](INSTRUCTIONS.md) for setup and usage. Status doc for developers: [INTEGRATION.md](INTEGRATION.md).
+
+## What works
+
+- Connecting to any Archipelago server (`ws://` and `wss://`), console window with chat/log under **Dev Tools → Archipelago**
+- File-select flow: connect first, then create a new file — it becomes an Archipelago save automatically (no native seed generation involved)
+- Scouted placements: chests/NPCs contain and display exactly what the multiworld placed there; other players' items appear as an Archipelago logo and announce what you sent
+- Sending checks (~383 of 419 locations mapped) and receiving items (all 111 items), with resync across reconnects/reloads (no double grants)
+- Goal completion (defeating Majora reports your win), DeathLink (both directions), shop prices, shopsanity/scrubsanity/cowsanity/fairysanity/skullsanity/keysanity/bosskeysanity, moon & Majora remains requirements, skull token / stray fairy counts, Tingle map shuffle (both vendors of each map share the one AP location)
+
+## Known limitations
+
+- `magic_is_a_trap` is not honored (conflicts with a native bug fix)
+- Cosmetic options (`camc` from slot data, `link_tunic_color`) are not wired up
+- A few niche locations have no 2S2H check yet and are unreachable in-game: Clock Town Bomb Shop Powder Keg Goron, Deku Palace Bean Seller, Zora Cape Pot Game, Zora Hall Good/Bad Pictures of Lulu, Ikana Canyon Spirit House; night/spring shop slots and starting-inventory locations are likewise unmapped (items there can be released by the server)
+- Foreign items use a simple procedural AP-logo model
+
+---
 
 ## Discord
 

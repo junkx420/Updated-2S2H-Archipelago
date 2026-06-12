@@ -106,7 +106,15 @@ elseif ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
 endif()
 
 vcpkg_bootstrap()
-vcpkg_install_packages(zlib bzip2 libzip libpng sdl2 sdl2-net glew glfw3 nlohmann-json tinyxml2 spdlog libogg libvorbis opus opusfile)
+set(VCPKG_PACKAGES zlib bzip2 libzip libpng sdl2 sdl2-net glew glfw3 nlohmann-json tinyxml2 spdlog libogg libvorbis opus opusfile)
+# Archipelago (mm/CMake/Archipelago.cmake) needs OpenSSL for wss://. The vcpkg
+# build matches our static CRT and is a 3.x version compatible with asio
+# (system OpenSSL 4.x installs break asio's ssl impl).
+option(BUILD_ARCHIPELAGO "Build with Archipelago multiworld support" ON)
+if (BUILD_ARCHIPELAGO)
+	list(APPEND VCPKG_PACKAGES openssl)
+endif()
+vcpkg_install_packages(${VCPKG_PACKAGES})
 endif()
 
 ################################################################################

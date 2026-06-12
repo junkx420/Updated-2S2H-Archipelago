@@ -405,6 +405,7 @@ void Rando::GiveItem(RandoItemId randoItemId) {
             break;
         case RI_JUNK:
         case RI_NONE:
+        case RI_ARCHIPELAGO_ITEM: // belongs to another Archipelago world; the server grants it to its owner
             break;
         default:
             Item_Give(gPlayState, Rando::StaticData::Items[randoItemId].itemId);

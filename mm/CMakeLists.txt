@@ -243,6 +243,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE assets
 	.
 )
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/Archipelago.cmake)
+
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	target_compile_definitions(${PROJECT_NAME} PRIVATE
 		"$<$<CONFIG:Debug>:"

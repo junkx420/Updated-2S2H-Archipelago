@@ -2945,7 +2945,10 @@ typedef enum {
     RI_WOODFALL_MAP,
     RI_WOODFALL_SMALL_KEY,
     RI_WOODFALL_STRAY_FAIRY,
-    RI_MAX_TRAP, // Just used for ice trap ice cube model
+    // Appended at the end on purpose: RandoItemId values are persisted in
+    // saves, so new entries must not shift existing ones.
+    RI_ARCHIPELAGO_ITEM, // An item belonging to another Archipelago world; granting it is a no-op
+    RI_MAX_TRAP,         // Just used for ice trap ice cube model
     RI_MAX,
 } RandoItemId;
 
