@@ -1,8 +1,10 @@
 # Playing 2 Ship 2 Harkinian with Archipelago
 
-This fork turns 2S2H into a client for the **"Majora's Mask Recompiled"**
-Archipelago world. You generate seeds with the standard Archipelago tools and
-the standard `mm_recomp.apworld` — 2S2H just connects and plays.
+This fork turns 2S2H into a client for the **"Majora's Mask (2 Ship 2 Harkinian)"**
+Archipelago world (`mm_2s2h.apworld`). That apworld is generated from 2S2H's own
+randomizer, so every native option works in a multiworld: grass, pots, crates,
+barrels, hives, snowballs, trees, enemy drops, butterflies, frogs, owl statues,
+souls, clocks, ocarina buttons and the rest.
 
 ## What you need
 
@@ -13,13 +15,13 @@ the standard `mm_recomp.apworld` — 2S2H just connects and plays.
    section of the [README](README.md).
 2. **Archipelago** (0.6.x or newer) — from [archipelago.gg](https://archipelago.gg).
 3. **The apworld + yaml** — both attached to the release:
-   - `mm_recomp.apworld` (the official MMRecompRando world — unmodified;
-     do **not** rename this file, the name must match the Python module inside)
+   - `mm_2s2h.apworld` (do **not** rename this file, the name must match the
+     Python module inside)
    - `2S2H-Archipelago.yaml` (a template yaml for this project)
 
 ## Setup
 
-1. Double-click `mm_recomp.apworld` (or place it in Archipelago's
+1. Double-click `mm_2s2h.apworld` (or place it in Archipelago's
    `custom_worlds` folder).
 2. Edit `2S2H-Archipelago.yaml`: set your `name` and any options you want,
    then put it in Archipelago's `Players` folder.
@@ -54,9 +56,9 @@ the standard `mm_recomp.apworld` — 2S2H just connects and plays.
   create a fresh file for each seed.
 - **DeathLink** is honored automatically when your yaml enables it.
 - **Goal:** defeat Majora. The server is informed automatically.
-- A few niche locations can't be triggered in 2S2H yet (see the README's
-  Known limitations); if a needed item lands on one, the host can free it
-  with the server's `/send` command.
+- **Goal with Triforce Hunt:** collect the required pieces instead.
+- **Versions must match:** the apworld is generated from one 2S2H version
+  (shown in the console on connect); use the client build of that version.
 - The console window (popout button in the menu) shows the full session log
   and server chat.
 
