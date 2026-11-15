@@ -69,15 +69,15 @@ void ArchipelagoConsoleWindow::DrawElement() {
     ImGui::BeginDisabled(busy);
     if (ImGui::InputText("Server Address", addressBuf, sizeof(addressBuf))) {
         CVarSetString(CVAR_ARCHIPELAGO("ServerAddress"), addressBuf);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
     }
     if (ImGui::InputText("Slot Name", slotNameBuf, sizeof(slotNameBuf))) {
         CVarSetString(CVAR_ARCHIPELAGO("SlotName"), slotNameBuf);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
     }
     if (ImGui::InputText("Password", passwordBuf, sizeof(passwordBuf), ImGuiInputTextFlags_Password)) {
         CVarSetString(CVAR_ARCHIPELAGO("Password"), passwordBuf);
-        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+        Ship::Context::GetRawInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
     }
     ImGui::EndDisabled();
 

@@ -306,7 +306,7 @@ void RegisterArchipelago() {
     // SetupGuiElements() runs before ShipInit::InitAll() (see BenPort.cpp), so
     // the Gui exists and we can self-register our window without touching
     // BenGui.cpp.
-    auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
+    auto gui = Ship::Context::GetRawInstance()->GetWindow()->GetGui();
     gui->AddGuiWindow(
         std::make_shared<ArchipelagoConsoleWindow>("gWindows.ApConsole", "Archipelago Console", ImVec2(520, 600)));
 
