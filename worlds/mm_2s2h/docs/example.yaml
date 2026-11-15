@@ -1,0 +1,560 @@
+﻿# Q. What is this file?
+# A. This file contains options which allow you to configure your multiworld experience while allowing
+#    others to play how they want as well.
+#
+# Q. How do I use it?
+# A. The options in this file are weighted. This means the higher number you assign to a value, the
+#    more chances you have for that option to be chosen. For example, an option like this:
+#
+#    map_shuffle:
+#      on: 5
+#      off: 15
+#
+#    Means you have 5 chances for map shuffle to occur, and 15 chances for map shuffle to be turned
+#    off.
+#
+# Q. I've never seen a file like this before. What characters am I allowed to use?
+# A. This is a .yaml file. You are allowed to use most characters.
+#    To test if your yaml is valid or not, you can use this website:
+#        http://www.yamllint.com/
+#    You can also verify that your Archipelago options are valid at this site:
+#        https://archipelago.gg/check
+
+# Your name in-game, limited to 16 characters.
+#     {player} will be replaced with the player's slot number.
+#     {PLAYER} will be replaced with the player's slot number, if that slot number is greater than 1.
+#     {number} will be replaced with the counter value of the name.
+#     {NUMBER} will be replaced with the counter value of the name, if the counter value is greater than 1.
+name: Player{number}
+
+# Used to describe your yaml. Useful if you have multiple files.
+description: Default Majora's Mask (2 Ship 2 Harkinian) Template
+
+game: Majora's Mask (2 Ship 2 Harkinian)
+requires:
+  version: 0.6.9 # Version of Archipelago required for this yaml to work as expected.
+  game:
+    Majora's Mask (2 Ship 2 Harkinian): 0.1.0 # Version of the world required for this yaml to work as expected.
+
+Majora's Mask (2 Ship 2 Harkinian):
+  ################
+  # Game Options #
+  ################
+  progression_balancing:
+    # A system that can move progression earlier, to try and prevent the player from getting stuck and bored early.
+    # 
+    # A lower setting means more getting stuck. A higher setting means less getting stuck.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 99
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-99: 0 # random value between 0 and 99
+    disabled: 0 # equivalent to 0
+    normal: 50 # equivalent to 50
+    extreme: 0 # equivalent to 99
+
+  accessibility:
+    # Set rules for reachability of your items/locations.
+    # 
+    # **Full:** ensure everything can be reached and acquired.
+    # 
+    # **Minimal:** ensure what is needed to reach your goal can be acquired.
+    full: 50
+    minimal: 0
+
+  logic:
+    # Glitchless: the seed is beatable without glitches. No Logic: items anywhere (may be unbeatable).
+    glitchless: 50
+    no_logic: 0
+
+  access_dungeons:
+    # What opens the four temples.
+    form_and_song: 50
+    form_or_song: 0
+    form_only: 0
+    song_only: 0
+    open: 0
+
+  access_trials:
+    # What opens the Moon trials.
+    20_masks: 50
+    remains: 0
+    forms: 0
+    open: 0
+
+  majora_remains_required:
+    # Boss remains required to fight Majora.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 4
+    0: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-4: 0 # random value between 0 and 4
+
+  majora_masks_required:
+    # Non-transformation masks required to fight Majora.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 20
+    0: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-20: 0 # random value between 0 and 20
+
+  moon_remains_required:
+    # Boss remains required to enter the Moon.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 4
+    4: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-4: 0 # random value between 0 and 4
+
+  moon_masks_required:
+    # Non-transformation masks required to enter the Moon.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 20
+    0: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-20: 0 # random value between 0 and 20
+
+  clock_shuffle:
+    # Each half-day (Day 1 ... Night 3) is an item. You start with one.
+    'false': 50
+    'true': 0
+
+  clock_shuffle_mode:
+    # Any order: six distinct clocks (2S2H "Random"). Ascending/Descending: progressive clocks, in time order.
+    any_order: 50
+    ascending: 0
+    descending: 0
+
+  clock_terminal_time:
+    # Minutes into Night 3 at which the Final Hours start (Clock Shuffle).
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 359
+    350: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-359: 0 # random value between 0 and 359
+
+  shuffle_owl_statues:
+    # Activating an owl statue is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_shops:
+    # Items sold in shops are checks, with randomized prices.
+    'false': 50
+    'true': 0
+
+  shuffle_tingle_shops:
+    # Maps sold by Tingle are checks.
+    'false': 50
+    'true': 0
+
+  shuffle_boss_remains:
+    # Temple bosses give a shuffled item instead of their remains.
+    'false': 50
+    'true': 0
+
+  shuffle_cows:
+    # Playing Epona's Song to a cow is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_enemy_drops:
+    # The first drop of each non-boss enemy is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_frogs:
+    # Each scattered choir frog is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_butterflies:
+    # Butterfly swarms are checks.
+    'false': 50
+    'true': 0
+
+  shuffle_freestanding:
+    # Items lying in the world are checks.
+    'false': 50
+    'true': 0
+
+  shuffle_wonder_items:
+    # Invisible touch/shoot triggers are checks.
+    'false': 50
+    'true': 0
+
+  shuffle_gold_skulltulas:
+    # Spider House Gold Skulltulas are checks.
+    'false': 50
+    'true': 0
+
+  skulltulas_shuffled:
+    # How many Gold Skulltulas per Spider House are checks (the rest hold their token).
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 30
+    30: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-30: 0 # random value between 1 and 30
+
+  skulltula_tokens_required:
+    # Tokens needed for the Spider House rewards.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 30
+    30: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-30: 0 # random value between 1 and 30
+
+  shuffle_pots:
+    # Breaking each pot is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_crates:
+    # Breaking each crate is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_barrels:
+    # Breaking each barrel is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_snowballs:
+    # Breaking each large snowball is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_grass:
+    # Cutting each clump of grass is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_trees:
+    # Bonking each shaking tree is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_hives:
+    # Knocking down each beehive is a check.
+    'false': 50
+    'true': 0
+
+  shuffle_boss_souls:
+    # Bosses cannot be defeated without their soul.
+    'false': 50
+    'true': 0
+
+  shuffle_enemy_souls:
+    # Enemies cannot be defeated without their soul.
+    'false': 50
+    'true': 0
+
+  shuffle_swim:
+    # The ability to swim is an item.
+    'false': 50
+    'true': 0
+
+  shuffle_ocarina_buttons:
+    # Each ocarina button is an item.
+    'false': 50
+    'true': 0
+
+  shuffle_song_sun:
+    # Adds Sun's Song to the pool.
+    'false': 50
+    'true': 0
+
+  shuffle_song_double_time:
+    # Song of Double Time is an item.
+    'false': 50
+    'true': 0
+
+  shuffle_song_inverted_time:
+    # Inverted Song of Time is an item.
+    'false': 50
+    'true': 0
+
+  shuffle_song_saria:
+    # Adds Saria's Song (hint song) to the pool.
+    'false': 50
+    'true': 0
+
+  shuffle_tycoon_wallet:
+    # Adds a third wallet upgrade.
+    'false': 50
+    'true': 0
+
+  shuffle_skeleton_key:
+    # Adds a key that opens every small-key door.
+    'false': 50
+    'true': 0
+
+  shuffle_traps:
+    # Adds traps to the pool.
+    'false': 50
+    'true': 0
+
+  trap_amount:
+    # Number of traps (with Traps on).
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 100
+    5: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-100: 0 # random value between 1 and 100
+
+  plentiful_items:
+    # Adds a second copy of every major item.
+    'false': 50
+    'true': 0
+
+  triforce_hunt:
+    # Collect Triforce pieces to win.
+    'false': 50
+    'true': 0
+
+  triforce_pieces_max:
+    # Triforce pieces in the pool.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 1000
+    15: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-1000: 0 # random value between 1 and 1000
+
+  triforce_pieces_required:
+    # Triforce pieces needed to win (capped at the shuffled amount).
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 1000
+    15: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-1000: 0 # random value between 1 and 1000
+
+  small_keys:
+    # Where small keys may be placed.
+    anywhere: 50
+    own_dungeon: 0
+    start_with: 0
+
+  boss_keys:
+    # Where boss keys may be placed.
+    anywhere: 50
+    own_dungeon: 0
+    start_with: 0
+
+  stray_fairies:
+    # Where stray fairies may be placed.
+    anywhere: 50
+    own_dungeon: 0
+    start_with: 0
+
+  stray_fairies_max:
+    # Stray fairies per temple in the pool.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 15
+    15: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-15: 0 # random value between 1 and 15
+
+  stray_fairies_required:
+    # Stray fairies per temple needed for the Great Fairy reward.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 15
+    15: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-15: 0 # random value between 1 and 15
+
+  starting_health:
+    # Starting heart containers.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 20
+    3: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-20: 0 # random value between 1 and 20
+
+  starting_consumables:
+    # Start with full deku sticks and nuts.
+    'false': 50
+    'true': 0
+
+  starting_rupees:
+    # Start with a full wallet.
+    'false': 50
+    'true': 0
+
+  starting_maps_and_compasses:
+    # Start with every map and compass.
+    'false': 50
+    'true': 0
+
+  infinite_rupees:
+    # Rupee shop items can be bought again.
+    'false': 50
+    'true': 0
+
+  starting_items:
+    # 2S2H starting items (by AP item name), removed from the pool like in 2S2H.
+    Hero's Shield: 1
+    Ocarina of Time: 1
+    Progressive Sword: 1
+    Song of Time: 1
+
+  hints_bank_sign:
+    # The bank sign hints its reward.
+    'false': 50
+    'true': 0
+
+  hints_boss_remains:
+    # Hints for the boss remains.
+    'false': 50
+    'true': 0
+
+  hints_gossip_stones:
+    # Gossip stones give static hints.
+    'false': 50
+    'true': 0
+
+  gossip_hint_strength:
+    # Gossip stone hint strength.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 100
+    50: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-100: 0 # random value between 0 and 100
+
+  hints_hookshot:
+    # Hint for the Hookshot location.
+    'false': 50
+    'true': 0
+
+  hints_oath_to_order:
+    # Hint for Oath to Order.
+    'false': 50
+    'true': 0
+
+  hints_purchaseable:
+    # Gossip stone hints can be bought.
+    'false': 50
+    'true': 0
+
+  hints_song_of_soaring:
+    # Hint for Song of Soaring.
+    'false': 50
+    'true': 0
+
+  hints_spider_houses:
+    # Spider House rewards are hinted.
+    'false': 50
+    'true': 0
+
+  hints_transformations:
+    # Hints for the transformation masks.
+    'false': 50
+    'true': 0
+
+  death_link:
+    # When you die, everyone who enabled death link dies. Of course, the reverse is true too.
+    'false': 50
+    'true': 0
+
+  ###########################
+  # Item & Location Options #
+  ###########################
+  local_items:
+    # Forces these items to be in their native world.
+    []
+
+  non_local_items:
+    # Forces these items to be outside their native world.
+    []
+
+  start_inventory:
+    # Start with the specified amount of these items. Example: {Bomb: 1, Arrow: 3}
+    {}
+
+  start_inventory_from_pool:
+    # Start with the specified amount of these items and don't place them in the world. Example: {Bomb: 1, Arrow: 3}
+    # 
+    # The game decides what the replacement items will be.
+    {}
+
+  start_hints:
+    # Start with these item's locations prefilled into the ``!hint`` command.
+    []
+
+  start_location_hints:
+    # Start with these locations and their item prefilled into the ``!hint`` command.
+    []
+
+  exclude_locations:
+    # Prevent these locations from having an important item.
+    []
+
+  priority_locations:
+    # Prevent these locations from having an unimportant item.
+    []
+
+  item_links:
+    # Share part of your item pool with other players.
+    []
+
+  plando_items:
+    # Generic items plando.
+    []
