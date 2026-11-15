@@ -18,6 +18,7 @@ namespace ApSlot {
 
 struct SlotData {
     std::string version2s2h;                          // 2S2H version the apworld was generated from
+    std::string apworldVersion;                       // mm_2s2h world_version, e.g. "0.1.0"
     std::unordered_map<std::string, int32_t> options; // "RO_*" -> value
     std::unordered_map<int32_t, int32_t> prices;      // RandoCheckId -> price
     std::vector<int32_t> startingItems;               // RandoItemId (also sent as AP start inventory)

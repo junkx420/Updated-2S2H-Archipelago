@@ -15,6 +15,7 @@ std::vector<std::string> SlotData::Parse(const nlohmann::json& data) {
     }
     try {
         version2s2h = data.value("version_2s2h", "");
+        apworldVersion = data.value("apworld_version", "");
         if (data.contains("options") && data["options"].is_object()) {
             for (auto& [key, value] : data["options"].items()) {
                 if (value.is_number_integer()) {
@@ -46,7 +47,8 @@ std::vector<std::string> SlotData::Parse(const nlohmann::json& data) {
 
 std::string SlotData::Describe() const {
     std::ostringstream out;
-    out << "  generated for 2S2H " << (version2s2h.empty() ? "?" : version2s2h) << "\n";
+    out << "  apworld " << (apworldVersion.empty() ? "?" : apworldVersion) << ", generated for 2S2H "
+        << (version2s2h.empty() ? "?" : version2s2h) << "\n";
     out << "  " << options.size() << " randomizer options, " << prices.size() << " prices, " << startingItems.size()
         << " starting items, " << vanillaSkulltulas.size() << " vanilla skulltulas\n";
     out << "  DeathLink: " << (deathLink ? "on" : "off");

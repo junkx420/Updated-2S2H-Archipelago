@@ -116,6 +116,20 @@ bool ArchipelagoClient::StartClient() {
         }
         ArchipelagoConsole_SendMessage("[LOG] Slot options:\n%s", slotOptions.Describe().c_str());
 
+        // Refuse seeds from another apworld major.minor: ids/options may not line up.
+        const std::string expected = std::string(AP_Client_consts::AP_WORLD_VERSION) + ".";
+        if (slotOptions.apworldVersion.rfind(expected, 0) != 0) {
+            ArchipelagoConsole_SendMessage("[ERROR] This seed was generated with mm_2s2h apworld %s, but this client "
+                                           "needs %s.x. Use client and apworld from the same release.",
+                                           slotOptions.apworldVersion.empty() ? "?"
+                                                                              : slotOptions.apworldVersion.c_str(),
+                                           AP_Client_consts::AP_WORLD_VERSION);
+            CVarSetInteger(CVAR_ARCHIPELAGO("ConnectionStatus"), AP_STATUS_CONNECTION_ERROR);
+            slotOptions = {};
+            disconnecting = true;
+            return;
+        }
+
         // Tags can only be set after we know the slot options; opt into
         // DeathLink bounces when the seed asks for it.
         if (slotOptions.deathLink) {
