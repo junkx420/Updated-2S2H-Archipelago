@@ -30,6 +30,7 @@
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/BenGui/Notification.h"
 #include "2s2h/Rando/Rando.h"
+#include "2s2h/Rando/StaticData/StaticData.h"
 
 extern "C" {
 #include "variables.h"
@@ -44,75 +45,26 @@ bool wasConnected = false;
 // Scouted placements have been written into the current save's check table.
 bool placementsApplied = false;
 
-// 2S2H check -> mm_recomp shop slot id (Constants.py SHOP_ID_*), the index
-// into slot_data's shop_prices_ints. Numbering verified against the vanilla
-// stock on both sides.
-const std::unordered_map<RandoCheckId, size_t> SHOP_PRICE_INDEX = {
-    { RC_TRADING_POST_SHOP_ITEM_01, 0x0A }, { RC_TRADING_POST_SHOP_ITEM_02, 0x05 },
-    { RC_TRADING_POST_SHOP_ITEM_03, 0x06 }, { RC_TRADING_POST_SHOP_ITEM_04, 0x03 },
-    { RC_TRADING_POST_SHOP_ITEM_05, 0x07 }, { RC_TRADING_POST_SHOP_ITEM_06, 0x08 },
-    { RC_TRADING_POST_SHOP_ITEM_07, 0x09 }, { RC_TRADING_POST_SHOP_ITEM_08, 0x04 },
-    { RC_BOMB_SHOP_ITEM_01, 0x1A },         { RC_BOMB_SHOP_ITEM_02, 0x19 },
-    { RC_BOMB_SHOP_ITEM_03, 0x17 },         { RC_BOMB_SHOP_ITEM_04_OR_CURIOSITY_SHOP_ITEM, 0x15 },
-    { RC_CURIOSITY_SHOP_SPECIAL_ITEM, 0x13 },
-    { RC_HAGS_POTION_SHOP_ITEM_01, 0x02 },  { RC_HAGS_POTION_SHOP_ITEM_02, 0x01 },
-    { RC_HAGS_POTION_SHOP_ITEM_03, 0x00 },
-    { RC_ZORA_SHOP_ITEM_01, 0x1B },         { RC_ZORA_SHOP_ITEM_02, 0x1C },
-    { RC_ZORA_SHOP_ITEM_03, 0x1D },
-    { RC_GORON_SHOP_ITEM_01, 0x1E },        { RC_GORON_SHOP_ITEM_02, 0x1F },
-    { RC_GORON_SHOP_ITEM_03, 0x20 },
-};
-
-// AP shuffles each Tingle map as ONE location, but 2S2H has TWO vendor slots
-// per map. The alternate slot mirrors the primary (same item/price), and
-// collecting either reports the same AP location.
-const std::pair<RandoCheckId, RandoCheckId> TINGLE_VENDOR_ALIASES[] = {
-    // { primary (mapped to AP), alternate (same map, other vendor) }
-    { RC_CLOCK_TOWN_NORTH_TINGLE_MAP_01, RC_IKANA_CANYON_TINGLE_MAP_02 },         // Clock Town
-    { RC_ROAD_TO_SOUTHERN_SWAMP_TINGLE_MAP_01, RC_CLOCK_TOWN_NORTH_TINGLE_MAP_02 },  // Woodfall
-    { RC_TWIN_ISLANDS_TINGLE_MAP_01, RC_ROAD_TO_SOUTHERN_SWAMP_TINGLE_MAP_02 },      // Snowhead
-    { RC_MILK_ROAD_TINGLE_MAP_01, RC_TWIN_ISLANDS_TINGLE_MAP_02 },                   // Romani Ranch
-    { RC_GREAT_BAY_COAST_TINGLE_MAP_01, RC_MILK_ROAD_TINGLE_MAP_02 },                // Great Bay
-    { RC_IKANA_CANYON_TINGLE_MAP_01, RC_GREAT_BAY_COAST_TINGLE_MAP_02 },             // Stone Tower
-};
-
-// Keep aliased Tingle slots in lockstep: buying from either vendor obtains
-// both (so the map can't be bought twice and either purchase reports the
-// shared AP location through the primary's mapping).
-void SyncTingleAliases() {
-    for (const auto& [primary, alternate] : TINGLE_VENDOR_ALIASES) {
-        auto& p = RANDO_SAVE_CHECKS[primary];
-        auto& a = RANDO_SAVE_CHECKS[alternate];
-        if (p.obtained != a.obtained) {
-            p.obtained = a.obtained = true;
-            p.cycleObtained = a.cycleObtained = true;
-            p.eligible = a.eligible = false;
-        }
-    }
-}
-
-// Translates slot_data options into the native RANDO_SAVE_OPTIONS the logic
-// and actor behaviors already read (persisted with the save).
+// Writes the native RO_* options from slot_data into RANDO_SAVE_OPTIONS (persisted
+// with the save). The apworld sends 2S2H's own option ids, so this is 1:1.
 void ApplySlotOptions(const ApSlot::SlotData& options) {
-    RANDO_SAVE_OPTIONS[RO_ACCESS_MOON_REMAINS_COUNT] = options.moonRemainsRequired;
-    RANDO_SAVE_OPTIONS[RO_ACCESS_MAJORA_REMAINS_COUNT] = options.majoraRemainsRequired;
-    if (options.shopsanity != ApSlot::Shopsanity::Vanilla) {
-        RANDO_SAVE_OPTIONS[RO_SHUFFLE_SHOPS] = 1;
-    }
-    RANDO_SAVE_OPTIONS[RO_SHUFFLE_GOLD_SKULLTULAS] = (options.skullsanity == ApSlot::Skullsanity::Anything) ? 1 : 0;
-    RANDO_SAVE_OPTIONS[RO_SKULLTULA_TOKENS_REQUIRED] = options.requiredSkullTokens;
-    RANDO_SAVE_OPTIONS[RO_STRAY_FAIRIES_REQUIRED] = options.requiredStrayFairies;
-    RANDO_SAVE_OPTIONS[RO_SHUFFLE_COWS] = options.cowsanity ? 1 : 0;
-    if (options.shuffleRegionalMaps == ApSlot::ShuffleRegionalMaps::Anywhere) {
-        RANDO_SAVE_OPTIONS[RO_SHUFFLE_TINGLE_SHOPS] = 1;
+    for (const auto& [name, value] : options.options) {
+        RandoOptionId optionId = Rando::StaticData::GetOptionIdFromName(name.c_str());
+        if (optionId == RO_MAX) {
+            ArchipelagoConsole_SendMessage("[ERROR] Unknown randomizer option '%s' in slot_data.", name.c_str());
+            continue;
+        }
+        RANDO_SAVE_OPTIONS[optionId] = value;
     }
 }
 
-// Rewrites RANDO_SAVE_CHECKS so every mapped check contains what the
+// Rewrites RANDO_SAVE_CHECKS so every AP location contains what the
 // multiworld actually placed there: our own items become the real
 // RandoItemId (native textbox/model/give all just work), other players'
 // items become RI_ARCHIPELAGO_ITEM (give is a no-op; the server grants the
-// owner when we report the location).
+// owner when we report the location). A check is an AP location exactly when
+// the apworld shuffled it, so `shuffled` here is the same flag 2S2H's
+// GeneratePools would set; checks we leave alone keep their vanilla behaviour.
 void ApplyScoutedPlacements(ArchipelagoClient& client) {
     if (placementsApplied || !client.ScoutsReady()) {
         return;
@@ -125,7 +77,8 @@ void ApplyScoutedPlacements(ArchipelagoClient& client) {
     for (const auto& [apLocationId, scout] : client.GetScoutedItems()) {
         RandoCheckId checkId = ApMapping::GetCheckFromApLocation(apLocationId);
         if (checkId == RC_UNKNOWN) {
-            continue; // AP location with no 2S2H check (see mapping report)
+            ArchipelagoConsole_SendMessage("[ERROR] AP location %lld is not a 2S2H check.", (long long)apLocationId);
+            continue;
         }
         auto& saveCheck = RANDO_SAVE_CHECKS[checkId];
         if (saveCheck.obtained) {
@@ -147,37 +100,32 @@ void ApplyScoutedPlacements(ArchipelagoClient& client) {
         }
         saveCheck.shuffled = true;
         applied++;
+    }
 
-        // Shopsanity: stamp the multiworld price onto the shop slot.
-        auto priceIndex = SHOP_PRICE_INDEX.find(checkId);
-        if (priceIndex != SHOP_PRICE_INDEX.end() && priceIndex->second < options.shopPrices.size()) {
-            saveCheck.price = (u16)options.shopPrices[priceIndex->second];
+    // Spider House tokens the apworld left vanilla (RO_SKULLTULA_SHUFFLED < 30): 2S2H marks
+    // them shuffled with their own token so the token count still works.
+    for (int32_t check : options.vanillaSkulltulas) {
+        auto checkId = static_cast<RandoCheckId>(check);
+        if (Rando::StaticData::Checks.contains(checkId)) {
+            RANDO_SAVE_CHECKS[checkId].randoItemId = Rando::StaticData::Checks[checkId].randoItemId;
+            RANDO_SAVE_CHECKS[checkId].shuffled = true;
         }
     }
 
-    // Tingle prices: AP doesn't price map purchases (they're not part of
-    // shop_prices), and the AP file flow never runs the native generator that
-    // would have rolled prices — so give the slots their vanilla prices
-    // (local map cheap, far map pricier).
-    static const std::pair<RandoCheckId, u16> TINGLE_VANILLA_PRICES[] = {
-        { RC_CLOCK_TOWN_NORTH_TINGLE_MAP_01, 5 },          { RC_CLOCK_TOWN_NORTH_TINGLE_MAP_02, 40 },
-        { RC_ROAD_TO_SOUTHERN_SWAMP_TINGLE_MAP_01, 20 },   { RC_ROAD_TO_SOUTHERN_SWAMP_TINGLE_MAP_02, 40 },
-        { RC_TWIN_ISLANDS_TINGLE_MAP_01, 20 },             { RC_TWIN_ISLANDS_TINGLE_MAP_02, 40 },
-        { RC_MILK_ROAD_TINGLE_MAP_01, 20 },                { RC_MILK_ROAD_TINGLE_MAP_02, 40 },
-        { RC_GREAT_BAY_COAST_TINGLE_MAP_01, 20 },          { RC_GREAT_BAY_COAST_TINGLE_MAP_02, 40 },
-        { RC_IKANA_CANYON_TINGLE_MAP_01, 20 },             { RC_IKANA_CANYON_TINGLE_MAP_02, 40 },
-    };
-    for (const auto& [checkId, price] : TINGLE_VANILLA_PRICES) {
-        RANDO_SAVE_CHECKS[checkId].price = price;
+    // Prices rolled by the apworld (the logic's CAN_AFFORD reads exactly these).
+    for (const auto& [check, price] : options.prices) {
+        auto checkId = static_cast<RandoCheckId>(check);
+        if (Rando::StaticData::Checks.contains(checkId)) {
+            RANDO_SAVE_CHECKS[checkId].price = (u16)price;
+        }
     }
 
-    // Mirror primary Tingle slots onto their alternate vendors.
-    for (const auto& [primary, alternate] : TINGLE_VENDOR_ALIASES) {
-        auto& p = RANDO_SAVE_CHECKS[primary];
-        auto& a = RANDO_SAVE_CHECKS[alternate];
-        if (p.shuffled) {
-            a.randoItemId = p.randoItemId;
-            a.shuffled = true;
+    // The Happy Mask Salesman checks are granted up front like native rando, but only
+    // now that they hold their multiworld item (CheckQueue would otherwise give RI_UNKNOWN).
+    for (RandoCheckId checkId : { RC_STARTING_ITEM_DEKU_MASK, RC_STARTING_ITEM_SONG_OF_HEALING }) {
+        auto& saveCheck = RANDO_SAVE_CHECKS[checkId];
+        if (saveCheck.shuffled && !saveCheck.obtained && !saveCheck.cycleObtained) {
+            saveCheck.eligible = true;
         }
     }
 
@@ -187,9 +135,12 @@ void ApplyScoutedPlacements(ArchipelagoClient& client) {
 }
 
 void SendNewlyObtainedChecks(ArchipelagoClient& client) {
+    // Every check type (grass, pots, crates, souls, ...) ends in CheckQueue setting
+    // `obtained`, so this one scan covers all of them without per-type code.
     std::list<int64_t> batch;
-    for (const auto& [checkId, apLocationId] : ApMapping::CHECK_TO_AP_LOCATION) {
-        if (!RANDO_SAVE_CHECKS[checkId].obtained || sentLocations.contains(apLocationId)) {
+    for (const auto& [apLocationId, _] : client.GetScoutedItems()) {
+        RandoCheckId checkId = ApMapping::GetCheckFromApLocation(apLocationId);
+        if (checkId == RC_UNKNOWN || !RANDO_SAVE_CHECKS[checkId].obtained || sentLocations.contains(apLocationId)) {
             continue;
         }
         batch.push_back(apLocationId);
@@ -308,7 +259,9 @@ void ProcessFrame() {
     }
 
     ApplyScoutedPlacements(client);
-    SyncTingleAliases();
+    if (!placementsApplied) {
+        return; // don't hand out items before the check table is filled
+    }
     SendNewlyObtainedChecks(client);
     ApplyNextPendingItem(client);
     ProcessDeathLink(client);
@@ -344,17 +297,32 @@ void OnApFileCreate(s16 fileNum) {
     BUTTON_ITEM_EQUIP(0, EQUIP_SLOT_B) = ITEM_NONE;
     SET_EQUIP_VALUE(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_NONE);
 
-    // Sane logic defaults (no cvars — the multiworld is authoritative), then
-    // the AP-controlled values on top.
+    // 2S2H defaults (no cvars — the multiworld is authoritative), then the
+    // apworld's RO_* values on top.
     for (auto& [randoOptionId, randoStaticOption] : Rando::StaticData::Options) {
         RANDO_SAVE_OPTIONS[randoOptionId] = randoStaticOption.defaultValue;
     }
-    ApplySlotOptions(client.GetSlotOptions());
-    gSaveContext.save.shipSaveInfo.rando.finalSeed = client.GetSlotOptions().randomSeed;
+    const auto& options = client.GetSlotOptions();
+    ApplySlotOptions(options);
+    gSaveContext.save.shipSaveInfo.rando.finalSeed = options.randomSeed;
 
-    // The Happy Mask Salesman checks are granted up front, like native rando.
-    RANDO_SAVE_CHECKS[RC_STARTING_ITEM_DEKU_MASK].eligible = true;
-    RANDO_SAVE_CHECKS[RC_STARTING_ITEM_SONG_OF_HEALING].eligible = true;
+    // Like GeneratePools: every check starts out holding its vanilla item, unshuffled.
+    for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
+        RANDO_SAVE_CHECKS[randoCheckId].randoItemId = randoStaticCheck.randoItemId;
+    }
+
+    // The non-item parts of Rando::GrantStartingItems. Starting *items* arrive from
+    // the server as AP start inventory (items_handling bit 2), so they are not given here.
+    if (RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] != 3) {
+        gSaveContext.save.saveInfo.playerData.healthCapacity = gSaveContext.save.saveInfo.playerData.health =
+            RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] * 0x10;
+    }
+    if (RANDO_SAVE_OPTIONS[RO_STARTING_CONSUMABLES]) {
+        Rando::GiveItem(RI_DEKU_STICK);
+        Rando::GiveItem(RI_DEKU_NUT);
+        AMMO(ITEM_DEKU_STICK) = CUR_CAPACITY(UPG_DEKU_STICKS);
+        AMMO(ITEM_DEKU_NUT) = CUR_CAPACITY(UPG_DEKU_NUTS);
+    }
 
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnRandoSeedGeneration>();
     Audio_PlaySfx(NA_SE_SY_ATTENTION_SOUND);

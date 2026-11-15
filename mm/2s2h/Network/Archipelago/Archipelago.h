@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 #ifdef ENABLE_ARCHIPELAGO
 
+#include <cstdint>
 #include <list>
 #include <memory>
 #include <string>
@@ -22,12 +23,12 @@ class APClient;
 #define CVAR_ARCHIPELAGO(var) "gNetwork.Archipelago." var
 
 namespace AP_Client_consts {
-// NOTE: This MUST match the `game` attribute of the apworld used for
-// generation. For ID/yaml compatibility with MMRecompRando, set this to the
-// exact string declared in the mm_recomp apworld (check with:
-//   unzip -p mm_recomp.apworld "*/__init__.py" | grep -E "game[: ]")
-// Expected to be "Majora's Mask Recompiled" — verify against your local copy.
-static constexpr char const* AP_GAME_NAME = "Majora's Mask Recompiled";
+// NOTE: This MUST match the `game` attribute of the mm_2s2h apworld.
+static constexpr char const* AP_GAME_NAME = "Majora's Mask (2 Ship 2 Harkinian)";
+
+// mm_2s2h ids: AP location id = AP_ID_BASE + RandoCheckId, AP item id = AP_ID_BASE + RandoItemId
+// (worlds/mm_2s2h/__init__.py BASE_ID). No translation tables.
+static constexpr int64_t AP_ID_BASE = 0x2D2D0000;
 
 // Version handshake with the AP server (matches SoH: server protocol 0.6.x).
 static constexpr int AP_PROTOCOL_MAJOR = 0;
