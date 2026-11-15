@@ -5,8 +5,9 @@
 
 ## Required software
 
-- The 2 Ship 2 Harkinian **client build** from the `client` branch of `junkx420/Updated-2S2H-Archipelago`
-  (Windows build from its GitHub Actions). The official 2S2H release does not include an Archipelago client.
+- The 2 Ship 2 Harkinian **client build** from the
+  [Releases](https://github.com/junkx420/Updated-2S2H-Archipelago/releases) of `junkx420/Updated-2S2H-Archipelago`
+  (`2S2H-Archipelago-<version>-Windows.zip`). The official 2S2H release does not include an Archipelago client.
 - Your **own legally obtained** Majora's Mask (US) ROM. 2S2H asks for it on first launch.
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases) 0.6.6 or newer.
 - `mm_2s2h.apworld` from the same repository (double-click it to install).
