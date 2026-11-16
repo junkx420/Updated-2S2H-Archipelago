@@ -11,8 +11,8 @@ crates, barrels, beehives, snowballs, trees, enemy drops, butterflies, frogs, ow
 time (clock) shuffle and ocarina buttons.
 
 **Status: feature-complete for the planned scope, but barely play-tested.** Generation, the test suites and the
-Windows/Linux client builds pass, the logic matches 2S2H's own logic in every compared case, and a first short
-play session worked. Things may still be broken, seeds may turn out unbeatable in game, and save files or
+Windows/Linux client builds pass, the logic matches 2S2H's own logic in every compared case, and first play
+sessions worked, including a two-slot multiworld (items sent to and received from another world). Things may still be broken, seeds may turn out unbeatable in game, and save files or
 generated games may not carry over between versions of this repository. Use at your own risk.
 
 ## Branches
@@ -59,7 +59,6 @@ version and refuses seeds of other versions. Neither side is compatible with MMR
 - Own-dungeon items are restricted by item rules, not pre-placed like 2S2H does; very tight pools may fail to fill.
 - Universal Tracker integration.
 - macOS client build (the CI job does not run on the fork).
-- Not tested yet: a real multiworld with items from another game.
 
 ## Testing
 
