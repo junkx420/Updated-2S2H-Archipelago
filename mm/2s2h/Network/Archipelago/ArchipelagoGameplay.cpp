@@ -44,6 +44,8 @@ std::unordered_set<int64_t> sentLocations;
 bool wasConnected = false;
 // Scouted placements have been written into the current save's check table.
 bool placementsApplied = false;
+// The loaded save is from another seed and the player has been told (once per load).
+bool foreignSaveWarned = false;
 
 // Writes the native RO_* options from slot_data into RANDO_SAVE_OPTIONS (persisted
 // with the save). The apworld sends 2S2H's own option ids, so this is 1:1.
@@ -138,22 +140,24 @@ void SendNewlyObtainedChecks(ArchipelagoClient& client) {
     // Every check type (grass, pots, crates, souls, ...) ends in CheckQueue setting
     // `obtained`, so this one scan covers all of them without per-type code.
     std::list<int64_t> batch;
-    for (const auto& [apLocationId, _] : client.GetScoutedItems()) {
+    for (const auto& [apLocationId, scout] : client.GetScoutedItems()) {
         RandoCheckId checkId = ApMapping::GetCheckFromApLocation(apLocationId);
         if (checkId == RC_UNKNOWN || !RANDO_SAVE_CHECKS[checkId].obtained || sentLocations.contains(apLocationId)) {
             continue;
         }
-        batch.push_back(apLocationId);
         sentLocations.insert(apLocationId);
+        // The server knew this one before we connected: nothing to report or announce.
+        if (scout.checked) {
+            continue;
+        }
+        batch.push_back(apLocationId);
 
         // If this location held another player's item, tell the player what
         // they just sent out (the in-game textbox only showed a placeholder).
-        const auto& scouts = client.GetScoutedItems();
-        auto scout = scouts.find(apLocationId);
-        if (scout != scouts.end() && !scout->second.isLocalItem) {
+        if (!scout.isLocalItem) {
             Notification::Emit({
                 .message = "Sent",
-                .suffix = scout->second.itemName + " to " + scout->second.playerName,
+                .suffix = scout.itemName + " to " + scout.playerName,
             });
         }
     }
@@ -166,19 +170,15 @@ void SendNewlyObtainedChecks(ArchipelagoClient& client) {
 // Applies at most one pending item per frame so a reconnect burst trickles in
 // visibly instead of dumping silently.
 void ApplyNextPendingItem(ArchipelagoClient& client) {
-    auto& pending = client.GetPendingItems();
-    if (pending.empty()) {
-        return;
-    }
-
-    // Items can arrive out of order across multiple packets; always apply the
-    // lowest index first so apItemsReceived stays a simple high-water mark.
-    auto next = std::min_element(pending.begin(), pending.end(),
-                                 [](const auto& a, const auto& b) { return a.index < b.index; });
-
-    // Already applied in a previous session (resync replay) — drop silently.
-    if ((uint32_t)next->index < gSaveContext.save.shipSaveInfo.rando.apItemsReceived) {
-        pending.erase(next);
+    // Received items stay in the list for the whole connection and the save's counter
+    // picks the next one. Entries below the counter were applied to this save before;
+    // a save loaded with a lower counter (reloaded without saving, another file of this
+    // slot) gets the items it is missing again without waiting for a reconnect.
+    auto& received = client.GetPendingItems();
+    const uint32_t nextIndex = gSaveContext.save.shipSaveInfo.rando.apItemsReceived;
+    auto next = std::find_if(received.begin(), received.end(),
+                             [nextIndex](const auto& item) { return (uint32_t)item.index == nextIndex; });
+    if (next == received.end()) {
         return;
     }
 
@@ -199,8 +199,7 @@ void ApplyNextPendingItem(ArchipelagoClient& client) {
                                        next->fromPlayer.c_str());
     }
 
-    gSaveContext.save.shipSaveInfo.rando.apItemsReceived = (uint32_t)next->index + 1;
-    pending.erase(next);
+    gSaveContext.save.shipSaveInfo.rando.apItemsReceived = nextIndex + 1;
 }
 
 // DeathLink: watch health transitions. A death we caused (incoming link) must
@@ -255,7 +254,19 @@ void ProcessFrame() {
         // ignores locations it already knows about.
         sentLocations.clear();
         placementsApplied = false;
+        foreignSaveWarned = false;
         wasConnected = true;
+    }
+
+    // A rando save of another seed (native randomizer, another slot or another room)
+    // must not be rewritten with this multiworld's options and placements.
+    if (gSaveContext.save.shipSaveInfo.rando.finalSeed != client.GetSlotOptions().randomSeed) {
+        if (!foreignSaveWarned) {
+            foreignSaveWarned = true;
+            ArchipelagoConsole_SendMessage("[ERROR] This save file belongs to another seed, not to the connected "
+                                           "slot. Nothing is sent or received on it.");
+        }
+        return;
     }
 
     ApplyScoutedPlacements(client);
@@ -342,6 +353,7 @@ void RegisterArchipelagoGameplay() {
     // switching files mid-session can't leak the previous file's state.
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnSaveLoad>([](s16 fileNum) {
         placementsApplied = false;
+        foreignSaveWarned = false;
         sentLocations.clear();
     });
 

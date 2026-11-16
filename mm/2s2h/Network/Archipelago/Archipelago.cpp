@@ -136,14 +136,20 @@ bool ArchipelagoClient::StartClient() {
             apClient->ConnectUpdate(false, 0, true, { "DeathLink" });
         }
 
-        // Scout every still-missing location of our slot so the game can show
-        // and place the real multiworld items (location_info handler below).
+        // Scout every location of our slot so the game can show and place the real
+        // multiworld items (location_info handler below). Checked locations are
+        // included: a new save on a slot that is already in progress (lost save,
+        // second device, locations collected by other players) would otherwise keep
+        // them unshuffled and hand out their vanilla items.
         scoutedItems.clear();
         hintedLocations.clear();
         scoutsReady = false;
         const auto missing = apClient->get_missing_locations();
-        if (!missing.empty()) {
-            apClient->LocationScouts(std::list<int64_t>(missing.begin(), missing.end()));
+        const auto checked = apClient->get_checked_locations();
+        std::list<int64_t> locations(missing.begin(), missing.end());
+        locations.insert(locations.end(), checked.begin(), checked.end());
+        if (!locations.empty()) {
+            apClient->LocationScouts(locations);
         } else {
             scoutsReady = true;
         }
@@ -171,6 +177,7 @@ bool ArchipelagoClient::StartClient() {
             return;
         }
         int ownSlot = apClient->get_player_number();
+        const auto checked = apClient->get_checked_locations();
         for (const auto& item : items) {
             scoutedItems[item.location] = ScoutedItem{
                 item.item,
@@ -178,6 +185,7 @@ bool ArchipelagoClient::StartClient() {
                 item.player == ownSlot,
                 apClient->get_item_name(item.item, apClient->get_player_game(item.player)),
                 apClient->get_player_alias(item.player),
+                checked.count(item.location) > 0,
             };
         }
         scoutsReady = true;
@@ -200,12 +208,20 @@ bool ArchipelagoClient::StartClient() {
         ArchipelagoConsole_SendMessage("%s", apClient->render_json(args.data, APClient::RenderFormat::TEXT).c_str());
     });
 
-    // Queue items for ArchipelagoGameplay.cpp, which applies them on safe
-    // gameplay frames and tracks the save's apItemsReceived index.
+    // Store items for ArchipelagoGameplay.cpp, which applies them on safe
+    // gameplay frames and tracks the save's apItemsReceived index. One entry per
+    // index: the server sends the whole list again after a socket reconnect.
     apClient->set_items_received_handler([&](const std::list<APClient::NetworkItem>& items) {
         for (const auto& item : items) {
             std::string from = apClient->get_player_alias(item.player);
-            pendingItems.push_back(ReceivedItem{ item.item, item.index, from });
+            ReceivedItem received{ item.item, item.index, from };
+            auto known = std::find_if(pendingItems.begin(), pendingItems.end(),
+                                      [&](const ReceivedItem& other) { return other.index == received.index; });
+            if (known != pendingItems.end()) {
+                *known = received;
+            } else {
+                pendingItems.push_back(received);
+            }
             SPDLOG_INFO("[AP] Queued item {} (index {}) from {}", item.item, item.index, from);
         }
     });

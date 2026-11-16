@@ -87,8 +87,10 @@ class ArchipelagoClient {
         std::string fromPlayer;
     };
 
-    // Pending items queued by the items_received handler; consumed on safe
-    // gameplay frames by ArchipelagoGameplay.cpp.
+    // Every item received on this connection, one entry per index. They are kept
+    // for the whole connection: ArchipelagoGameplay.cpp applies the entry whose index
+    // equals the loaded save's apItemsReceived, so a save with a lower counter
+    // (reloaded without saving, another file of this slot) catches up by itself.
     std::vector<ReceivedItem>& GetPendingItems();
 
     // Reports these AP location ids as checked to the server.
@@ -103,9 +105,10 @@ class ArchipelagoClient {
         bool isLocalItem; // true when the item belongs to this slot
         std::string itemName;
         std::string playerName;
+        bool checked; // the server already had this location checked when we connected
     };
 
-    // AP location id -> scouted placement. Empty until ScoutsReady().
+    // AP location id -> scouted placement, for every location of this slot. Empty until ScoutsReady().
     const std::unordered_map<int64_t, ScoutedItem>& GetScoutedItems() const;
     bool ScoutsReady() const;
 
