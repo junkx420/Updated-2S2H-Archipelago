@@ -17,6 +17,7 @@ from worlds.AutoWorld import LogicMixin, WebWorld, World
 from .enums_generated import OPTION_DEFAULTS, RC_ID, RI_ID
 from .items_generated import ITEMS
 from .locations_generated import LOCATIONS
+from .macros_generated import CAN_USE_SWORD
 from .options import MM2S2HOptions
 from .primitives import LOGIC_ITEMS, SaveView
 from .regions_generated import REGIONS
@@ -310,8 +311,14 @@ class MM2S2HWorld(World):
         lair = regions["RR_MOON_MAJORAS_LAIR"]
         goal = MM2S2HLocation(p, "Defeat Majora", None, lair)
         goal.place_locked_item(MM2S2HItem("Victory", IC.progression, None, p))
-        if self.ro["RO_SHUFFLE_BOSS_SOULS"] and not self.ro["RO_SHUFFLE_TRIFORCE_PIECES"]:
-            goal.access_rule = lambda state: state.has(ITEMS["RI_SOUL_BOSS_MAJORA"][0], p)
+        # 2S2H's logic stops at the door (Moon.cpp: "TODO: Add a check for Game Completion?"), so on its own the
+        # goal would be in logic without anything to fight with. A sword (any human sword, Great Fairy's Sword or
+        # Fierce Deity) wins all three phases; the soul is needed in every logic mode.
+        soul = (ITEMS["RI_SOUL_BOSS_MAJORA"][0]
+                if self.ro["RO_SHUFFLE_BOSS_SOULS"] and not self.ro["RO_SHUFFLE_TRIFORCE_PIECES"] else None)
+        fight = self._rule(CAN_USE_SWORD)
+        if soul or fight:
+            goal.access_rule = lambda state: (not soul or state.has(soul, p)) and (not fight or fight(state))
         lair.locations.append(goal)
         if self.ro["RO_SHUFFLE_TRIFORCE_PIECES"]:
             need = self.ro["RO_TRIFORCE_PIECES_REQUIRED"]

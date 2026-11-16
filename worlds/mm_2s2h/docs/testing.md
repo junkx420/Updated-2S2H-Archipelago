@@ -83,3 +83,9 @@ grass.
 Two-slot multiworld (both mm_2s2h, one played, the other released with `/release`): items for the other world show
 the Archipelago model and are reported, ~900 released items arrive in order, and reloading the save grants nothing
 twice.
+
+### Goal (apworld 0.1.5)
+
+2S2H's logic has no rule for beating Majora, so until 0.1.4 the goal was in logic as soon as the lair was reachable,
+with or without a weapon. The goal now needs a sword (any human sword, Great Fairy's Sword or Fierce Deity) in
+Glitchless logic. `test/test_goal.py` checks both directions. 20 random seeds: **20 / 20**.
