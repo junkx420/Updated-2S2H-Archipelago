@@ -3374,6 +3374,7 @@ typedef enum {
     // Appended at the end on purpose: option values are persisted in saves by index.
     RO_SHUFFLE_NPC_SOULS,
     RO_SHUFFLE_DUNGEON_ENTRANCES,
+    RO_SHUFFLE_BOSS_ENTRANCES,
     RO_MAX,
 } RandoOptionId;
 

@@ -27,6 +27,7 @@ void Rando::MiscBehavior::OnFileLoad() {
     COND_HOOK(AfterEndOfCycleSave, IS_RANDO, Rando::MiscBehavior::AfterEndOfCycleSave);
     COND_HOOK(OnSceneInit, IS_RANDO, Rando::MiscBehavior::OnSceneInit);
     COND_HOOK(BeforeTransitionSetup, IS_RANDO, Rando::EntranceShuffle::OnBeforeTransitionSetup);
+    COND_HOOK(OnSceneInit, IS_RANDO, Rando::EntranceShuffle::OnSceneInit);
     COND_ID_HOOK(OnActorUpdate, ACTOR_PLAYER, IS_RANDO, [](Actor* actor) { Rando::MiscBehavior::CheckQueue(); });
 
     // This overrides the ocarina condition for Termina Field

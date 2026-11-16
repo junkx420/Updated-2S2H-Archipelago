@@ -20,6 +20,8 @@ struct ShuffleEntrance {
     s16 outsideScene;
     s16 bossScene;                // boss room whose blue warp should return to this area's door, SCENE_MAX if none
     std::vector<u16> bossWarpsTo; // where that blue warp normally lands
+    // Boss rows only: the containing temple's exterior exit. Their outOf is a one-way blue warp, not a back door.
+    u16 templeExit = 0;
 };
 
 // Append only: a save stores the shuffle per row index (RandoSaveInfo::entrancePairs). Read by the apworld generator.
@@ -41,6 +43,9 @@ void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs);
 
 // BeforeTransitionSetup hook: replaces play->nextEntrance when it goes through a shuffled door.
 void OnBeforeTransitionSetup();
+
+// After an overridden blue warp, replace both respawn records with the actual exterior spawn.
+void OnSceneInit(s16 sceneId, s8 spawnNum);
 
 } // namespace EntranceShuffle
 
