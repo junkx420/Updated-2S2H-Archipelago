@@ -47,6 +47,15 @@ DUNGEON_SCENES = {"WOODFALL": {"SCENE_MITURIN", "SCENE_MITURIN_BS"}, "SNOWHEAD":
                   "GREAT_BAY": {"SCENE_SEA", "SCENE_SEA_BS"},
                   "STONE_TOWER": {"SCENE_INISIE_N", "SCENE_INISIE_R", "SCENE_INISIE_BS"}}
 JUNK_FILL = "RI_RUPEE_BLUE"
+LOCATION_TYPE_GROUPS = {
+    "RCTYPE_GRASS": "Grass", "RCTYPE_POT": "Pots", "RCTYPE_CRATE": "Crates", "RCTYPE_BARREL": "Barrels",
+    "RCTYPE_SNOWBALL": "Snowballs", "RCTYPE_TREE": "Trees", "RCTYPE_BEEHIVE": "Beehives", "RCTYPE_CHEST": "Chests",
+    "RCTYPE_FREESTANDING": "Freestanding Items", "RCTYPE_WONDER_ITEM": "Wonder Items", "RCTYPE_NPC": "NPC Rewards",
+    "RCTYPE_SKULL_TOKEN": "Gold Skulltulas", "RCTYPE_ENEMY_DROP": "Enemy Drops", "RCTYPE_STRAY_FAIRY": "Stray Fairy Checks",
+    "RCTYPE_SHOP": "Shops", "RCTYPE_HEART": "Heart Pieces and Containers", "RCTYPE_BUTTERFLY": "Butterflies",
+    "RCTYPE_MINIGAME": "Minigames", "RCTYPE_TINGLE_SHOP": "Tingle", "RCTYPE_COW": "Cows", "RCTYPE_OWL": "Owl Statue Checks",
+    "RCTYPE_SONG": "Song Checks", "RCTYPE_FROG": "Frogs", "RCTYPE_REMAINS": "Boss Remains Checks",
+}
 # Nearly No Logic placement blacklists (port of Logic/NearlyNoLogic.cpp)
 _MOON = {"SCENE_LAST_DEKU", "SCENE_LAST_GORON", "SCENE_LAST_ZORA", "SCENE_LAST_LINK", "SCENE_SOUGEN", "SCENE_LAST_BS"}
 NNL_SCENE_BLACKLIST = {
@@ -101,9 +110,26 @@ class MM2S2HWorld(World):
     item_name_to_id: ClassVar[dict[str, int]] = {v[0]: BASE_ID + RI_ID[k] for k, v in ITEMS.items()
                                                  if k not in ("RI_UNKNOWN", "RI_NONE")}
     location_name_to_id: ClassVar[dict[str, int]] = {v[0]: BASE_ID + RC_ID[k] for k, v in LOCATIONS.items()}
-    item_name_groups = {"Souls": {v[0] for k, v in ITEMS.items() if k.startswith("RI_SOUL_")},
-                        "Clocks": {v[0] for k, v in ITEMS.items() if k.startswith("RI_TIME_")},
-                        "Masks": {v[0] for k, v in ITEMS.items() if v[1] == "RITYPE_MASK"}}
+    item_name_groups = {group: {v[0] for k, v in ITEMS.items() if test(k, v)} for group, test in {
+        "Souls": lambda k, v: k.startswith("RI_SOUL_"),
+        "Boss Souls": lambda k, v: k.startswith("RI_SOUL_BOSS_"),
+        "Enemy Souls": lambda k, v: k.startswith("RI_SOUL_ENEMY_"),
+        "Clocks": lambda k, v: k.startswith("RI_TIME_"),
+        "Masks": lambda k, v: v[1] == "RITYPE_MASK",
+        "Songs": lambda k, v: k.startswith("RI_SONG_") or k == "RI_PROGRESSIVE_LULLABY",
+        "Boss Remains": lambda k, v: k.startswith("RI_REMAINS_"),
+        "Owl Statues": lambda k, v: k.startswith("RI_OWL_"),
+        "Ocarina Buttons": lambda k, v: k.startswith("RI_OCARINA_BUTTON_"),
+        "Small Keys": lambda k, v: v[1] == "RITYPE_SMALL_KEY",
+        "Boss Keys": lambda k, v: v[1] == "RITYPE_BOSS_KEY",
+        "Stray Fairies": lambda k, v: v[1] == "RITYPE_STRAY_FAIRY",
+        "Tingle Maps": lambda k, v: k.startswith("RI_TINGLE_MAP_"),
+    }.items()}
+    location_name_groups = {
+        **{group: {v[0] for v in LOCATIONS.values() if v[1] == rctype} for rctype, group in LOCATION_TYPE_GROUPS.items()},
+        **{f"{d.replace('_', ' ').title()} Temple": {v[0] for v in LOCATIONS.values() if v[2] in scenes}
+           for d, scenes in DUNGEON_SCENES.items()},
+    }
 
     ro: dict[str, int]
     prices: dict[str, int]
