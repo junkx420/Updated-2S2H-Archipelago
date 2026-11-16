@@ -6,6 +6,14 @@
 
 #define BANK_SIGN_MESSAGE_ID 0x1C14
 
+// Announces an in-game hint that names an item and its exact location as an Archipelago hint (no-op without
+// Archipelago support). Kept out of the hook lambdas: preprocessor directives inside macro arguments break MSVC.
+static void AnnounceExactHint(RandoCheckId randoCheckId) {
+#ifdef ENABLE_ARCHIPELAGO
+    ApMapping::HintCheck(randoCheckId);
+#endif
+}
+
 void Rando::MiscBehavior::BankSignHint() {
     bool shouldRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_HINTS_BANK_SIGN];
 
@@ -30,9 +38,7 @@ void Rando::MiscBehavior::BankSignHint() {
 
         CustomMessage::Replace(&entry.msg, "{{item}}",
                                Rando::StaticData::GetItemName(saveCheck.randoItemId, true, randoCheckId));
-#ifdef ENABLE_ARCHIPELAGO
-        ApMapping::HintCheck(randoCheckId); // the hint names item and exact location
-#endif
+        AnnounceExactHint(randoCheckId);
 
         CustomMessage::LoadCustomMessageIntoFont(entry);
         *loadFromMessageTable = false;

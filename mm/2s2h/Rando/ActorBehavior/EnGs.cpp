@@ -143,6 +143,14 @@ RandoCheckId GetRandomCheck(bool repeatableOnlyObtained = false) {
     return weightedChecks.back().first;
 }
 
+// Announces an in-game hint that names an item and its exact location as an Archipelago hint (no-op without
+// Archipelago support). Kept out of the hook lambdas: preprocessor directives inside macro arguments break MSVC.
+static void AnnounceExactHint(RandoCheckId randoCheckId) {
+#ifdef ENABLE_ARCHIPELAGO
+    ApMapping::HintCheck(randoCheckId);
+#endif
+}
+
 void Rando::ActorBehavior::InitEnGsBehavior() {
     bool shouldRegister =
         IS_RANDO && (RANDO_SAVE_OPTIONS[RO_HINTS_GOSSIP_STONES] || RANDO_SAVE_OPTIONS[RO_HINTS_PURCHASEABLE]);
@@ -178,11 +186,9 @@ void Rando::ActorBehavior::InitEnGsBehavior() {
                                    Rando::StaticData::GetItemName(saveCheck.randoItemId, true, randoCheckId));
             CustomMessage::Replace(&entry.msg, "{{location}}",
                                    Rando::StaticData::GetLocationNameForHint(randoCheckId, showExact));
-#ifdef ENABLE_ARCHIPELAGO
             if (showExact) {
-                ApMapping::HintCheck(randoCheckId); // the hint names item and exact location
+                AnnounceExactHint(randoCheckId);
             }
-#endif
 
             // Replace colors before line break calculation
             CustomMessage::ReplaceColorChars(&entry.msg);
@@ -232,9 +238,7 @@ void Rando::ActorBehavior::InitEnGsBehavior() {
                                            Rando::StaticData::GetItemName(saveCheck.randoItemId, true, randoCheckId));
                     CustomMessage::Replace(&entry.msg, "{{location}}",
                                            Rando::StaticData::GetLocationNameForHint(randoCheckId, true));
-#ifdef ENABLE_ARCHIPELAGO
-                    ApMapping::HintCheck(randoCheckId); // the hint names item and exact location
-#endif
+                    AnnounceExactHint(randoCheckId);
 
                     gSaveContext.rupeeAccumulator -= cost;
                     cost *= 2;
