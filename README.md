@@ -19,12 +19,13 @@ generated games may not carry over between versions of this repository. Use at y
 
 | Branch | Contents | State |
 |---|---|---|
-| `client` | 2 Ship 2 Harkinian **5.0.1** with the Archipelago client (client layer ported from `xirba13/2ship2harkinian-archipelago`, branch `archipelago`) | Builds on Windows (MSVC), Linux and macOS in GitHub Actions. Reads all options from the slot data. Expects apworld **0.1**. |
-| `apworld` | Archipelago with the `mm_2s2h` world in `worlds/mm_2s2h` | apworld version **0.1.4**. Logic generated from the 2S2H 5.0.1 sources. |
+| `client` | 2 Ship 2 Harkinian **5.0.1** with the Archipelago client (client layer ported from `xirba13/2ship2harkinian-archipelago`, branch `archipelago`) | Builds on Windows (MSVC), Linux and macOS in GitHub Actions. Reads all options from the slot data. Accepts apworld **0.1** and **0.2** seeds. |
+| `apworld` | Archipelago with the `mm_2s2h` world in `worlds/mm_2s2h` | apworld version **0.2.0**. Logic generated from the 2S2H 5.0.1 sources, plus the NPC souls of the `client` branch. |
 | `main` | This README only | |
 
 Client and apworld have to come from this repository **together**. The client checks the apworld's major.minor
-version and refuses seeds of other versions. Neither side is compatible with MMRecompRando (`mm_recomp`) seeds.
+version and refuses seeds of versions it does not know (a newer client still plays 0.1 seeds and their saves).
+Neither side is compatible with MMRecompRando (`mm_recomp`) seeds.
 
 ## How it works
 
@@ -51,8 +52,17 @@ version and refuses seeds of other versions. Neither side is compatible with MMR
 - Time shuffle (any order / progressive ascending / descending), dungeon and trial access, Majora and Moon
   requirements, dungeon item placement (anywhere / own dungeon / start with), stray fairy and token counts,
   starting health, consumables, rupees, maps and compasses, starting items, hint options, DeathLink.
+- **NPC souls** (apworld 0.2, not part of 2S2H, off by default, **not play-tested yet**): 30 NPCs such as Granny,
+  Anju, the Banker, Tingle, the Postman, the smiths and the cows are not there until their soul is found. Their
+  rewards, minigames and sales need the soul in logic.
 - Items for other worlds appear with an Archipelago model; collecting them reports the location. Hints, shops,
   NPC offers and the "You found ..." message name them with their owner, e.g. "Alice's Hookshot".
+- The Archipelago model shows what the item is worth: gray for filler, full color for useful items, full color with
+  a small arrow below it for progression items and traps. "Skip Get Item Cutscenes" treats another world's item like
+  an own item of that worth, so filler no longer plays the full get-item animation.
+- The goal needs a weapon in logic: reaching Majora's lair is not enough, a sword (any human sword, Great Fairy's
+  Sword or Fierce Deity) has to be reachable too.
+- DeathLink only shares real deaths, not a revive by a bottled fairy.
 - In-game hints that name an item and its exact location (gossip stones with an exact location, purchased hints,
   the bank sign, the Spider Houses) also become Archipelago hints. Vague region-only hints stay in game.
 - Universal Tracker support (the world is rebuilt exactly from the slot data).
