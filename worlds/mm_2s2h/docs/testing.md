@@ -60,4 +60,8 @@ including playthrough:
 
 Windows CI build of the client, local server, seed with pots + grass: start inventory received, Happy Mask Salesman
 checks give their seed items, grass/pots/chests are reported, own items (stray fairies, Epona's Song) are given from
-grass. Not yet tested: items from another player's world in a real multiworld.
+grass.
+
+Two-slot multiworld (both mm_2s2h, one played, the other released with `/release`): items for the other world show
+the Archipelago model and are reported, ~900 released items arrive in order, and reloading the save grants nothing
+twice.
