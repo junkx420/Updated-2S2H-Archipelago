@@ -3,6 +3,9 @@
 #include "2s2h/ShipUtils.h"
 #include "2s2h/Rando/Rando.h"
 #include "2s2h_assets.h"
+#ifdef ENABLE_ARCHIPELAGO
+#include "2s2h/Network/Archipelago/ArchipelagoMapping.h"
+#endif
 
 extern "C" {
 extern s16 D_801CFF94[250];
@@ -670,6 +673,16 @@ const std::map<RandoItemId, std::vector<std::string>> fakeItemNames = {
 
 std::string GetItemName(RandoItemId randoItemId, bool includeArticle, RandoCheckId randoCheckId) {
     std::string result;
+
+#ifdef ENABLE_ARCHIPELAGO
+    // Another world's item at one of our checks: name it ("Alice's Hookshot") in hints, shops and get-item text.
+    if (randoItemId == RI_ARCHIPELAGO_ITEM && randoCheckId != RC_UNKNOWN) {
+        std::string label = ApMapping::GetForeignItemLabel(randoCheckId);
+        if (!label.empty()) {
+            return label;
+        }
+    }
+#endif
 
     if (includeArticle && !Ship_IsCStringEmpty(Rando::StaticData::Items[randoItemId].article)) {
         result += Rando::StaticData::Items[randoItemId].article;

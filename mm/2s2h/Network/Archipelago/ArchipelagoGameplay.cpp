@@ -360,6 +360,36 @@ void RegisterArchipelagoGameplay() {
 
 } // namespace
 
+// The 2S2H textbox font only covers printable ASCII; other games' names can be anything.
+static std::string TextboxSafe(const std::string& in, size_t maxLen) {
+    std::string out;
+    for (unsigned char c : in) {
+        if (c >= 0x20 && c < 0x7F) {
+            out += static_cast<char>(c);
+        } else if (c < 0x80 || c >= 0xC0) { // control char or start of a UTF-8 sequence; continuation bytes dropped
+            out += '?';
+        }
+    }
+    if (out.size() > maxLen) {
+        out.resize(maxLen - 3);
+        out += "...";
+    }
+    return out;
+}
+
+std::string ApMapping::GetForeignItemLabel(RandoCheckId checkId) {
+    int64_t apLocationId = ApMapping::GetApLocationFromCheck(checkId);
+    if (apLocationId < 0) {
+        return "";
+    }
+    const auto& scouted = ArchipelagoClient::GetInstance().GetScoutedItems();
+    auto it = scouted.find(apLocationId);
+    if (it == scouted.end() || it->second.isLocalItem || it->second.itemName.empty()) {
+        return "";
+    }
+    return TextboxSafe(it->second.playerName, 16) + "'s " + TextboxSafe(it->second.itemName, 40);
+}
+
 static RegisterShipInitFunc initGameplayFunc(RegisterArchipelagoGameplay);
 
 #endif // ENABLE_ARCHIPELAGO
