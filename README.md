@@ -11,7 +11,7 @@ crates, barrels, beehives, snowballs, trees, enemy drops, butterflies, frogs, ow
 time (clock) shuffle and ocarina buttons.
 
 **Status: feature-complete for the planned scope, but barely play-tested.** Generation, the test suites and the
-Windows/Linux client builds pass, the logic matches 2S2H's own logic in every compared case, and first play
+Windows/Linux/macOS client builds pass, the logic matches 2S2H's own logic in every compared case, and first play
 sessions worked, including a two-slot multiworld (items sent to and received from another world). Things may still be broken, seeds may turn out unbeatable in game, and save files or
 generated games may not carry over between versions of this repository. Use at your own risk.
 
@@ -19,7 +19,7 @@ generated games may not carry over between versions of this repository. Use at y
 
 | Branch | Contents | State |
 |---|---|---|
-| `client` | 2 Ship 2 Harkinian **5.0.1** with the Archipelago client (client layer ported from `xirba13/2ship2harkinian-archipelago`, branch `archipelago`) | Builds on Windows (MSVC) and Linux in GitHub Actions. Reads all options from the slot data. Expects apworld **0.1**. |
+| `client` | 2 Ship 2 Harkinian **5.0.1** with the Archipelago client (client layer ported from `xirba13/2ship2harkinian-archipelago`, branch `archipelago`) | Builds on Windows (MSVC), Linux and macOS in GitHub Actions. Reads all options from the slot data. Expects apworld **0.1**. |
 | `apworld` | Archipelago with the `mm_2s2h` world in `worlds/mm_2s2h` | apworld version **0.1.1**. Logic generated from the 2S2H 5.0.1 sources. |
 | `main` | This README only | |
 
@@ -58,7 +58,6 @@ version and refuses seeds of other versions. Neither side is compatible with MMR
 
 - Glitched logic variants: 2S2H's "No Logic" is passed through, "Nearly No Logic" and "Vanilla" are not offered.
 - Own-dungeon items are restricted by item rules, not pre-placed like 2S2H does; very tight pools may fail to fill.
-- macOS client build (the CI job does not run on the fork).
 
 ## Testing
 
