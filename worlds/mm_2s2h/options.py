@@ -15,11 +15,16 @@ class RO:
 
 # ---- logic & access --------------------------------------------------------------------------
 class Logic(RO, Choice):
-    """Glitchless: the seed is beatable without glitches. No Logic: items anywhere (may be unbeatable)."""
+    """Glitchless: the seed is beatable without glitches.
+    No Logic: your items can be anywhere (the seed may be unbeatable).
+    Nearly No Logic: like No Logic, but Deku Mask and Sonata are never in Woodfall Temple, Zora Mask and New Wave
+    Bossa Nova never in Great Bay Temple, those and the boss remains and Oath to Order never on the Moon, and Epona's
+    Song never on a cow."""
     display_name = "Logic"
     ro = "RO_LOGIC"
     option_glitchless = 0
     option_no_logic = 1
+    option_nearly_no_logic = 2
     default = 0
 
 

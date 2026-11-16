@@ -47,6 +47,16 @@ DUNGEON_SCENES = {"WOODFALL": {"SCENE_MITURIN", "SCENE_MITURIN_BS"}, "SNOWHEAD":
                   "GREAT_BAY": {"SCENE_SEA", "SCENE_SEA_BS"},
                   "STONE_TOWER": {"SCENE_INISIE_N", "SCENE_INISIE_R", "SCENE_INISIE_BS"}}
 JUNK_FILL = "RI_RUPEE_BLUE"
+# Nearly No Logic placement blacklists (port of Logic/NearlyNoLogic.cpp)
+_MOON = {"SCENE_LAST_DEKU", "SCENE_LAST_GORON", "SCENE_LAST_ZORA", "SCENE_LAST_LINK", "SCENE_SOUGEN", "SCENE_LAST_BS"}
+NNL_SCENE_BLACKLIST = {
+    "RI_MASK_DEKU": DUNGEON_SCENES["WOODFALL"] | _MOON, "RI_SONG_SONATA": DUNGEON_SCENES["WOODFALL"] | _MOON,
+    "RI_MASK_ZORA": DUNGEON_SCENES["GREAT_BAY"] | _MOON, "RI_SONG_NOVA": DUNGEON_SCENES["GREAT_BAY"] | _MOON,
+    "RI_REMAINS_ODOLWA": _MOON, "RI_REMAINS_GOHT": _MOON, "RI_REMAINS_GYORG": _MOON, "RI_REMAINS_TWINMOLD": _MOON,
+    "RI_SONG_OATH": _MOON,
+}
+NNL_TYPE_BLACKLIST = {"RI_SONG_EPONA": "RCTYPE_COW"}
+LOGIC_GLITCHLESS, LOGIC_NEARLY_NO_LOGIC = 0, 2
 
 
 def region_name(rr: str) -> str:
@@ -212,7 +222,7 @@ class MM2S2HWorld(World):
         return v
 
     def _rule(self, f):
-        if f is None:
+        if f is None or self.ro["RO_LOGIC"] != LOGIC_GLITCHLESS:
             return None
         return lambda state: bool(f(self.view(state)))
 
@@ -259,11 +269,11 @@ class MM2S2HWorld(World):
                 def rule(state, parts=parts):
                     return any(state.can_reach_region(rn, p) and (f is None or f(self.view(state))) for rn, f in parts)
             loc = MM2S2HLocation(p, name, BASE_ID + RC_ID[rc] if shuffled else None, parent)
-            if rule:
+            if rule and self.ro["RO_LOGIC"] == LOGIC_GLITCHLESS:
                 loc.access_rule = rule
             if shuffled:
                 self.shuffled.append(rc)
-                self._dungeon_rule(loc, scene)
+                self._item_rule(loc, scene, rctype)
             else:
                 vanilla_item = self.create_item(ITEMS[vanilla][0])
                 vanilla_item.code = None  # locked vanilla item behaves like an event
@@ -294,14 +304,21 @@ class MM2S2HWorld(World):
                     confined[ITEMS[f"RI_{d}_{kind}"][0]] = d
         return confined
 
-    def _dungeon_rule(self, loc: Location, scene: str) -> None:
-        if not self.confined:
-            return
+    def _item_rule(self, loc: Location, scene: str, rctype: str) -> None:
+        """Placement constraints for this world's own items: own-dungeon items (PlacementConstraints.cpp) and the
+        Nearly No Logic blacklists (NearlyNoLogic.cpp)."""
         dungeon = next((d for d, scenes in DUNGEON_SCENES.items() if scene in scenes), None)
-        if dungeon:
+        forbidden = set()
+        if self.ro["RO_LOGIC"] == LOGIC_NEARLY_NO_LOGIC:
+            forbidden = {ITEMS[ri][0] for ri, scenes in NNL_SCENE_BLACKLIST.items() if scene in scenes}
+            forbidden |= {ITEMS[ri][0] for ri, t in NNL_TYPE_BLACKLIST.items() if t == rctype}
+        if not self.confined and not forbidden:
+            return
+        if dungeon and self.confined:
             self.dungeon_locations[dungeon].append(loc)
-        loc.item_rule = lambda item, c=self.confined, d=dungeon: not (item.player == self.player
-                                                                     and c.get(item.name, d) != d)
+        player, confined = self.player, self.confined
+        loc.item_rule = lambda item: not (item.player == player and (item.name in forbidden
+                                                                     or confined.get(item.name, dungeon) != dungeon))
 
     def pre_fill(self) -> None:
         """Place own-dungeon items before the main fill, like 2S2H's PreplaceConfinedItems, but logic-aware:

@@ -42,7 +42,7 @@ python worlds/mm_2s2h/tools/parity/compare.py 150
 
 ## 2. Archipelago test suites
 
-`pytest test/general worlds/mm_2s2h/test`: **421 passed, 0 failed** (all worlds, includes ours).
+`pytest test/general worlds/mm_2s2h/test`: **433 passed, 0 failed** (all worlds, includes ours).
 The general suite caught two issues, both fixed: Toggle options created with `type()` were not picklable, and
 `tools/` lacked `__init__.py`.
 
@@ -65,6 +65,14 @@ Same tool, 100 seeds with small keys, boss keys and stray fairies all on "own du
 * `pre_fill` placement (0.1.2): **99 / 100**, the remaining one is the oversized pool above.
 
 `test/test_dungeon_items.py` checks that every confined item lands in its own dungeon and the seed is beatable.
+
+### Logic modes (apworld 0.1.3)
+
+Before 0.1.3, `logic: no_logic` was only written into the save; the apworld still applied every glitchless rule.
+Now No Logic and Nearly No Logic drop all access rules, and Nearly No Logic adds the item blacklists of
+`NearlyNoLogic.cpp`. `test/test_logic_modes.py` checks that every location is reachable with nothing collected and
+that no blacklisted item lands in a blacklisted scene or on a cow. 50 random seeds per mode: **49 / 50** each, the
+remaining one is the oversized pool above.
 
 ## 4. In-game (Phase 2)
 
