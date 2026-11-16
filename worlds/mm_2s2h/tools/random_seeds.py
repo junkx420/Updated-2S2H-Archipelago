@@ -1,6 +1,7 @@
 """Generate N seeds with randomized mm_2s2h options and report failures.
 
-Usage (archipelago root, venv):  python worlds/mm_2s2h/tools/random_seeds.py <n> <work-dir>
+Usage (archipelago root, venv):  python worlds/mm_2s2h/tools/random_seeds.py <n> <work-dir> [option=value ...]
+Extra option=value arguments override the rolled value in every seed (e.g. small_keys=own_dungeon).
 Each seed: random option set -> yaml -> Generate.py (full output incl. playthrough). Prints one line per seed
 and a summary; failing yamls and logs are kept in <work-dir>/failed/.
 """
@@ -44,10 +45,11 @@ def main():
     shutil.rmtree(work, ignore_errors=True)
     (work / "failed").mkdir(parents=True)
     rng = random.Random(2026)
+    forced = dict(a.split("=", 1) for a in sys.argv[3:])
     ok = fail = 0
     t0 = time.time()
     for i in range(n):
-        opts = roll(rng)
+        opts = roll(rng) | forced
         pdir = work / f"p{i}"
         pdir.mkdir()
         body = "\n".join(f"  {k}: {str(v).lower() if isinstance(v, bool) else v}" for k, v in opts.items())

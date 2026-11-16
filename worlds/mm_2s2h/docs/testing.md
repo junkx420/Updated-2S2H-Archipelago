@@ -42,7 +42,7 @@ python worlds/mm_2s2h/tools/parity/compare.py 150
 
 ## 2. Archipelago test suites
 
-`pytest test/general worlds/mm_2s2h/test`: **396 passed, 0 failed** (all worlds, includes ours).
+`pytest test/general worlds/mm_2s2h/test`: **421 passed, 0 failed** (all worlds, includes ours).
 The general suite caught two issues, both fixed: Toggle options created with `type()` were not picklable, and
 `tools/` lacked `__init__.py`.
 
@@ -55,6 +55,16 @@ including playthrough:
 * The 1 failure is an intentional refusal: plentiful items + triforce hunt (40 pieces) + traps with only 468
   locations means 502 items for 468 locations. 2S2H refuses the same pool ("can't balance"). The apworld raises a
   clear `OptionError` naming the counts.
+
+### Own-dungeon items (apworld 0.1.2)
+
+Same tool, 100 seeds with small keys, boss keys and stray fairies all on "own dungeon"
+(`random_seeds.py 100 <dir> small_keys=own_dungeon boss_keys=own_dungeon stray_fairies=own_dungeon`):
+
+* item rules only (0.1.1): 97 / 100, two real `FillError`s (dungeon locations taken by other items first)
+* `pre_fill` placement (0.1.2): **99 / 100**, the remaining one is the oversized pool above.
+
+`test/test_dungeon_items.py` checks that every confined item lands in its own dungeon and the seed is beatable.
 
 ## 4. In-game (Phase 2)
 

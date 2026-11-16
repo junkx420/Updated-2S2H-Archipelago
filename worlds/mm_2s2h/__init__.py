@@ -10,6 +10,7 @@ from collections import Counter, defaultdict
 from typing import Any, ClassVar
 
 from BaseClasses import CollectionState, Item, ItemClassification as IC, Location, Region, Tutorial
+from Fill import fill_restrictive
 from Options import OptionError
 from worlds.AutoWorld import LogicMixin, WebWorld, World
 
@@ -237,6 +238,8 @@ class MM2S2HWorld(World):
         # checks
         self.shuffled: list[str] = []
         self.locked_vanilla = 0
+        self.confined = self._confined_items()
+        self.dungeon_locations: dict[str, list[Location]] = {d: [] for d in DUNGEON_SCENES}
         rules_by_rc = defaultdict(list)
         for rr, (_, _, checks, *_rest) in REGIONS.items():
             for rc, f in checks:
@@ -280,16 +283,50 @@ class MM2S2HWorld(World):
         else:
             mw.completion_condition[p] = lambda state: state.has("Victory", p)
 
-    def _dungeon_rule(self, loc: Location, scene: str) -> None:
+    def _confined_items(self) -> dict[str, str]:
+        """Item name -> dungeon, for every item that has to stay in its own dungeon (port of
+        PlacementConstraints.cpp RandoItemIdToDungeon)."""
         confined = {}
-        for d, scenes in DUNGEON_SCENES.items():
+        for d in DUNGEON_SCENES:
             for kind, ro in (("SMALL_KEY", "RO_PLACEMENT_SMALL_KEYS"), ("BOSS_KEY", "RO_PLACEMENT_BOSS_KEYS"),
                              ("STRAY_FAIRY", "RO_PLACEMENT_STRAY_FAIRIES")):
                 if self.ro[ro] == 1:
-                    confined[ITEMS[f"RI_{d}_{kind}"][0]] = scenes
-        if confined:
-            loc.item_rule = lambda item, c=confined: not (item.player == self.player and item.name in c
-                                                          and scene not in c[item.name])
+                    confined[ITEMS[f"RI_{d}_{kind}"][0]] = d
+        return confined
+
+    def _dungeon_rule(self, loc: Location, scene: str) -> None:
+        if not self.confined:
+            return
+        dungeon = next((d for d, scenes in DUNGEON_SCENES.items() if scene in scenes), None)
+        if dungeon:
+            self.dungeon_locations[dungeon].append(loc)
+        loc.item_rule = lambda item, c=self.confined, d=dungeon: not (item.player == self.player
+                                                                     and c.get(item.name, d) != d)
+
+    def pre_fill(self) -> None:
+        """Place own-dungeon items before the main fill, like 2S2H's PreplaceConfinedItems, but logic-aware:
+        every item goes to a location that is reachable with everything else in the pool."""
+        if not self.confined:
+            return
+        mw = self.multiworld
+        items = [item for item in mw.itempool if item.player == self.player and item.name in self.confined]
+        if not items:
+            return
+        for item in items:
+            mw.itempool.remove(item)
+        locations = []
+        for d, locs in self.dungeon_locations.items():
+            free = [loc for loc in locs if loc.item is None]
+            need = sum(self.confined[item.name] == d for item in items)
+            if need > len(free):
+                raise OptionError(f"{self.player_name}: {need} own-dungeon items for {len(free)} locations in "
+                                  f"{d.replace('_', ' ').title()}; shuffle more check types or place them anywhere")
+            locations += free
+        state = mw.get_all_state()  # every other item of every world, without the confined ones
+        self.random.shuffle(locations)
+        self.random.shuffle(items)
+        fill_restrictive(mw, state, locations, items, single_player_placement=True, lock=True,
+                         allow_excluded=True, name="MM2S2H own-dungeon items")
 
     # ------------------------------------------------------------------------------------------
     def create_item(self, name: str) -> MM2S2HItem:
