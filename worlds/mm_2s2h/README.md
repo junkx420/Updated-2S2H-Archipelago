@@ -15,6 +15,15 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 | `tools/time_spike/` | Phase 0 check of the time propagation against the C++ code |
 | `tools/random_seeds.py` | generates N seeds with random options |
 
+## Additions that are not in 2S2H
+
+The generator has to run on the **client fork** (branch `client`), not on upstream 2S2H, because these live there:
+
+- **NPC souls** (`shuffle_npc_souls`, apworld 0.2): 30 items `RI_SOUL_NPC_*`, appended to the enums so no existing
+  id moves. The table `npcSouls` in `Rando/ActorBehavior/Souls.cpp` names, per soul, the actors it brings to life and
+  the checks and logic events that need it. The generator writes it to `NPC_SOULS` and `__init__.py` adds the soul to
+  those rules. To add or change a soul, edit that table and regenerate.
+
 ## Updating to a new 2S2H release
 
 ```

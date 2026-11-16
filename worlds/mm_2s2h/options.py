@@ -131,6 +131,9 @@ ShuffleHives = _shuffle("ShuffleHives", "RO_SHUFFLE_HIVE_DROPS", "Beehive Drops"
 # ---- item pool ------------------------------------------------------------------------------
 ShuffleBossSouls = _shuffle("ShuffleBossSouls", "RO_SHUFFLE_BOSS_SOULS", "Boss Souls", "Bosses cannot be defeated without their soul.")
 ShuffleEnemySouls = _shuffle("ShuffleEnemySouls", "RO_SHUFFLE_ENEMY_SOULS", "Enemy Souls", "Enemies cannot be defeated without their soul.")
+ShuffleNpcSouls = _shuffle("ShuffleNpcSouls", "RO_SHUFFLE_NPC_SOULS", "NPC Souls",
+                           "30 townsfolk and other NPCs (Granny, Anju, the Banker, Tingle, the cows, ...) are not there "
+                           "until their soul is found: no rewards, no minigames, no sales from them.")
 ShuffleSwim = _shuffle("ShuffleSwim", "RO_SHUFFLE_SWIM", "Shuffle Swim", "The ability to swim is an item.")
 ShuffleOcarinaButtons = _shuffle("ShuffleOcarinaButtons", "RO_SHUFFLE_OCARINA_BUTTONS", "Ocarina Buttons", "Each ocarina button is an item.")
 ShuffleSongSun = _shuffle("ShuffleSongSun", "RO_SHUFFLE_SONG_SUN", "Sun's Song", "Adds Sun's Song to the pool.")
@@ -291,6 +294,7 @@ class MM2S2HOptions(PerGameCommonOptions):
     shuffle_hives: ShuffleHives
     shuffle_boss_souls: ShuffleBossSouls
     shuffle_enemy_souls: ShuffleEnemySouls
+    shuffle_npc_souls: ShuffleNpcSouls
     shuffle_swim: ShuffleSwim
     shuffle_ocarina_buttons: ShuffleOcarinaButtons
     shuffle_song_sun: ShuffleSongSun

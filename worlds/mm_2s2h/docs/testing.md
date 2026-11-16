@@ -89,3 +89,17 @@ twice.
 2S2H's logic has no rule for beating Majora, so until 0.1.4 the goal was in logic as soon as the lair was reachable,
 with or without a weapon. The goal now needs a sword (any human sword, Great Fairy's Sword or Fierce Deity) in
 Glitchless logic. `test/test_goal.py` checks both directions. 20 random seeds: **20 / 20**.
+
+### NPC souls (apworld 0.2.0)
+
+Not part of 2S2H: 30 NPC souls live in the client fork (`Rando/ActorBehavior/Souls.cpp`, table `npcSouls`). The
+generator reads that table (item, actors, checks, events) and the world adds the soul to the rule of every listed
+check and logic event. 2S2H's own logic does not know the souls, so the parity comparison runs with the option off
+and still has to match.
+
+* `test/test_npc_souls.py`: for each soul, every one of its checks is out of logic with everything but the soul
+  and in logic with it (70 locations with cows, shops and Tingle maps shuffled); all 30 souls are in the pool as
+  progression; the option is off by default and No Logic drops the soul rules.
+* 30 random seeds with `shuffle_npc_souls=true`: **30 / 30**.
+* The client builds locally (MSVC, Release). **Not tested in game yet**: whether each NPC really cannot give its
+  checks without the soul, and that nothing else breaks while an NPC is missing.

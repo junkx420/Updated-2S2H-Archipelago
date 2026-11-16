@@ -17,7 +17,7 @@ TOGGLES = ["clock_shuffle", "shuffle_owl_statues", "shuffle_shops", "shuffle_tin
            "shuffle_cows", "shuffle_enemy_drops", "shuffle_frogs", "shuffle_butterflies", "shuffle_freestanding",
            "shuffle_wonder_items", "shuffle_gold_skulltulas", "shuffle_pots", "shuffle_crates", "shuffle_barrels",
            "shuffle_snowballs", "shuffle_grass", "shuffle_trees", "shuffle_hives", "shuffle_boss_souls",
-           "shuffle_enemy_souls", "shuffle_swim", "shuffle_ocarina_buttons", "shuffle_song_sun",
+           "shuffle_enemy_souls", "shuffle_npc_souls", "shuffle_swim", "shuffle_ocarina_buttons", "shuffle_song_sun",
            "shuffle_song_double_time", "shuffle_song_inverted_time", "shuffle_song_saria", "shuffle_tycoon_wallet",
            "shuffle_skeleton_key", "shuffle_traps", "plentiful_items", "triforce_hunt", "starting_consumables",
            "starting_rupees", "starting_maps_and_compasses", "death_link"]

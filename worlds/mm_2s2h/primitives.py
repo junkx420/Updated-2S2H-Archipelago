@@ -68,8 +68,11 @@ FLAGS = {
     "RI_SONG_INVERTED_TIME": "RANDO_INF_OBTAINED_SONG_INVERTED_TIME",
 }
 _inf_by_value = {v: k for k, v in RandoInf.items()}
-for _ri, _v in RI_ID.items():  # souls: SOUL_RI_TO_RANDO_INF
-    if _ri.startswith("RI_SOUL_"):
+for _ri, _v in RI_ID.items():  # souls: SOUL_RI_TO_RANDO_INF / NPC_SOUL_RI_TO_RANDO_INF
+    if _ri.startswith("RI_SOUL_NPC_"):
+        FLAGS[_ri] = "RANDO_INF_OBTAINED_SOUL_OF_NPC_" + _ri[len("RI_SOUL_NPC_"):]
+        assert FLAGS[_ri] in RandoInf
+    elif _ri.startswith("RI_SOUL_"):
         FLAGS[_ri] = _inf_by_value[_v - RI_ID["RI_SOUL_BOSS_GOHT"] + RandoInf["RANDO_INF_OBTAINED_SOUL_OF_BOSS_GOHT"]]
 for _i, _b in enumerate(["A", "C_DOWN", "C_RIGHT", "C_LEFT", "C_UP"]):
     _ri = f"RI_OCARINA_BUTTON_{_b}"

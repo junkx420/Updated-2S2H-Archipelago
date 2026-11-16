@@ -14,7 +14,7 @@ from Fill import fill_restrictive
 from Options import OptionError
 from worlds.AutoWorld import LogicMixin, WebWorld, World
 
-from .enums_generated import OPTION_DEFAULTS, RC_ID, RI_ID
+from .enums_generated import NPC_SOULS, OPTION_DEFAULTS, RC_ID, RI_ID
 from .items_generated import ITEMS
 from .locations_generated import LOCATIONS
 from .macros_generated import CAN_USE_SWORD
@@ -115,6 +115,7 @@ class MM2S2HWorld(World):
         "Souls": lambda k, v: k.startswith("RI_SOUL_"),
         "Boss Souls": lambda k, v: k.startswith("RI_SOUL_BOSS_"),
         "Enemy Souls": lambda k, v: k.startswith("RI_SOUL_ENEMY_"),
+        "NPC Souls": lambda k, v: k.startswith("RI_SOUL_NPC_"),
         "Clocks": lambda k, v: k.startswith("RI_TIME_"),
         "Masks": lambda k, v: v[1] == "RITYPE_MASK",
         "Songs": lambda k, v: k.startswith("RI_SONG_") or k == "RI_PROGRESSIVE_LULLABY",
@@ -253,8 +254,23 @@ class MM2S2HWorld(World):
             return None
         return lambda state: bool(f(self.view(state)))
 
+    def _with_souls(self, rule, souls: list[str] | None):
+        """`rule`, and every NPC soul in `souls` (item names). Like every access rule, only in Glitchless logic."""
+        if not souls or self.ro["RO_LOGIC"] != LOGIC_GLITCHLESS:
+            return rule
+        p = self.player
+        if rule is None:
+            return lambda state: state.has_all(souls, p)
+        return lambda state: state.has_all(souls, p) and rule(state)
+
     def create_regions(self) -> None:
         mw, p = self.multiworld, self.player
+        # NPC souls: checks and events that need an NPC need its soul (Souls.cpp npcSouls)
+        souls_for: dict[str, list[str]] = defaultdict(list)
+        if self.ro["RO_SHUFFLE_NPC_SOULS"]:
+            for ri, (_, checks, events) in NPC_SOULS.items():
+                for key in checks + events:
+                    souls_for[key].append(ITEMS[ri][0])
         regions = {rr: Region(region_name(rr), p, mw) for rr in REGIONS}
         mw.regions.extend(regions.values())
         self.event_count = 0
@@ -268,7 +284,7 @@ class MM2S2HWorld(World):
                 src.connect(regions[tgt], name, self._rule(f))
             for i, (re_id, f) in enumerate(events):
                 loc = MM2S2HLocation(p, f"{re_id} @ {src.name} #{i}", None, src)
-                loc.access_rule = self._rule(f) or (lambda state: True)
+                loc.access_rule = self._with_souls(self._rule(f), souls_for.get(re_id)) or (lambda state: True)
                 loc.place_locked_item(MM2S2HItem(re_id, IC.progression, None, p))
                 src.locations.append(loc)
                 self.event_count += 1
@@ -295,6 +311,7 @@ class MM2S2HWorld(World):
 
                 def rule(state, parts=parts):
                     return any(state.can_reach_region(rn, p) and (f is None or f(self.view(state))) for rn, f in parts)
+            rule = self._with_souls(rule, souls_for.get(rc))
             loc = MM2S2HLocation(p, name, BASE_ID + RC_ID[rc] if shuffled else None, parent)
             if rule and self.ro["RO_LOGIC"] == LOGIC_GLITCHLESS:
                 loc.access_rule = rule
@@ -403,6 +420,8 @@ class MM2S2HWorld(World):
                      and not (k == "RI_SOUL_BOSS_MAJORA" and ro["RO_SHUFFLE_TRIFORCE_PIECES"])]
         if ro["RO_SHUFFLE_ENEMY_SOULS"]:
             pool += [k for k in RI_ID if k.startswith("RI_SOUL_ENEMY_")]
+        if ro["RO_SHUFFLE_NPC_SOULS"]:  # not in 2S2H's own pools: an addition of this fork
+            pool += list(NPC_SOULS)
         if ro["RO_CLOCK_SHUFFLE"]:
             pool += (["RI_TIME_DAY_1", "RI_TIME_NIGHT_1", "RI_TIME_DAY_2", "RI_TIME_NIGHT_2", "RI_TIME_DAY_3", "RI_TIME_NIGHT_3"]
                      if ro["RO_CLOCK_SHUFFLE_PROGRESSIVE"] == 0 else ["RI_TIME_PROGRESSIVE"] * 6)
