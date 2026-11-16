@@ -117,8 +117,11 @@ bool ArchipelagoClient::StartClient() {
         ArchipelagoConsole_SendMessage("[LOG] Slot options:\n%s", slotOptions.Describe().c_str());
 
         // Refuse seeds from another apworld major.minor: ids/options may not line up.
-        const std::string expected = std::string(AP_Client_consts::AP_WORLD_VERSION) + ".";
-        if (slotOptions.apworldVersion.rfind(expected, 0) != 0) {
+        bool accepted = false;
+        for (const char* version : AP_Client_consts::AP_WORLD_VERSIONS_ACCEPTED) {
+            accepted = accepted || slotOptions.apworldVersion.rfind(std::string(version) + ".", 0) == 0;
+        }
+        if (!accepted) {
             ArchipelagoConsole_SendMessage("[ERROR] This seed was generated with mm_2s2h apworld %s, but this client "
                                            "needs %s.x. Use client and apworld from the same release.",
                                            slotOptions.apworldVersion.empty() ? "?"

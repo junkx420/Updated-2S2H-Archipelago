@@ -64,12 +64,20 @@ inline void to_json(json& j, const RandoSaveInfo& rando) {
     };
 }
 
+// For arrays sized by an enum that has grown since the save was written: takes the entries the save has and
+// zeroes the rest (a new flag is not set, a new option is off).
+template <typename T, size_t N> inline void GetGrownArray(const json& j, T (&array)[N]) {
+    for (size_t i = 0; i < N; i++) {
+        array[i] = i < j.size() ? j.at(i).get<T>() : T{};
+    }
+}
+
 inline void from_json(const json& j, RandoSaveInfo& rando) {
-    j.at("randoInf").get_to(rando.randoInf);
+    GetGrownArray(j.at("randoInf"), rando.randoInf);
     j.at("randoEvents").get_to(rando.randoEvents);
     j.at("randoSaveChecks").get_to(rando.randoSaveChecks);
     j.at("finalSeed").get_to(rando.finalSeed);
-    j.at("randoSaveOptions").get_to(rando.randoSaveOptions);
+    GetGrownArray(j.at("randoSaveOptions"), rando.randoSaveOptions);
     j.at("randoStartingItems").get_to(rando.randoStartingItems);
     j.at("foundDungeonKeys").get_to(rando.foundDungeonKeys);
     j.at("foundTriforcePieces").get_to(rando.foundTriforcePieces);

@@ -1,6 +1,8 @@
 #include "ActorBehavior.h"
 #include "Souls.h"
 #include <libultraship/bridge/consolevariablebridge.h>
+#include <unordered_set>
+#include <vector>
 #include "Rando/DrawFuncs.h"
 #include "Rando/Logic/Logic.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
@@ -97,6 +99,70 @@ std::unordered_map<int16_t, RandoItemId> enemySoulMap = {
 };
 // clang-format on
 
+// NPC souls (Archipelago fork). Without its soul an NPC is there but neither updates nor draws: it cannot be
+// talked to, hands out nothing and runs no minigame. One entry per soul: the item, the actors it brings to life,
+// the checks that need it and the logic events that need it.
+// The apworld's rules are generated from this table (worlds/mm_2s2h/tools/gen_from_2s2h.py), so a check or event
+// that cannot be done without the NPC has to be listed here. Listing too much only restricts item placement,
+// listing too little can make a seed unbeatable.
+struct NpcSoul {
+    RandoItemId randoItemId;
+    std::vector<int16_t> actorIds;
+    std::vector<RandoCheckId> checks;
+    std::vector<RandoEvent> events;
+};
+
+// clang-format off
+const std::vector<NpcSoul> npcSouls = {
+    { RI_SOUL_NPC_ANJU, { ACTOR_EN_AN }, { RC_STOCK_POT_INN_ROOM_KEY, RC_STOCK_POT_INN_LETTER_TO_KAFEI, RC_STOCK_POT_INN_COUPLES_MASK }, {} },
+    { RI_SOUL_NPC_BANKER, { ACTOR_EN_GINKO_MAN }, { RC_CLOCK_TOWN_WEST_BANK_ADULTS_WALLET, RC_CLOCK_TOWN_WEST_BANK_PIECE_OF_HEART, RC_CLOCK_TOWN_WEST_BANK_INTEREST }, {} },
+    { RI_SOUL_NPC_BEAVERS, { ACTOR_EN_AZ }, { RC_WATERFALL_RAPIDS_BEAVER_RACE_01, RC_WATERFALL_RAPIDS_BEAVER_RACE_02 }, {} },
+    { RI_SOUL_NPC_COWS, { ACTOR_EN_COW }, { RC_BENEATH_THE_WELL_COW, RC_GREAT_BAY_COAST_COW_BACK, RC_GREAT_BAY_COAST_COW_FRONT, RC_ROMANI_RANCH_BARN_COW_LEFT, RC_ROMANI_RANCH_BARN_COW_MIDDLE, RC_ROMANI_RANCH_BARN_COW_RIGHT, RC_ROMANI_RANCH_FIELD_COW_ENTRANCE, RC_ROMANI_RANCH_FIELD_COW_NEAR_HOUSE_BACK, RC_ROMANI_RANCH_FIELD_COW_NEAR_HOUSE_FRONT, RC_TERMINA_FIELD_COW_BACK, RC_TERMINA_FIELD_COW_FRONT }, { RE_ACCESS_MILK_REFILL } },
+    { RI_SOUL_NPC_DEKU_BUTLER, { ACTOR_EN_DNO }, { RC_DEKU_SHRINE_MASK_OF_SCENTS }, {} },
+    { RI_SOUL_NPC_EVAN, { ACTOR_EN_ZOS }, { RC_ZORA_HALL_EVANS_PIECE_OF_HEART }, {} },
+    { RI_SOUL_NPC_GORMAN_BROTHERS, { ACTOR_EN_IN }, { RC_GORMAN_TRACK_GARO_MASK, RC_GORMAN_MILK_PURCHASE }, {} },
+    { RI_SOUL_NPC_GRANNY, { ACTOR_EN_NB }, { RC_STOCK_POT_INN_GRANDMA_SHORT_STORY, RC_STOCK_POT_INN_GRANDMA_LONG_STORY }, {} },
+    { RI_SOUL_NPC_GROG, { ACTOR_EN_HS }, { RC_ROMANI_RANCH_GROG }, {} },
+    { RI_SOUL_NPC_GURU_GURU, { ACTOR_EN_GURUGURU }, { RC_CLOCK_TOWN_LAUNDRY_GURU_GURU }, {} },
+    { RI_SOUL_NPC_HONEY_AND_DARLING, { ACTOR_EN_FU }, { RC_CLOCK_TOWN_EAST_HONEY_DARLING_ANY_DAY, RC_CLOCK_TOWN_EAST_HONEY_DARLING_ALL_DAYS }, {} },
+    { RI_SOUL_NPC_KAMARO, { ACTOR_EN_YB }, { RC_TERMINA_FIELD_KAMARO_MASK }, {} },
+    { RI_SOUL_NPC_KEATON, { ACTOR_EN_KITAN }, { RC_KEATON_QUIZ }, {} },
+    { RI_SOUL_NPC_LOTTERY_GIRL, { ACTOR_EN_KUJIYA }, { RC_CLOCK_TOWN_WEST_LOTTERY }, {} },
+    { RI_SOUL_NPC_MADAME_AROMA, { ACTOR_EN_AL }, { RC_MAYORS_OFFICE_KAFEIS_MASK, RC_MILK_BAR_MADAME_AROMA }, {} },
+    { RI_SOUL_NPC_MAMAMU_YAN, { ACTOR_EN_AOB_01 }, { RC_DOGGY_RACETRACK_PIECE_OF_HEART }, {} },
+    { RI_SOUL_NPC_MAYOR, { ACTOR_EN_DT }, { RC_MAYORS_OFFICE_PIECE_OF_HEART }, {} },
+    { RI_SOUL_NPC_PLAYGROUND_SCRUBS, { ACTOR_EN_LIFT_NUTS }, { RC_DEKU_PLAYGROUND_ANY_DAY, RC_DEKU_PLAYGROUND_ALL_DAYS, RC_DEKU_PLAYGROUND_DAY_1_RUPEE_01, RC_DEKU_PLAYGROUND_DAY_1_RUPEE_02, RC_DEKU_PLAYGROUND_DAY_1_RUPEE_03, RC_DEKU_PLAYGROUND_DAY_1_RUPEE_04, RC_DEKU_PLAYGROUND_DAY_1_RUPEE_05, RC_DEKU_PLAYGROUND_DAY_1_RUPEE_06, RC_DEKU_PLAYGROUND_DAY_2_RUPEE_01, RC_DEKU_PLAYGROUND_DAY_2_RUPEE_02, RC_DEKU_PLAYGROUND_DAY_2_RUPEE_03, RC_DEKU_PLAYGROUND_DAY_2_RUPEE_04, RC_DEKU_PLAYGROUND_DAY_2_RUPEE_05, RC_DEKU_PLAYGROUND_DAY_2_RUPEE_06, RC_DEKU_PLAYGROUND_DAY_3_RUPEE_01, RC_DEKU_PLAYGROUND_DAY_3_RUPEE_02, RC_DEKU_PLAYGROUND_DAY_3_RUPEE_03, RC_DEKU_PLAYGROUND_DAY_3_RUPEE_04, RC_DEKU_PLAYGROUND_DAY_3_RUPEE_05, RC_DEKU_PLAYGROUND_DAY_3_RUPEE_06 }, {} },
+    { RI_SOUL_NPC_POE_COLLECTOR, { ACTOR_EN_GB2 }, { RC_IKANA_CANYON_GHOST_HUT_PIECE_OF_HEART }, {} },
+    { RI_SOUL_NPC_POSTMAN, { ACTOR_EN_PM, ACTOR_EN_MM3 }, { RC_CLOCK_TOWN_WEST_POSTMAN_MINIGAME, RC_CLOCK_TOWN_EAST_POSTMAN_HAT }, { RE_MEET_KAFEI, RE_POSTMAN_FREEDOM } },
+    { RI_SOUL_NPC_ROSA_SISTERS, { ACTOR_EN_RZ }, { RC_CLOCK_TOWN_WEST_SISTERS_PIECE_OF_HEART }, {} },
+    { RI_SOUL_NPC_SHIRO, { ACTOR_EN_STONE_HEISHI }, { RC_ROAD_TO_IKANA_STONE_MASK }, {} },
+    { RI_SOUL_NPC_SHOOTING_GALLERY_OWNERS, { ACTOR_EN_SYATEKI_MAN }, { RC_CLOCK_TOWN_EAST_SHOOTING_GALLERY_HIGH_SCORE, RC_CLOCK_TOWN_EAST_SHOOTING_GALLERY_PERFECT_SCORE, RC_SWAMP_SHOOTING_GALLERY_HIGH_SCORE, RC_SWAMP_SHOOTING_GALLERY_PERFECT_SCORE }, {} },
+    { RI_SOUL_NPC_SMITHS, { ACTOR_EN_KGY, ACTOR_EN_KBT }, { RC_MOUNTAIN_VILLAGE_SMITHY_RAZOR_SWORD, RC_MOUNTAIN_VILLAGE_SMITHY_GILDED_SWORD }, { RE_ACCESS_SMITHY } },
+    { RI_SOUL_NPC_SPIDER_HOUSE_MEN, { ACTOR_EN_SSH, ACTOR_EN_STH }, { RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH, RC_OCEAN_SPIDER_HOUSE_WALLET }, {} },
+    { RI_SOUL_NPC_SWORDSMAN, { ACTOR_EN_KENDO_JS }, { RC_SWORDSMAN_SCHOOL_PIECE_OF_HEART }, {} },
+    { RI_SOUL_NPC_TINGLE, { ACTOR_EN_BAL }, { RC_CLOCK_TOWN_NORTH_TINGLE_MAP_01, RC_CLOCK_TOWN_NORTH_TINGLE_MAP_02, RC_GREAT_BAY_COAST_TINGLE_MAP_01, RC_GREAT_BAY_COAST_TINGLE_MAP_02, RC_IKANA_CANYON_TINGLE_MAP_01, RC_IKANA_CANYON_TINGLE_MAP_02, RC_MILK_ROAD_TINGLE_MAP_01, RC_MILK_ROAD_TINGLE_MAP_02, RC_ROAD_TO_SOUTHERN_SWAMP_TINGLE_MAP_01, RC_ROAD_TO_SOUTHERN_SWAMP_TINGLE_MAP_02, RC_TWIN_ISLANDS_TINGLE_MAP_01, RC_TWIN_ISLANDS_TINGLE_MAP_02 }, { RE_ACCESS_PICTOGRAPH_TINGLE } },
+    { RI_SOUL_NPC_TOILET_HAND, { ACTOR_EN_BJT }, { RC_STOCK_POT_INN_TOILET_HAND }, {} },
+    { RI_SOUL_NPC_TOTO, { ACTOR_EN_TOTO }, { RC_MILK_BAR_CIRCUS_LEADER_MASK }, {} },
+    { RI_SOUL_NPC_TREASURE_CHEST_SHOP_GAL, { ACTOR_EN_TAKARAYA }, { RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_DEKU, RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_GORON, RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_HUMAN, RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_ZORA }, {} },
+};
+// clang-format on
+
+bool HaveNpcSoul(int16_t actorId) {
+    static std::vector<RandoInf> soulOfActor; // RANDO_INF_MAX: this actor has no soul
+    if (soulOfActor.empty()) {
+        soulOfActor.assign(ACTOR_ID_MAX, RANDO_INF_MAX);
+        for (const auto& npcSoul : npcSouls) {
+            for (int16_t npcActorId : npcSoul.actorIds) {
+                soulOfActor[npcActorId] = (RandoInf)NPC_SOUL_RI_TO_RANDO_INF(npcSoul.randoItemId);
+            }
+        }
+    }
+    if (actorId < 0 || actorId >= ACTOR_ID_MAX || soulOfActor[actorId] == RANDO_INF_MAX) {
+        return true;
+    }
+    return Flags_GetRandoInf(soulOfActor[actorId]);
+}
+
 bool HaveEnemySoul(ActorId enemyId) {
     auto findSoulFlag = enemySoulMap.find(enemyId);
     if (findSoulFlag != enemySoulMap.end()) {
@@ -138,6 +204,28 @@ void SetEnemyInjureGrayscale(bool enable) {
 void Rando::ActorBehavior::InitSoulsBehavior() {
     bool shouldBossRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_BOSS_SOULS] == RO_GENERIC_YES;
     bool shouldEnemyInjure = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_SOULS] == RO_GENERIC_YES;
+    bool shouldNpcRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_NPC_SOULS] == RO_GENERIC_YES;
+
+    // NPCs without their soul: no update (no talking, no rewards, no collision) and no draw. They cannot be
+    // targeted either; the flag comes back with the soul.
+    static std::unordered_set<Actor*> untargetable;
+    COND_HOOK(OnSceneInit, shouldNpcRegister, [](s8 sceneId, s8 spawnNum) { untargetable.clear(); });
+    COND_HOOK(ShouldActorUpdate, shouldNpcRegister, [](Actor* actor, bool* should) {
+        if (!HaveNpcSoul(actor->id)) {
+            *should = false;
+            if (actor->flags & ACTOR_FLAG_ATTENTION_ENABLED) {
+                actor->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+                untargetable.insert(actor);
+            }
+        } else if (!untargetable.empty() && untargetable.erase(actor)) {
+            actor->flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+        }
+    });
+    COND_HOOK(ShouldActorDraw, shouldNpcRegister, [](Actor* actor, bool* should) {
+        if (!HaveNpcSoul(actor->id)) {
+            *should = false;
+        }
+    });
 
     COND_VB_SHOULD(VB_PERFORM_AC_COLLISION, shouldEnemyInjure, {
         Collider* at = va_arg(args, Collider*);

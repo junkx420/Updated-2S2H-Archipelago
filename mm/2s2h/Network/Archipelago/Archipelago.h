@@ -31,8 +31,11 @@ static constexpr char const* AP_GAME_NAME = "Majora's Mask (2 Ship 2 Harkinian)"
 // (worlds/mm_2s2h/__init__.py BASE_ID). No translation tables.
 static constexpr int64_t AP_ID_BASE = 0x2D2D0000;
 
-// Only seeds from an apworld with this major.minor version are accepted (archipelago.json world_version).
-static constexpr char const* AP_WORLD_VERSION = "0.1";
+// The apworld major.minor this client is built for (archipelago.json world_version), and every major.minor it
+// still accepts seeds from. 0.2 only added to 0.1 (NPC souls: new items and one option at the end of the enums),
+// so a 0.1 seed and its save keep working.
+static constexpr char const* AP_WORLD_VERSION = "0.2";
+static constexpr char const* AP_WORLD_VERSIONS_ACCEPTED[] = { "0.1", "0.2" };
 
 // Version handshake with the AP server (matches SoH: server protocol 0.6.x).
 static constexpr int AP_PROTOCOL_MAJOR = 0;

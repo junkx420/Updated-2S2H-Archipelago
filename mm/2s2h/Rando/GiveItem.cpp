@@ -9,6 +9,11 @@ extern "C" {
 }
 
 void Rando::GiveItem(RandoItemId randoItemId) {
+    if (IS_NPC_SOUL(randoItemId)) {
+        Flags_SetRandoInf(NPC_SOUL_RI_TO_RANDO_INF(randoItemId));
+        return;
+    }
+
     switch (randoItemId) {
         case RI_CLOCK_TOWN_STRAY_FAIRY:
             SET_WEEKEVENTREG(WEEKEVENTREG_08_80);

@@ -2,6 +2,7 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/ShipUtils.h"
 #include "2s2h/Rando/Rando.h"
+#include "2s2h/Rando/ActorBehavior/Souls.h"
 #include "2s2h_assets.h"
 #ifdef ENABLE_ARCHIPELAGO
 #include "2s2h/Network/Archipelago/ArchipelagoMapping.h"
@@ -236,6 +237,36 @@ std::map<RandoItemId, RandoStaticItem> Items = {
     RI(RI_SOUL_ENEMY_WART,            "the",  "Soul of Warts",              RITYPE_LESSER,          ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_SOUL_ENEMY_WIZROBE,         "the",  "Soul of Wizrobes",           RITYPE_LESSER,          ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_SOUL_ENEMY_WOLFOS,          "the",  "Soul of Wolfos",             RITYPE_LESSER,          ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_ANJU,                  "the",  "Soul of Anju",                RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_BANKER,                "the",  "Soul of the Banker",          RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_BEAVERS,               "the",  "Soul of the Beavers",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_COWS,                  "the",  "Soul of Cows",                RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_DEKU_BUTLER,           "the",  "Soul of the Deku Butler",     RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_EVAN,                  "the",  "Soul of Evan",                RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_GORMAN_BROTHERS,       "the",  "Soul of the Gorman Brothers", RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_GRANNY,                "the",  "Soul of Granny",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_GROG,                  "the",  "Soul of Grog",                RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_GURU_GURU,             "the",  "Soul of Guru-Guru",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_HONEY_AND_DARLING,     "the",  "Soul of Honey & Darling",     RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_KAMARO,                "the",  "Soul of Kamaro",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_KEATON,                "the",  "Soul of the Keaton",          RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_LOTTERY_GIRL,          "the",  "Soul of the Lottery Girl",    RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_MADAME_AROMA,          "the",  "Soul of Madame Aroma",        RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_MAMAMU_YAN,            "the",  "Soul of Mamamu Yan",          RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_MAYOR,                 "the",  "Soul of Mayor Dotour",        RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_PLAYGROUND_SCRUBS,     "the",  "Soul of the Playground Scrubs", RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_POE_COLLECTOR,         "the",  "Soul of the Poe Collector",   RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_POSTMAN,               "the",  "Soul of the Postman",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_ROSA_SISTERS,          "the",  "Soul of the Rosa Sisters",    RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_SHIRO,                 "the",  "Soul of Shiro",               RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_SHOOTING_GALLERY_OWNERS, "the",  "Soul of the Shooting Gallery Owners", RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_SMITHS,                "the",  "Soul of the Smiths",          RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_SPIDER_HOUSE_MEN,      "the",  "Soul of the Spider House Men", RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_SWORDSMAN,             "the",  "Soul of the Swordsman",       RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_TINGLE,                "the",  "Soul of Tingle",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_TOILET_HAND,           "the",  "Soul of the Toilet Hand",     RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_TOTO,                  "the",  "Soul of Toto",                RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_SOUL_NPC_TREASURE_CHEST_SHOP_GAL, "the",  "Soul of the Treasure Chest Shop Gal", RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_STONE_TOWER_BOSS_KEY,       "the",  "Stone Tower Boss Key",       RITYPE_BOSS_KEY,        ITEM_KEY_BOSS,                   GI_KEY_BOSS,                 GID_KEY_BOSS),
     RI(RI_STONE_TOWER_COMPASS,        "the",  "Stone Tower Compass",        RITYPE_LESSER,          ITEM_COMPASS,                    GI_COMPASS,                  GID_COMPASS),
     RI(RI_STONE_TOWER_MAP,            "the",  "Stone Tower Map",            RITYPE_LESSER,          ITEM_DUNGEON_MAP,                GI_MAP,                      GID_DUNGEON_MAP),
@@ -366,6 +397,10 @@ u8 GetIconForZMessage(RandoItemId randoItemId) {
 }
 
 const char* GetIconTexturePath(RandoItemId randoItemId) {
+    if (IS_NPC_SOUL(randoItemId)) {
+        return (const char*)gDungeonMapSkullTex;
+    }
+
     switch (randoItemId) {
         case RI_BOMBCHU:
         case RI_BOMBCHU_5:

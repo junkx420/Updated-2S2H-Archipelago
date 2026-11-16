@@ -10,6 +10,11 @@ extern "C" {
 #define CLEAR_OWL_WARP(owlId) (gSaveContext.save.saveInfo.playerData.owlActivationFlags &= ~(1 << owlId))
 
 void Rando::RemoveItem(RandoItemId randoItemId) {
+    if (IS_NPC_SOUL(randoItemId)) {
+        Flags_ClearRandoInf(NPC_SOUL_RI_TO_RANDO_INF(randoItemId));
+        return;
+    }
+
     switch (randoItemId) {
         case RI_CLOCK_TOWN_STRAY_FAIRY:
             CLEAR_WEEKEVENTREG(WEEKEVENTREG_08_80);

@@ -193,6 +193,10 @@ RandoItemId Rando::CurrentTrapItem(RandoCheckId randoCheckId) {
 }
 
 bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId) {
+    if (IS_NPC_SOUL(randoItemId)) {
+        return !Flags_GetRandoInf(NPC_SOUL_RI_TO_RANDO_INF(randoItemId));
+    }
+
     bool hasObtainedCheck = false;
     if (randoCheckId != RC_UNKNOWN) {
         hasObtainedCheck = RANDO_SAVE_CHECKS[randoCheckId].obtained;
