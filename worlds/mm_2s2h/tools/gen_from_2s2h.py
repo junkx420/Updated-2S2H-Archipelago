@@ -468,7 +468,7 @@ def main() -> int:
     # Entrance shuffle: { RO_X, ENTRANCE(into), ENTRANCE(outOf), inside scene, outside scene, boss scene,
     # { boss warp targets } } (MiscBehavior/EntranceShuffle.cpp shuffleEntrances); checked against the regions below
     es_src = strip_comments((rando / "MiscBehavior" / "EntranceShuffle.cpp").read_text(encoding="utf-8"))
-    es_body = re.search(r"shuffleEntrances\s*=\s*\{(.*)\};", es_src, re.S).group(1)
+    es_body = re.search(r"shuffleEntrances\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
     ent = r"ENTRANCE\(\s*\w+\s*,\s*\d+\s*\)"
     es_rows = [(opt, entrance_key(a), entrance_key(b), ins, outs, boss, [entrance_key(w) for w in re.findall(ent, warps)])
                for opt, a, b, ins, outs, boss, warps in re.findall(
@@ -620,6 +620,23 @@ def main() -> int:
         entrance_shuffle.append({"option": opt, "into": into, "out": out, "into_value": entrance_value(into),
                                  "door_region": door, "inside_region": inner, "boss_warps": boss_warps})
 
+    # Area rules: { RO_X, ENTRANCE(into), [] { return condition; } } (EntranceShuffle.cpp shuffleAreaRules), translated
+    # like every CONNECTION rule; the apworld adds them to a door with another row's area behind it
+    ar_body = re.search(r"shuffleAreaRules\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
+    ar_rows = re.findall(rf"\{{\s*(RO_\w+)\s*,\s*({ent})\s*,\s*\[\]\s*\{{\s*return\s+(.*?);\s*\}}\s*\}}", ar_body, re.S)
+    if len(ar_rows) != ar_body.count("RO_"):
+        raise SystemExit("shuffleAreaRules: a row does not match the expected format")
+    es_options = {row["into"]: row["option"] for row in entrance_shuffle}
+    area_rules = {}
+    for opt, into, cond in ar_rows:
+        into = entrance_key(into)
+        if es_options.get(into) != opt or into in area_rules:
+            raise SystemExit(f"shuffleAreaRules: {opt} {into} is no shuffleEntrances row (or a duplicate)")
+        before = len(untranslated)
+        area_rules[into] = rule(cond, "EntranceShuffle.cpp(shuffleAreaRules)")
+        if area_rules[into] is None or len(untranslated) != before:
+            raise SystemExit(f"shuffleAreaRules: {into}: rule `{cond}` is empty or untranslatable")
+
     # ---- time-logic guard (docs/time-logic.md) ----
     time_ops = {"AT", "BEFORE", "AFTER", "BETWEEN", "IS_DAY1", "IS_NIGHT1", "IS_DAY2", "IS_NIGHT2", "IS_DAY3",
                 "IS_NIGHT3", "IS_DAY", "IS_NIGHT", "FIRST_DAY", "SECOND_DAY", "FINAL_DAY", "MIDNIGHT"}
@@ -646,6 +663,8 @@ def main() -> int:
         f = lambda xs: "[" + ", ".join("(" + ", ".join(repr(a) if not (isinstance(a, str) and a.startswith("r") and a[1:].isdigit()) else a for a in x) + ")" for x in xs) + "]"  # noqa: E731
         lines.append(f"    {rid!r}: ({name!r}, {scene!r}, {f(checks)}, {f(conns)}, {f(exits)}, {f(events)}, {f(stay)}),")
     lines.append("}")
+    lines.append("# shuffleAreaRules (EntranceShuffle.cpp): door entrance `into` -> rule of the area behind it")
+    lines.append("ENTRANCE_AREA_RULES = {" + ", ".join(f"{k!r}: {v}" for k, v in area_rules.items()) + "}")
     (OUT / "regions_generated.py").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     # ---- enums / items / locations ----

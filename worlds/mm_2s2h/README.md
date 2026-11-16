@@ -32,6 +32,12 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   (`RandoSaveInfo::entrancePairs`). The client redirects at one place, the new `BeforeTransitionSetup` hook at the
   start of `TRANS_MODE_SETUP` in `z_play.c`. A further group of doors is new rows plus a new `RO_*` option. The
   inverted Stone Tower Temple, boss rooms and the Woodfall prison door are not shuffled.
+  Since 0.3.1 a door with another temple behind it also needs that temple's **area rule** (`shuffleAreaRules` in the
+  same file, generated to `ENTRANCE_AREA_RULES`): what the vanilla way to that temple's own door requires, because
+  the 2S2H temple logic may rely on it silently. Woodfall: Deku Mask; Great Bay: Zora Mask and Hookshot; Stone Tower:
+  Hookshot, Elegy of Emptiness, Goron and Zora Mask; Snowhead: none (its Goron Mask block comes before every check
+  but an enemy drop). A temple behind its own door keeps its vanilla rule. The rule is logic only: the in-game check
+  tracker does not know it and may show a temple's first rooms as reachable earlier.
 
 ## Updating to a new 2S2H release
 

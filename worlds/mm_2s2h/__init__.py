@@ -21,7 +21,7 @@ from .locations_generated import LOCATIONS
 from .macros_generated import CAN_USE_SWORD
 from .options import MM2S2HOptions
 from .primitives import LOGIC_ITEMS, SaveView
-from .regions_generated import REGIONS
+from .regions_generated import ENTRANCE_AREA_RULES, REGIONS
 from .time_logic import TimeContext
 
 GAME = "Majora's Mask (2 Ship 2 Harkinian)"
@@ -534,8 +534,13 @@ class MM2S2HWorld(World):
             inside = row_of_inside[rr_of[door.connected_region.name]]
             self.entrance_pairs.append((row["into_value"], inside["into_value"]))
             self.multiworld.spoiler.set_entrance(_door_name(row), _door_name(inside), "both", self.player)
-            # the boss of the area behind this door warps back out of this door (EntranceShuffle.cpp)
+            # the boss of the area behind this door warps back out of this door (EntranceShuffle.cpp), and the door
+            # also needs what the vanilla way to that area's own door guarantees (shuffleAreaRules)
             if inside is not row:
+                area = self._rule(ENTRANCE_AREA_RULES.get(inside["into"]))
+                if area is not None:
+                    own = door.access_rule
+                    door.access_rule = lambda state, own=own, area=area: own(state) and area(state)
                 for boss_rr, warp in inside["boss_warps"]:
                     self._reconnect(self.exit_entrances[(boss_rr, warp)], row["door_region"])
 

@@ -1526,6 +1526,9 @@ def r506(s):
 def r507(s):
     return (((h.HAS_ITEM(s, 'ITEM_HOOKSHOT') or h.CAN_BE_ZORA(s)) and h.HAS_ITEM(s, 'ITEM_MASK_GREAT_FAIRY')) or (h.HAS_ITEM(s, 'ITEM_BOW') or (h.CAN_BE_DEKU(s) and h.HAS_MAGIC(s))))
 
+def r508(s):
+    return (h.CAN_BE_ZORA(s) and h.HAS_ITEM(s, 'ITEM_HOOKSHOT'))
+
 # id: (name, scene, checks[(RC, rule)], connections[(RR, rule)], exits[(entrance, RR, rule)],
 #      events[(RE, rule)], stay[(TIME_SLICE, rule)])
 REGIONS = {
@@ -1845,3 +1848,5 @@ REGIONS = {
     'RR_WOODFALL_TEMPLE_WATER_ROOM_UPPER': ('Water Room Upper', 'SCENE_MITURIN', [('RC_WOODFALL_TEMPLE_WATER_ROOM_POT_01', None), ('RC_WOODFALL_TEMPLE_WATER_ROOM_POT_02', None), ('RC_WOODFALL_TEMPLE_WATER_ROOM_POT_03', None), ('RC_WOODFALL_TEMPLE_WATER_ROOM_POT_04', None)], [('RR_WOODFALL_TEMPLE_WATER_ROOM', None), ('RR_WOODFALL_TEMPLE_BOW_ROOM', None), ('RR_WOODFALL_TEMPLE_BOSS_KEY_ROOM', r506), ('RR_WOODFALL_TEMPLE_MAIN_ROOM_UPPER', None)], [], [], []),
     'RR_WOODFALL_TEMPLE_WATER_ROOM': ('Water Room', 'SCENE_MITURIN', [('RC_WOODFALL_TEMPLE_WATER_ROOM_GRASS_01', r52), ('RC_WOODFALL_TEMPLE_WATER_ROOM_GRASS_02', r52), ('RC_WOODFALL_TEMPLE_WATER_CHEST', r495), ('RC_WOODFALL_TEMPLE_SF_WATER_ROOM_BEEHIVE', r507)], [('RR_WOODFALL_TEMPLE_MAIN_ROOM', None), ('RR_WOODFALL_TEMPLE_MAP_ROOM', r52), ('RR_WOODFALL_TEMPLE_WATER_ROOM_UPPER', r506)], [], [], []),
 }
+# shuffleAreaRules (EntranceShuffle.cpp): door entrance `into` -> rule of the area behind it
+ENTRANCE_AREA_RULES = {'WOODFALL_TEMPLE:0': r52, 'GREAT_BAY_TEMPLE:0': r508, 'STONE_TOWER_TEMPLE:0': r192}

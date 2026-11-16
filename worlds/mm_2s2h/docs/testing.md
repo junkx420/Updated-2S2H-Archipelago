@@ -125,3 +125,21 @@ back, and unless every boss row names a warp exit of its boss room.
   scenarios identical**. `pytest test/general worlds/mm_2s2h/test`: 487 passed.
 * **Not tested in game**: walking in and out of each temple, voiding out inside, the boss warps (first and repeat),
   the Great Bay turtle ride into another temple, save and reload, and the option off.
+
+#### Area rules (apworld 0.3.1)
+
+`shuffleAreaRules` (`EntranceShuffle.cpp`, generated to `ENTRANCE_AREA_RULES`): a door with another temple behind
+it also needs what the vanilla way to that temple's door requires (read from `South.cpp`, `West.cpp`, `East.cpp`:
+Woodfall Deku Mask; Great Bay Zora Mask and Hookshot; Stone Tower Hookshot, Elegy, Goron and Zora Mask; Snowhead
+none, its Goron Mask block in `SnowheadTemple.cpp` comes before every check but an enemy drop). The generator
+translates each rule like a CONNECTION rule and stops on an unknown or duplicate row or an untranslatable rule.
+`CanAccessDungeon` (the door's own song/form condition) stays at the door and is not part of an area rule.
+
+* `test/test_entrance_shuffle.py`, 12 seeds: without one of the area's items a door with that temple behind it is
+  closed (also where its own rule would let you through); every other door evaluates exactly as its own rule;
+  Universal Tracker evaluates every door the same; with No Logic every door is open.
+* 100 random seeds with `shuffle_dungeon_entrances=true`: **100 / 100**, about 2.6 s per seed.
+* Client builds locally. Parity harness rebuilt, option off: **1200 / 1200**. `pytest test/general
+  worlds/mm_2s2h/test`: 496 passed.
+* The in-game check tracker does not know the area rules: with the option on it can show a temple's first rooms
+  as reachable before the logic counts them. **Not tested in game.**
