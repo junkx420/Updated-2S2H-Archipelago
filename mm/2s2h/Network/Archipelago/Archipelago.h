@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <nlohmann/json.hpp>
 
@@ -108,6 +109,10 @@ class ArchipelagoClient {
     const std::unordered_map<int64_t, ScoutedItem>& GetScoutedItems() const;
     bool ScoutsReady() const;
 
+    // Announces one of our still-missing locations as a hint (LocationScouts with create_as_hint=2), once per
+    // session. Called when an in-game hint revealed the item and exact location.
+    void HintLocation(int64_t apLocationId);
+
     // Tells the server this slot reached its goal (Majora defeated).
     void SendGoalComplete();
 
@@ -134,6 +139,7 @@ class ArchipelagoClient {
     std::vector<ReceivedItem> pendingItems;
     std::unordered_map<int64_t, ScoutedItem> scoutedItems;
     bool scoutsReady = false;
+    std::unordered_set<int64_t> hintedLocations;
     std::vector<std::string> pendingDeaths;
     bool disconnecting = false;
     int retries = 0;

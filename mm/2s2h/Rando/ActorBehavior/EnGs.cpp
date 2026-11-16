@@ -2,6 +2,9 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/ShipUtils.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
+#ifdef ENABLE_ARCHIPELAGO
+#include "2s2h/Network/Archipelago/ArchipelagoMapping.h"
+#endif
 
 #include <vector>
 
@@ -175,6 +178,11 @@ void Rando::ActorBehavior::InitEnGsBehavior() {
                                    Rando::StaticData::GetItemName(saveCheck.randoItemId, true, randoCheckId));
             CustomMessage::Replace(&entry.msg, "{{location}}",
                                    Rando::StaticData::GetLocationNameForHint(randoCheckId, showExact));
+#ifdef ENABLE_ARCHIPELAGO
+            if (showExact) {
+                ApMapping::HintCheck(randoCheckId); // the hint names item and exact location
+            }
+#endif
 
             // Replace colors before line break calculation
             CustomMessage::ReplaceColorChars(&entry.msg);
@@ -224,6 +232,9 @@ void Rando::ActorBehavior::InitEnGsBehavior() {
                                            Rando::StaticData::GetItemName(saveCheck.randoItemId, true, randoCheckId));
                     CustomMessage::Replace(&entry.msg, "{{location}}",
                                            Rando::StaticData::GetLocationNameForHint(randoCheckId, true));
+#ifdef ENABLE_ARCHIPELAGO
+                    ApMapping::HintCheck(randoCheckId); // the hint names item and exact location
+#endif
 
                     gSaveContext.rupeeAccumulator -= cost;
                     cost *= 2;

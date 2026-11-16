@@ -390,6 +390,14 @@ std::string ApMapping::GetForeignItemLabel(RandoCheckId checkId) {
     return TextboxSafe(it->second.playerName, 16) + "'s " + TextboxSafe(it->second.itemName, 40);
 }
 
+void ApMapping::HintCheck(RandoCheckId checkId) {
+    int64_t apLocationId = ApMapping::GetApLocationFromCheck(checkId);
+    if (apLocationId < 0 || RANDO_SAVE_CHECKS[checkId].obtained) {
+        return;
+    }
+    ArchipelagoClient::GetInstance().HintLocation(apLocationId);
+}
+
 static RegisterShipInitFunc initGameplayFunc(RegisterArchipelagoGameplay);
 
 #endif // ENABLE_ARCHIPELAGO

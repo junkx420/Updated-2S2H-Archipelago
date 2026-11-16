@@ -139,6 +139,7 @@ bool ArchipelagoClient::StartClient() {
         // Scout every still-missing location of our slot so the game can show
         // and place the real multiworld items (location_info handler below).
         scoutedItems.clear();
+        hintedLocations.clear();
         scoutsReady = false;
         const auto missing = apClient->get_missing_locations();
         if (!missing.empty()) {
@@ -235,6 +236,7 @@ void ArchipelagoClient::Poll() {
         slotOptions = {}; // don't keep stale options past the session
         pendingItems.clear();
         scoutedItems.clear();
+        hintedLocations.clear();
         scoutsReady = false;
         pendingDeaths.clear();
         CVarSetInteger(CVAR_ARCHIPELAGO("ConnectionStatus"), AP_STATUS_DISCONNECTED);
@@ -277,6 +279,17 @@ const std::unordered_map<int64_t, ArchipelagoClient::ScoutedItem>& ArchipelagoCl
 
 bool ArchipelagoClient::ScoutsReady() const {
     return scoutsReady;
+}
+
+void ArchipelagoClient::HintLocation(int64_t apLocationId) {
+    // Only locations of this slot that are still missing (the scout list) can be hinted.
+    if (apClient == nullptr || !scoutsReady || !scoutedItems.contains(apLocationId)) {
+        return;
+    }
+    if (!hintedLocations.insert(apLocationId).second) {
+        return;
+    }
+    apClient->LocationScouts({ apLocationId }, 2); // 2: create the hint, announce only if it is new
 }
 
 void ArchipelagoClient::SendGoalComplete() {

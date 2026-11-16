@@ -1,5 +1,8 @@
 #include "MiscBehavior.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
+#ifdef ENABLE_ARCHIPELAGO
+#include "2s2h/Network/Archipelago/ArchipelagoMapping.h"
+#endif
 
 #define BANK_SIGN_MESSAGE_ID 0x1C14
 
@@ -27,6 +30,9 @@ void Rando::MiscBehavior::BankSignHint() {
 
         CustomMessage::Replace(&entry.msg, "{{item}}",
                                Rando::StaticData::GetItemName(saveCheck.randoItemId, true, randoCheckId));
+#ifdef ENABLE_ARCHIPELAGO
+        ApMapping::HintCheck(randoCheckId); // the hint names item and exact location
+#endif
 
         CustomMessage::LoadCustomMessageIntoFont(entry);
         *loadFromMessageTable = false;

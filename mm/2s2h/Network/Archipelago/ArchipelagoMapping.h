@@ -24,6 +24,10 @@ RandoItemId GetItemFromApItem(int64_t apItemId);
 // LocationScouts (printable ASCII only, long names shortened). Empty when not connected, not scouted or our own item.
 std::string GetForeignItemLabel(RandoCheckId checkId);
 
+// An in-game hint just named the item at this check and its exact location: announce it as an Archipelago hint
+// too (once per session, only for still-missing locations of this slot, no-op when not connected).
+void HintCheck(RandoCheckId checkId);
+
 } // namespace ApMapping
 
 #endif // ENABLE_ARCHIPELAGO

@@ -3,6 +3,9 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipUtils.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
+#ifdef ENABLE_ARCHIPELAGO
+#include "2s2h/Network/Archipelago/ArchipelagoMapping.h"
+#endif
 
 extern "C" {
 #include "variables.h"
@@ -18,6 +21,9 @@ void ApplySwampSpiderHouseHint(u16* textId, bool* loadFromMessageTable) {
         &entry.msg, "{{item}}",
         Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH].randoItemId, true,
                                        RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH));
+#ifdef ENABLE_ARCHIPELAGO
+    ApMapping::HintCheck(RC_SWAMP_SPIDER_HOUSE_MASK_OF_TRUTH); // the hint names item and exact location
+#endif
 
     CustomMessage::LoadCustomMessageIntoFont(entry);
     *loadFromMessageTable = false;
@@ -31,6 +37,9 @@ void ApplyOceanSpiderHouseHint(u16* textId, bool* loadFromMessageTable) {
     CustomMessage::Replace(&entry.msg, "{{item}}",
                            Rando::StaticData::GetItemName(RANDO_SAVE_CHECKS[RC_OCEAN_SPIDER_HOUSE_WALLET].randoItemId,
                                                           true, RC_OCEAN_SPIDER_HOUSE_WALLET));
+#ifdef ENABLE_ARCHIPELAGO
+    ApMapping::HintCheck(RC_OCEAN_SPIDER_HOUSE_WALLET); // the hint names item and exact location
+#endif
 
     CustomMessage::LoadCustomMessageIntoFont(entry);
     *loadFromMessageTable = false;
