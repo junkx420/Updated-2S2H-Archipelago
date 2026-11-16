@@ -536,12 +536,22 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
     return itemId < ITEM_RECOVERY_HEART ? (const char*)gItemIcons[itemId] : nullptr;
 }
 
-bool ShouldShowGetItemCutscene(RandoItemId itemId) {
+RandoItemType GetItemTypeAtCheck(RandoItemId itemId, RandoCheckId randoCheckId) {
+#ifdef ENABLE_ARCHIPELAGO
+    // Another world's item counts as what Archipelago says it is (filler, useful, progression or trap).
+    if (itemId == RI_ARCHIPELAGO_ITEM && randoCheckId != RC_UNKNOWN) {
+        return ApMapping::GetForeignItemType(randoCheckId);
+    }
+#endif
+    return Rando::StaticData::Items[itemId].randoItemType;
+}
+
+bool ShouldShowGetItemCutscene(RandoItemId itemId, RandoCheckId randoCheckId) {
     if (!CVarGetInteger("gEnhancements.Cutscenes.SkipGetItemCutscenes", 0)) {
         return true;
     }
 
-    switch (Rando::StaticData::Items[itemId].randoItemType) {
+    switch (GetItemTypeAtCheck(itemId, randoCheckId)) {
         case RITYPE_JUNK:
             return CVarGetInteger("gEnhancements.Cutscenes.SkipGetItemCutscenes", 0) < 1;
         case RITYPE_HEALTH:

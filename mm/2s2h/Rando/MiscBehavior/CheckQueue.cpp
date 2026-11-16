@@ -16,6 +16,9 @@ extern s16 D_801CFF94[250];
 }
 
 static bool queued = false;
+// The check whose item was given last. Once an item is given, CUSTOM_ITEM_PARAM holds its RandoItemId, but drawing
+// still needs the check (another world's item is drawn by what Archipelago says it is worth).
+static RandoCheckId lastGivenCheck = RC_UNKNOWN;
 
 // This function handles queuing up item gives that the player has been marked as eligible for. If you are looking for
 // the behavior of the actual giving itself, the heavy lifting is done by the GameInteractor queue. This function is
@@ -38,8 +41,8 @@ void Rando::MiscBehavior::CheckQueue() {
             queued = true;
 
             GameInteractor::Instance->events.emplace_back(GIEventGiveItem{
-                .showGetItemCutscene =
-                    Rando::StaticData::ShouldShowGetItemCutscene(ConvertItem(randoSaveCheck.randoItemId, randoCheckId)),
+                .showGetItemCutscene = Rando::StaticData::ShouldShowGetItemCutscene(
+                    ConvertItem(randoSaveCheck.randoItemId, randoCheckId), randoCheckId),
                 .param = (int16_t)randoCheckId,
                 .giveItem =
                     [](Actor* actor, PlayState* play) {
@@ -80,10 +83,12 @@ void Rando::MiscBehavior::CheckQueue() {
 
                         if (CUSTOM_ITEM_FLAGS & CustomItem::GIVE_ITEM_CUTSCENE) {
                             CustomMessage::SetActiveCustomMessage(entry.msg, entry);
-                        } else if (Rando::StaticData::ShouldShowGetItemCutscene(randoItemId)) {
+                        } else if (Rando::StaticData::ShouldShowGetItemCutscene(randoItemId,
+                                                                                (RandoCheckId)CUSTOM_ITEM_PARAM)) {
                             CustomMessage::StartTextbox(entry.msg + "\x1C\x02\x10", entry);
                         } else {
-                            if (Rando::StaticData::Items[randoItemId].randoItemType != RITYPE_JUNK) {
+                            if (Rando::StaticData::GetItemTypeAtCheck(randoItemId, (RandoCheckId)CUSTOM_ITEM_PARAM) !=
+                                RITYPE_JUNK) {
                                 Notification::Emit({
                                     .itemIcon = Rando::StaticData::GetIconTexturePath(randoItemId),
                                     .message = prefix,
@@ -96,14 +101,17 @@ void Rando::MiscBehavior::CheckQueue() {
                         randoSaveCheck.obtained = true;
                         randoSaveCheck.eligible = false;
                         queued = false;
+                        lastGivenCheck = (RandoCheckId)CUSTOM_ITEM_PARAM;
                         CUSTOM_ITEM_PARAM = randoItemId;
                     },
                 .drawItem =
                     [](Actor* actor, PlayState* play) {
                         RandoItemId randoItemId;
+                        RandoCheckId randoCheckId = (RandoCheckId)CUSTOM_ITEM_PARAM;
 
                         // If the item has been given, the CUSTOM_ITEM_PARAM is set to the RI, prior to that it's the RC
                         if (CUSTOM_ITEM_FLAGS & CustomItem::CALLED_ACTION) {
+                            randoCheckId = lastGivenCheck;
                             if ((RandoItemId)CUSTOM_ITEM_PARAM == RI_TRAP) {
                                 randoItemId = RI_MAX_TRAP;
                             } else {
@@ -116,7 +124,7 @@ void Rando::MiscBehavior::CheckQueue() {
                         }
 
                         Matrix_Scale(30.0f, 30.0f, 30.0f, MTXMODE_APPLY);
-                        Rando::DrawItem(randoItemId, (RandoCheckId)CUSTOM_ITEM_PARAM, actor);
+                        Rando::DrawItem(randoItemId, randoCheckId, actor);
                     } });
             return;
         }

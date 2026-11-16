@@ -186,6 +186,7 @@ bool ArchipelagoClient::StartClient() {
                 apClient->get_item_name(item.item, apClient->get_player_game(item.player)),
                 apClient->get_player_alias(item.player),
                 checked.count(item.location) > 0,
+                item.flags,
             };
         }
         scoutsReady = true;

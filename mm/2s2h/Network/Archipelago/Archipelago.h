@@ -105,7 +105,8 @@ class ArchipelagoClient {
         bool isLocalItem; // true when the item belongs to this slot
         std::string itemName;
         std::string playerName;
-        bool checked; // the server already had this location checked when we connected
+        bool checked;   // the server already had this location checked when we connected
+        unsigned flags; // Archipelago classification: 1 progression, 2 useful, 4 trap, 0 filler
     };
 
     // AP location id -> scouted placement, for every location of this slot. Empty until ScoutsReady().

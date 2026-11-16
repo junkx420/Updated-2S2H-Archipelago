@@ -54,7 +54,8 @@ RandoItemId GetItemIdFromName(const char* name);
 RandoItemId GetItemIdFromVanillaItemId(u32 itemId);
 u8 GetIconForZMessage(RandoItemId itemId);
 const char* GetIconTexturePath(RandoItemId itemId);
-bool ShouldShowGetItemCutscene(RandoItemId itemId);
+RandoItemType GetItemTypeAtCheck(RandoItemId itemId, RandoCheckId randoCheckId);
+bool ShouldShowGetItemCutscene(RandoItemId itemId, RandoCheckId randoCheckId = RC_UNKNOWN);
 std::string GetItemName(RandoItemId randoItemId, bool includeArticle = true, RandoCheckId randoCheckId = RC_UNKNOWN);
 std::string GetTrapMessage();
 

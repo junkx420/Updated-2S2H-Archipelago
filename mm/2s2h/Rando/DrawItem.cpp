@@ -3,6 +3,9 @@
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/Rando/DrawFuncs.h"
 #include "2s2h_assets.h"
+#ifdef ENABLE_ARCHIPELAGO
+#include "2s2h/Network/Archipelago/ArchipelagoMapping.h"
+#endif
 
 extern "C" {
 #include "variables.h"
@@ -507,8 +510,12 @@ void DrawTycoonWallet() {
 #ifdef ENABLE_ARCHIPELAGO
 // The Archipelago logo (its ring of six colored dots), built once at runtime
 // as vertex-colored discs so no custom texture/OTR asset is needed.
-static void DrawArchipelagoItem() {
-    static Vtx discVtx[6][7];
+// Like in other Archipelago games it shows what the item is worth: gray for
+// filler, full color for useful items, full color with a small arrow pointing
+// up below the ring for progression items and traps.
+static void DrawArchipelagoItem(RandoCheckId randoCheckId) {
+    static Vtx discVtx[2][6][7]; // [0] full color, [1] gray
+    static Vtx arrowVtx[7];
     static bool vtxInitialized = false;
     static const uint8_t discColors[6][3] = {
         { 230, 50, 50 },  // red
@@ -527,7 +534,7 @@ static void DrawArchipelagoItem() {
             float cx = ringRadius * cosf(angle);
             float cy = ringRadius * sinf(angle);
             for (int v = 0; v < 7; v++) {
-                Vtx* vtx = &discVtx[d][v];
+                Vtx* vtx = &discVtx[0][d][v];
                 if (v == 0) {
                     vtx->v.ob[0] = (s16)cx;
                     vtx->v.ob[1] = (s16)cy;
@@ -543,10 +550,33 @@ static void DrawArchipelagoItem() {
                 vtx->v.cn[1] = discColors[d][1];
                 vtx->v.cn[2] = discColors[d][2];
                 vtx->v.cn[3] = 255;
+
+                // Same disc in gray, keeping its brightness so the six dots stay distinguishable.
+                uint8_t gray = (uint8_t)((discColors[d][0] * 30 + discColors[d][1] * 59 + discColors[d][2] * 11) / 100);
+                discVtx[1][d][v] = *vtx;
+                discVtx[1][d][v].v.cn[0] = discVtx[1][d][v].v.cn[1] = discVtx[1][d][v].v.cn[2] = gray;
             }
+        }
+
+        // Arrow below the ring: head (tip, left, right), then the stem.
+        static const s16 arrowPos[7][2] = {
+            { 0, -23 }, { -6, -30 }, { 6, -30 }, { -2, -30 }, { 2, -30 }, { -2, -36 }, { 2, -36 },
+        };
+        for (int v = 0; v < 7; v++) {
+            arrowVtx[v].v.ob[0] = arrowPos[v][0];
+            arrowVtx[v].v.ob[1] = arrowPos[v][1];
+            arrowVtx[v].v.ob[2] = 0;
+            arrowVtx[v].v.flag = 0;
+            arrowVtx[v].v.tc[0] = arrowVtx[v].v.tc[1] = 0;
+            arrowVtx[v].v.cn[0] = arrowVtx[v].v.cn[1] = arrowVtx[v].v.cn[2] = arrowVtx[v].v.cn[3] = 255;
         }
         vtxInitialized = true;
     }
+
+    // -1: not known (not connected, not scouted); drawn in plain full color
+    const int flags = ApMapping::GetForeignItemFlags(randoCheckId);
+    const bool important = flags > 0 && (flags & (1 | 4)); // progression or trap
+    const int palette = flags == 0 ? 1 : 0;                // filler is gray
 
     OPEN_DISPS(gPlayState->state.gfxCtx);
     Gfx_SetupDL25_Opa(gPlayState->state.gfxCtx);
@@ -554,10 +584,16 @@ static void DrawArchipelagoItem() {
     gDPSetCombineMode(POLY_OPA_DISP++, G_CC_SHADE, G_CC_SHADE);
     gSPClearGeometryMode(POLY_OPA_DISP++, G_LIGHTING | G_CULL_BACK);
     for (int d = 0; d < 6; d++) {
-        gSPVertex(POLY_OPA_DISP++, (uintptr_t)discVtx[d], 7, 0);
+        gSPVertex(POLY_OPA_DISP++, (uintptr_t)discVtx[palette][d], 7, 0);
         for (int t = 0; t < 6; t++) {
             gSP1Triangle(POLY_OPA_DISP++, 0, 1 + t, 1 + ((t + 1) % 6), 0);
         }
+    }
+    if (important) {
+        gSPVertex(POLY_OPA_DISP++, (uintptr_t)arrowVtx, 7, 0);
+        gSP1Triangle(POLY_OPA_DISP++, 0, 1, 2, 0);
+        gSP1Triangle(POLY_OPA_DISP++, 3, 5, 6, 0);
+        gSP1Triangle(POLY_OPA_DISP++, 3, 6, 4, 0);
     }
     gSPSetGeometryMode(POLY_OPA_DISP++, G_LIGHTING | G_CULL_BACK);
     CLOSE_DISPS(gPlayState->state.gfxCtx);
@@ -751,7 +787,7 @@ void Rando::DrawItem(RandoItemId randoItemId, RandoCheckId randoCheckId, Actor* 
             break;
 #ifdef ENABLE_ARCHIPELAGO
         case RI_ARCHIPELAGO_ITEM:
-            DrawArchipelagoItem();
+            DrawArchipelagoItem(randoCheckId);
             break;
 #endif
         default:

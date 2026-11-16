@@ -35,6 +35,7 @@
 extern "C" {
 #include "variables.h"
 #include "functions.h"
+extern PlayState* gPlayState;
 }
 
 namespace {
@@ -202,10 +203,12 @@ void ApplyNextPendingItem(ArchipelagoClient& client) {
     gSaveContext.save.shipSaveInfo.rando.apItemsReceived = nextIndex + 1;
 }
 
-// DeathLink: watch health transitions. A death we caused (incoming link) must
-// not be re-broadcast or two linked players would ping-pong forever.
+// DeathLink: watch for the game over sequence. Health alone is not enough: it also
+// hits zero when a bottled fairy revives the player, which is no death. A death we
+// caused (incoming link) must not be re-broadcast or two linked players would
+// ping-pong forever.
 void ProcessDeathLink(ArchipelagoClient& client) {
-    static int16_t prevHealth = -1;
+    static bool wasDying = false;
     static bool dyingFromDeathLink = false;
 
     if (!client.GetSlotOptions().deathLink) {
@@ -220,22 +223,20 @@ void ProcessDeathLink(ArchipelagoClient& client) {
         deaths.erase(deaths.begin());
         gSaveContext.save.saveInfo.playerData.health = 0;
         dyingFromDeathLink = true;
-        prevHealth = 0;
         return;
     }
 
-    if (prevHealth > 0 && health <= 0) {
-        if (dyingFromDeathLink) {
-            dyingFromDeathLink = false;
-        } else {
-            client.SendDeathLink(std::string(CVarGetString(CVAR_ARCHIPELAGO("SlotName"), "Player")) +
-                                 " met their fate in Termina");
-        }
+    const u16 gameOverState = gPlayState != nullptr ? gPlayState->gameOverCtx.state : GAMEOVER_INACTIVE;
+    const bool dying = gameOverState >= GAMEOVER_DEATH_START && gameOverState <= GAMEOVER_DEATH_FADE_OUT;
+    if (dying && !wasDying && !dyingFromDeathLink) {
+        client.SendDeathLink(std::string(CVarGetString(CVAR_ARCHIPELAGO("SlotName"), "Player")) +
+                             " met their fate in Termina");
     }
-    if (health > 0) {
+    // Back on their feet (respawned, or revived by a fairy): the next death is their own again.
+    if (!dying && health > 0) {
         dyingFromDeathLink = false;
     }
-    prevHealth = health;
+    wasDying = dying;
 }
 
 void ProcessFrame() {
@@ -400,6 +401,27 @@ std::string ApMapping::GetForeignItemLabel(RandoCheckId checkId) {
         return "";
     }
     return TextboxSafe(it->second.playerName, 16) + "'s " + TextboxSafe(it->second.itemName, 40);
+}
+
+int ApMapping::GetForeignItemFlags(RandoCheckId checkId) {
+    int64_t apLocationId = ApMapping::GetApLocationFromCheck(checkId);
+    if (apLocationId < 0) {
+        return -1;
+    }
+    const auto& scouted = ArchipelagoClient::GetInstance().GetScoutedItems();
+    auto it = scouted.find(apLocationId);
+    if (it == scouted.end() || it->second.isLocalItem) {
+        return -1;
+    }
+    return (int)(it->second.flags & 7);
+}
+
+RandoItemType ApMapping::GetForeignItemType(RandoCheckId checkId) {
+    const int flags = ApMapping::GetForeignItemFlags(checkId);
+    if (flags < 0 || (flags & (1 | 4))) { // unknown, progression, trap
+        return RITYPE_MAJOR;
+    }
+    return (flags & 2) ? RITYPE_LESSER : RITYPE_JUNK; // useful : filler
 }
 
 void ApMapping::HintCheck(RandoCheckId checkId) {
