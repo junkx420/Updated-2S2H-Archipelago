@@ -511,6 +511,11 @@ class MM2S2HWorld(World):
         doors = [self.exit_entrances[(row["door_region"], row["into"])] for row in rows]
         insides = [self.exit_entrances[(row["inside_region"], row["out"])] for row in rows]
         row_of_inside = {row["inside_region"]: row for row in rows}
+        # Blue warps are one-way in vanilla. Give the coupled helper the inverse side of the boss door temporarily;
+        # after both permutations are known every warp is restored or composed with the temple's exterior pairing.
+        for row, inside in zip(rows, insides):
+            if row["temple_exit"] is not None:
+                self._reconnect(inside, row["door_region"])
         if self.ut_entrance_pairs is not None:  # Universal Tracker: the pairing of the generated seed
             by_value = {row["into_value"]: i for i, row in enumerate(rows)}
             behind = {by_value[door]: by_value[inside] for door, inside in self.ut_entrance_pairs}
@@ -534,15 +539,33 @@ class MM2S2HWorld(World):
             inside = row_of_inside[rr_of[door.connected_region.name]]
             self.entrance_pairs.append((row["into_value"], inside["into_value"]))
             self.multiworld.spoiler.set_entrance(_door_name(row), _door_name(inside), "both", self.player)
-            # the boss of the area behind this door warps back out of this door (EntranceShuffle.cpp), and the door
-            # also needs what the vanilla way to that area's own door guarantees (shuffleAreaRules)
+            # The source door keeps its key/form/event rule. Only a foreign area adds its guaranteed items.
             if inside is not row:
                 area = self._rule(ENTRANCE_AREA_RULES.get(inside["into"]))
                 if area is not None:
                     own = door.access_rule
                     door.access_rule = lambda state, own=own, area=area: own(state) and area(state)
-                for boss_rr, warp in inside["boss_warps"]:
-                    self._reconnect(self.exit_entrances[(boss_rr, warp)], row["door_region"])
+        self._connect_boss_warps()
+
+    def _connect_boss_warps(self) -> None:
+        by_value = {row["into_value"]: row for row in ENTRANCE_SHUFFLE}
+        door_for = {inside: by_value[door] for door, inside in self.entrance_pairs}
+        temples = {row["out"]: row for row in ENTRANCE_SHUFFLE if row["temple_exit"] is None}
+        for boss in ENTRANCE_SHUFFLE:
+            if boss["temple_exit"] is None:
+                continue
+            boss_door = door_for.get(boss["into_value"], boss)
+            temple = temples.get(boss_door["temple_exit"])
+            exterior = boss_door["exterior_region"]
+            moved = boss_door is not boss
+            if temple is not None:
+                temple_door = door_for.get(temple["into_value"], temple)
+                exterior = temple_door["door_region"]
+                moved |= temple_door is not temple
+            for boss_rr, warp in boss["boss_warps"]:
+                # Fixed points must retain the original prison/spring/cape/canyon destinations, even with boss ER on.
+                vanilla = next(target for key, target, _ in REGIONS[boss_rr][4] if key == warp)
+                self._reconnect(self.exit_entrances[(boss_rr, warp)], exterior if moved else vanilla)
 
     def _reconnect(self, exit_: Entrance, rr: str) -> None:
         if exit_.connected_region is not None:

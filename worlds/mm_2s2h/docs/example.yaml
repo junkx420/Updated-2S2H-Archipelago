@@ -34,7 +34,7 @@ game: Majora's Mask (2 Ship 2 Harkinian)
 requires:
   version: 0.6.9 # Version of Archipelago required for this yaml to work as expected.
   game:
-    Majora's Mask (2 Ship 2 Harkinian): 0.3.1 # Version of the world required for this yaml to work as expected.
+    Majora's Mask (2 Ship 2 Harkinian): 0.4.0 # Version of the world required for this yaml to work as expected.
 
 Majora's Mask (2 Ship 2 Harkinian):
   ################
@@ -332,6 +332,12 @@ Majora's Mask (2 Ship 2 Harkinian):
 
   shuffle_dungeon_entrances:
     # The doors of Woodfall, Snowhead, Great Bay and Stone Tower Temple lead into a random one of these four temples; its exit and its boss's warp lead back out of the same door. The inverted Stone Tower Temple stays where it is.
+    'false': 50
+    'true': 0
+
+  shuffle_boss_entrances:
+    # Shuffle Odolwa, Goht, Gyorg and Twinmold. Blue warps return outside the temple containing the door used.
+    # Boss rewards and clear effects follow the boss. Majora and the Moon stay unchanged.
     'false': 50
     'true': 0
 

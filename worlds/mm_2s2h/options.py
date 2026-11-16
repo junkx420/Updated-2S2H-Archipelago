@@ -146,6 +146,10 @@ ShuffleDungeonEntrances = _shuffle("ShuffleDungeonEntrances", "RO_SHUFFLE_DUNGEO
                                    "random one of these four temples; its exit and its boss's warp lead back out of "
                                    "the same door. The inverted Stone Tower Temple stays where it is.")
 ShuffleSkeletonKey = _shuffle("ShuffleSkeletonKey", "RO_SHUFFLE_SKELETON_KEY", "Skeleton Key", "Adds a key that opens every small-key door.")
+ShuffleBossEntrances = _shuffle("ShuffleBossEntrances", "RO_SHUFFLE_BOSS_ENTRANCES", "Shuffle Boss Entrances",
+                                "Shuffle the four temple boss rooms, coupled. Boss rewards and clear effects follow "
+                                "the boss; blue warps return outside the temple containing the door used. "
+                                "Majora and the Moon are unchanged.")
 ShuffleTraps = _shuffle("ShuffleTraps", "RO_SHUFFLE_TRAPS", "Traps", "Adds traps to the pool.")
 PlentifulItems = _shuffle("PlentifulItems", "RO_PLENTIFUL_ITEMS", "Plentiful Items", "Adds a second copy of every major item.")
 TriforceHunt = _shuffle("TriforceHunt", "RO_SHUFFLE_TRIFORCE_PIECES", "Triforce Hunt", "Collect Triforce pieces to win.")
@@ -308,6 +312,7 @@ class MM2S2HOptions(PerGameCommonOptions):
     shuffle_tycoon_wallet: ShuffleTycoonWallet
     shuffle_skeleton_key: ShuffleSkeletonKey
     shuffle_dungeon_entrances: ShuffleDungeonEntrances
+    shuffle_boss_entrances: ShuffleBossEntrances
     shuffle_traps: ShuffleTraps
     trap_amount: TrapAmount
     plentiful_items: PlentifulItems

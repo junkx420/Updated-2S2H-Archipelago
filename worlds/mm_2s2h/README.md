@@ -31,13 +31,28 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   `entrance_rando`, and the pairing travels as `entrance_pairs` in the slot data into the save
   (`RandoSaveInfo::entrancePairs`). The client redirects at one place, the new `BeforeTransitionSetup` hook at the
   start of `TRANS_MODE_SETUP` in `z_play.c`. A further group of doors is new rows plus a new `RO_*` option. The
-  inverted Stone Tower Temple, boss rooms and the Woodfall prison door are not shuffled.
+  inverted Stone Tower exterior and the Woodfall prison door are not shuffled. Boss rooms have their own option below.
   Since 0.3.1 a door with another temple behind it also needs that temple's **area rule** (`shuffleAreaRules` in the
   same file, generated to `ENTRANCE_AREA_RULES`): what the vanilla way to that temple's own door requires, because
   the 2S2H temple logic may rely on it silently. Woodfall: Deku Mask; Great Bay: Zora Mask and Hookshot; Stone Tower:
   Hookshot, Elegy of Emptiness, Goron and Zora Mask; Snowhead: none (its Goron Mask block comes before every check
   but an enemy drop). A temple behind its own door keeps its vanilla rule. The rule is logic only: the in-game check
   tracker does not know it and may show a temple's first rooms as reachable earlier.
+- **Boss entrance shuffle** (`shuffle_boss_entrances`, apworld 0.4.0, default off): Odolwa, Goht, Gyorg and Twinmold
+  are shuffled among the four boss doors, coupled, independently of dungeon entrance shuffle. Majora and the Moon
+  stay unchanged. Four rows are appended to `shuffleEntrances`; boss rows also specify `templeExit`, the containing
+  temple's exterior exit. The generator validates the one-way boss entrance/warp and the exterior against the original
+  region graph. Boss keys and door rules remain at the source door; boss fights, hearts, warp checks and existing
+  clear events remain in their boss regions. Blue warps compose the inverse boss and temple pairings to return outside
+  the temple containing the door used. The inverted temple's exterior remains fixed. If neither the boss nor its
+  containing temple moved, the original warp and cutscene remain intact. Otherwise the completion cutscene is skipped,
+  its clear flags are set by boss scene, and both death/void return records are renewed at the exterior spawn, including
+  the first warp through the Giants' Chamber skip (which still processes the giant and Oath check).
+  Foreign boss rooms add conservative `shuffleAreaRules`: Odolwa Deku Mask + Bow; Goht Goron Mask; Gyorg Zora Mask;
+  Twinmold Bow + Light Arrows + magic. The original boss combat rules still apply. Giant's Mask use follows Twinmold's
+  scene/actor and therefore follows the shuffled room. The original region files and `Logic.h` are unchanged.
+  Both pairings use the existing save/slot-data format and are rebuilt by Universal Tracker; 0.1–0.3 seeds/saves remain
+  supported. See `docs/testing.md` for code evidence, validation and the in-game checklist. **Not tested in game.**
 
 ## Updating to a new 2S2H release
 

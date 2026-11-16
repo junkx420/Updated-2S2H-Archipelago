@@ -19,7 +19,7 @@ TOGGLES = ["clock_shuffle", "shuffle_owl_statues", "shuffle_shops", "shuffle_tin
            "shuffle_snowballs", "shuffle_grass", "shuffle_trees", "shuffle_hives", "shuffle_boss_souls",
            "shuffle_enemy_souls", "shuffle_npc_souls", "shuffle_swim", "shuffle_ocarina_buttons", "shuffle_song_sun",
            "shuffle_song_double_time", "shuffle_song_inverted_time", "shuffle_song_saria", "shuffle_tycoon_wallet",
-           "shuffle_skeleton_key", "shuffle_dungeon_entrances", "shuffle_traps", "plentiful_items", "triforce_hunt", "starting_consumables",
+           "shuffle_skeleton_key", "shuffle_dungeon_entrances", "shuffle_boss_entrances", "shuffle_traps", "plentiful_items", "triforce_hunt", "starting_consumables",
            "starting_rupees", "starting_maps_and_compasses", "death_link"]
 CHOICES = {"access_dungeons": ["form_and_song", "form_or_song", "form_only", "song_only", "open"],
            "access_trials": ["20_masks", "remains", "forms", "open"],

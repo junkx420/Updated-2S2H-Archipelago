@@ -470,10 +470,11 @@ def main() -> int:
     es_src = strip_comments((rando / "MiscBehavior" / "EntranceShuffle.cpp").read_text(encoding="utf-8"))
     es_body = re.search(r"shuffleEntrances\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
     ent = r"ENTRANCE\(\s*\w+\s*,\s*\d+\s*\)"
-    es_rows = [(opt, entrance_key(a), entrance_key(b), ins, outs, boss, [entrance_key(w) for w in re.findall(ent, warps)])
-               for opt, a, b, ins, outs, boss, warps in re.findall(
+    es_rows = [(opt, entrance_key(a), entrance_key(b), ins, outs, boss, [entrance_key(w) for w in re.findall(ent, warps)],
+                entrance_key(temple) if temple else None)
+               for opt, a, b, ins, outs, boss, warps, temple in re.findall(
                    rf"\{{\s*(RO_\w+)\s*,\s*({ent})\s*,\s*({ent})\s*,\s*(SCENE_\w+)\s*,\s*(SCENE_\w+)\s*,\s*(SCENE_\w+)\s*,"
-                   rf"\s*\{{([^{{}}]*)\}}\s*\}}", es_body)]
+                   rf"\s*\{{([^{{}}]*)\}}\s*(?:,\s*({ent}))?\s*\}}", es_body)]
     if len(es_rows) != es_body.count("RO_") or not es_rows:
         raise SystemExit("shuffleEntrances: a row does not match the expected format")
     entr_scene = parse_enums(strip_comments((root / "mm" / "include" / "z64scene.h").read_text(encoding="utf-8")))["EntranceSceneId"]
@@ -603,7 +604,7 @@ def main() -> int:
         for to, tgt, _ in exits:
             exits_of[to].append((rid, scene, tgt))
     entrance_shuffle = []
-    for opt, into, out, inside, outside, boss, warps in es_rows:
+    for opt, into, out, inside, outside, boss, warps, temple_exit in es_rows:
         if opt not in E("RandoOptionId"):
             raise SystemExit(f"shuffleEntrances: unknown option {opt}")
         for key, scene in ((into, outside), (out, inside)):
@@ -611,14 +612,20 @@ def main() -> int:
                 raise SystemExit(f"shuffleEntrances: {key} must be the exit of exactly one region in {scene}, "
                                  f"found {exits_of[key]}")
         (door, _, behind), (inner, _, back) = exits_of[into][0], exits_of[out][0]
-        if behind != inner or back != door:  # coupled ER puts you in the reverse exit's region
+        if behind != inner or (temple_exit is None and back != door):
             raise SystemExit(f"shuffleEntrances: {into} ({door} -> {behind}) and {out} ({inner} -> {back}) "
                              f"are not each other's way back")
         boss_warps = [(rid, w) for w in warps for rid, scene, _ in exits_of[w] if scene == boss]
         if (boss == "SCENE_MAX") != (not boss_warps):
             raise SystemExit(f"shuffleEntrances: boss warps {warps} of {boss} are no exit of a {boss} region")
+        exterior_region = None
+        if temple_exit is not None:
+            if inside != boss or out not in warps or len(exits_of[temple_exit]) != 1 or exits_of[temple_exit][0][1] != outside:
+                raise SystemExit(f"shuffleEntrances: invalid boss door/temple exit: {into}, {temple_exit}")
+            exterior_region = exits_of[temple_exit][0][2]
         entrance_shuffle.append({"option": opt, "into": into, "out": out, "into_value": entrance_value(into),
-                                 "door_region": door, "inside_region": inner, "boss_warps": boss_warps})
+                                 "door_region": door, "inside_region": inner, "boss_warps": boss_warps,
+                                 "temple_exit": temple_exit, "exterior_region": exterior_region})
 
     # Area rules: { RO_X, ENTRANCE(into), [] { return condition; } } (EntranceShuffle.cpp shuffleAreaRules), translated
     # like every CONNECTION rule; the apworld adds them to a door with another row's area behind it
