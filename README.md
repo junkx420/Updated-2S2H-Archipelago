@@ -53,6 +53,8 @@ version and refuses seeds of other versions. Neither side is compatible with MMR
   starting health, consumables, rupees, maps and compasses, starting items, hint options, DeathLink.
 - Items for other worlds appear with an Archipelago model; collecting them reports the location. Hints, shops,
   NPC offers and the "You found ..." message name them with their owner, e.g. "Alice's Hookshot".
+- In-game hints that name an item and its exact location (gossip stones with an exact location, purchased hints,
+  the bank sign, the Spider Houses) also become Archipelago hints. Vague region-only hints stay in game.
 - Universal Tracker support (the world is rebuilt exactly from the slot data).
 - Item and location groups for YAML options and `!hint`: e.g. `Songs`, `Boss Souls`, `Small Keys`, `Stray Fairies`,
   `Grass`, `Pots`, `Chests`, `Shops`, `Woodfall Temple` (so `exclude_locations: [Grass]` works).
