@@ -29,6 +29,9 @@ Options can also add items that have no location of their own: boss souls, enemy
 swim, ocarina buttons, the six half-days of the three-day cycle (Clock Shuffle), extra songs, the Tycoon's Wallet,
 the Skeleton Key, traps and Triforce Pieces.
 
+With Shuffle Dungeon Entrances, the doors of the four temples lead into a random one of them. A temple's exit, and
+the blue warp after its boss, lead back out of the door you came in through.
+
 ## Which items can be in another player's world?
 
 Every shuffled item. Small keys, boss keys and stray fairies can be limited to their own dungeon or be given at the

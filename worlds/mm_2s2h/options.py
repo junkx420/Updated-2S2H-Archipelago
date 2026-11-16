@@ -141,6 +141,10 @@ ShuffleSongDoubleTime = _shuffle("ShuffleSongDoubleTime", "RO_SHUFFLE_SONG_DOUBL
 ShuffleSongInvertedTime = _shuffle("ShuffleSongInvertedTime", "RO_SHUFFLE_SONG_INVERTED_TIME", "Inverted Song of Time", "Inverted Song of Time is an item.")
 ShuffleSongSaria = _shuffle("ShuffleSongSaria", "RO_SHUFFLE_SONG_SARIA", "Saria's Song", "Adds Saria's Song (hint song) to the pool.")
 ShuffleTycoonWallet = _shuffle("ShuffleTycoonWallet", "RO_SHUFFLE_TYCOON_WALLET", "Tycoon's Wallet", "Adds a third wallet upgrade.")
+ShuffleDungeonEntrances = _shuffle("ShuffleDungeonEntrances", "RO_SHUFFLE_DUNGEON_ENTRANCES", "Shuffle Dungeon Entrances",
+                                   "The doors of Woodfall, Snowhead, Great Bay and Stone Tower Temple lead into a "
+                                   "random one of these four temples; its exit and its boss's warp lead back out of "
+                                   "the same door. The inverted Stone Tower Temple stays where it is.")
 ShuffleSkeletonKey = _shuffle("ShuffleSkeletonKey", "RO_SHUFFLE_SKELETON_KEY", "Skeleton Key", "Adds a key that opens every small-key door.")
 ShuffleTraps = _shuffle("ShuffleTraps", "RO_SHUFFLE_TRAPS", "Traps", "Adds traps to the pool.")
 PlentifulItems = _shuffle("PlentifulItems", "RO_PLENTIFUL_ITEMS", "Plentiful Items", "Adds a second copy of every major item.")
@@ -303,6 +307,7 @@ class MM2S2HOptions(PerGameCommonOptions):
     shuffle_song_saria: ShuffleSongSaria
     shuffle_tycoon_wallet: ShuffleTycoonWallet
     shuffle_skeleton_key: ShuffleSkeletonKey
+    shuffle_dungeon_entrances: ShuffleDungeonEntrances
     shuffle_traps: ShuffleTraps
     trap_amount: TrapAmount
     plentiful_items: PlentifulItems

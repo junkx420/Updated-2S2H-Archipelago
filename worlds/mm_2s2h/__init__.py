@@ -9,12 +9,13 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from typing import Any, ClassVar
 
-from BaseClasses import CollectionState, Item, ItemClassification as IC, Location, Region, Tutorial
+from BaseClasses import CollectionState, Entrance, EntranceType, Item, ItemClassification as IC, Location, Region, Tutorial
+from entrance_rando import disconnect_entrance_for_randomization, randomize_entrances
 from Fill import fill_restrictive
 from Options import OptionError
 from worlds.AutoWorld import LogicMixin, WebWorld, World
 
-from .enums_generated import NPC_SOULS, OPTION_DEFAULTS, RC_ID, RI_ID
+from .enums_generated import ENTRANCE_SHUFFLE, NPC_SOULS, OPTION_DEFAULTS, RC_ID, RI_ID
 from .items_generated import ITEMS
 from .locations_generated import LOCATIONS
 from .macros_generated import CAN_USE_SWORD
@@ -67,6 +68,11 @@ NNL_SCENE_BLACKLIST = {
 }
 NNL_TYPE_BLACKLIST = {"RI_SONG_EPONA": "RCTYPE_COW"}
 LOGIC_GLITCHLESS, LOGIC_NEARLY_NO_LOGIC = 0, 2
+
+
+def _door_name(row: dict) -> str:
+    """'WOODFALL_TEMPLE:0' -> 'Woodfall Temple'"""
+    return row["into"].split(":")[0].replace("_", " ").title()
 
 
 def region_name(rr: str) -> str:
@@ -165,6 +171,8 @@ class MM2S2HWorld(World):
                     self.random.shuffle(rcs)
                     self.vanilla_skulltulas.update(rcs[n:])
         self.starting = self._starting_items()
+        self.ut_entrance_pairs: list[tuple[int, int]] | None = None
+        self.entrance_pairs: list[tuple[int, int]] = []
 
         # Universal Tracker: rebuild exactly the generated world from slot data (options, random rolls)
         passthrough = getattr(self.multiworld, "re_gen_passthrough", {}).get(self.game)
@@ -175,6 +183,7 @@ class MM2S2HWorld(World):
             self.prices = {rc_by_id[int(k)]: int(v) for k, v in passthrough["prices"].items()}
             self.vanilla_skulltulas = {rc_by_id[int(i)] for i in passthrough["vanilla_skulltulas"]}
             self.starting = [ri_by_id[int(i)] for i in passthrough["starting_items"]]
+            self.ut_entrance_pairs = [tuple(pair) for pair in passthrough.get("entrance_pairs", [])]
 
     # Universal Tracker
     ut_can_gen_without_yaml = True
@@ -273,15 +282,19 @@ class MM2S2HWorld(World):
                     souls_for[key].append(ITEMS[ri][0])
         regions = {rr: Region(region_name(rr), p, mw) for rr in REGIONS}
         mw.regions.extend(regions.values())
+        self.regions_by_rr = regions
         self.event_count = 0
-        # connections & exits
+        # connections & exits; exits by (region, game entrance) for the entrance shuffle
+        self.exit_entrances: dict[tuple[str, str], Entrance] = {}
         for rr, (_, _, _, conns, exits, events, _) in REGIONS.items():
             src = regions[rr]
             seen = Counter()
-            for tgt, f in conns + [(t, f) for _, t, f in exits]:
+            for key, tgt, f in [(None, t, f) for t, f in conns] + exits:
                 seen[tgt] += 1
                 name = f"{src.name} -> {regions[tgt].name}" + (f" #{seen[tgt]}" if seen[tgt] > 1 else "")
-                src.connect(regions[tgt], name, self._rule(f))
+                exit_ = src.connect(regions[tgt], name, self._rule(f))
+                if key is not None:
+                    self.exit_entrances[(rr, key)] = exit_
             for i, (re_id, f) in enumerate(events):
                 loc = MM2S2HLocation(p, f"{re_id} @ {src.name} #{i}", None, src)
                 loc.access_rule = self._with_souls(self._rule(f), souls_for.get(re_id)) or (lambda state: True)
@@ -487,6 +500,51 @@ class MM2S2HWorld(World):
             state.mm2s2h_views.pop(self.player, None)
         return change
 
+    # ------------------------------------------------------------------------------------------
+    def connect_entrances(self) -> None:
+        """Entrance shuffle (EntranceShuffle.cpp rows whose option is on): coupled, so a door's way back is the exit
+        of the area behind it. An exit keeps its own rule, i.e. what it takes to use the door stays at the door."""
+        self.entrance_pairs: list[tuple[int, int]] = []  # [door's "into", "into" of the area behind it] (slot data)
+        rows = [row for row in ENTRANCE_SHUFFLE if self.ro.get(row["option"])]
+        if not rows:
+            return
+        doors = [self.exit_entrances[(row["door_region"], row["into"])] for row in rows]
+        insides = [self.exit_entrances[(row["inside_region"], row["out"])] for row in rows]
+        row_of_inside = {row["inside_region"]: row for row in rows}
+        if self.ut_entrance_pairs is not None:  # Universal Tracker: the pairing of the generated seed
+            by_value = {row["into_value"]: i for i, row in enumerate(rows)}
+            behind = {by_value[door]: by_value[inside] for door, inside in self.ut_entrance_pairs}
+            for i, row in enumerate(rows):
+                j = behind.get(i, i)
+                self._reconnect(doors[i], rows[j]["inside_region"])
+                self._reconnect(insides[j], row["door_region"])
+        else:
+            groups = sorted({row["option"] for row in rows})
+            lookup = {}
+            for row, door, inside in zip(rows, doors, insides):
+                g = 2 * groups.index(row["option"]) + 1
+                door.randomization_type = inside.randomization_type = EntranceType.TWO_WAY
+                door.randomization_group, inside.randomization_group = g, g + 1
+                lookup[g], lookup[g + 1] = [g + 1], [g]
+            for exit_ in doors + insides:
+                disconnect_entrance_for_randomization(exit_)
+            randomize_entrances(self, True, lookup, exits=doors + insides)
+        rr_of = {region.name: rr for rr, region in self.regions_by_rr.items()}
+        for row, door in zip(rows, doors):
+            inside = row_of_inside[rr_of[door.connected_region.name]]
+            self.entrance_pairs.append((row["into_value"], inside["into_value"]))
+            self.multiworld.spoiler.set_entrance(_door_name(row), _door_name(inside), "both", self.player)
+            # the boss of the area behind this door warps back out of this door (EntranceShuffle.cpp)
+            if inside is not row:
+                for boss_rr, warp in inside["boss_warps"]:
+                    self._reconnect(self.exit_entrances[(boss_rr, warp)], row["door_region"])
+
+    def _reconnect(self, exit_: Entrance, rr: str) -> None:
+        if exit_.connected_region is not None:
+            exit_.connected_region.entrances.remove(exit_)
+            exit_.connected_region = None
+        exit_.connect(self.regions_by_rr[rr])
+
     def fill_slot_data(self) -> dict[str, Any]:
         return {
             "version_2s2h": VERSION_2S2H,
@@ -496,6 +554,7 @@ class MM2S2HWorld(World):
             "prices": {RC_ID[rc]: price for rc, price in self.prices.items()},
             "starting_items": [RI_ID[ri] for ri in self.starting],
             "vanilla_skulltulas": sorted(RC_ID[rc] for rc in self.vanilla_skulltulas),
+            "entrance_pairs": [list(pair) for pair in self.entrance_pairs],
             "death_link": bool(self.options.death_link.value),
             "seed": self.random.getrandbits(32),
         }

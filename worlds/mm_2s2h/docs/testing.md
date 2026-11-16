@@ -105,3 +105,23 @@ and still has to match.
   checks without the soul, and that nothing else breaks while an NPC is missing.
 * Parity harness rebuilt from the fork with the souls in it, option off: **1200 / 1200 scenarios identical**.
   `pytest test/general worlds/mm_2s2h/test`: 467 passed.
+
+### Dungeon entrance shuffle (apworld 0.3.0)
+
+Not part of 2S2H, so there is no reference for the option on; the parity comparison runs with it off. The table
+`shuffleEntrances` (`Rando/MiscBehavior/EntranceShuffle.cpp`) is read by the generator, which stops unless every
+door's way in and way out is the exit of exactly one region in the stated scene and the two are each other's way
+back, and unless every boss row names a warp exit of its boss room.
+
+* `test/test_entrance_shuffle.py`: option off: slot data has no pairing and every door, way back and boss warp is
+  as generated. Option on, 12 seeds: the pairing is a permutation of the four temples, coupled (door → temple,
+  temple exit → the same door), each moved boss warps out of the door used, the game is beatable with all items;
+  more than one pairing occurs. The base class's default tests add: every location reachable with all items, fill
+  works. Universal Tracker rebuilds the same pairing and boss warps from slot data. Own-dungeon keys and fairies
+  stay in their own temple with the option on.
+* 100 random seeds with `shuffle_dungeon_entrances=true` (all other options random): **100 / 100**, about 2.5 s
+  per seed.
+* The client builds locally (MSVC, Release). Parity harness rebuilt from the fork, option off: **1200 / 1200
+  scenarios identical**. `pytest test/general worlds/mm_2s2h/test`: 487 passed.
+* **Not tested in game**: walking in and out of each temple, voiding out inside, the boss warps (first and repeat),
+  the Great Bay turtle ride into another temple, save and reload, and the option off.

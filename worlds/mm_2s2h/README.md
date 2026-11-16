@@ -23,6 +23,15 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   id moves. The table `npcSouls` in `Rando/ActorBehavior/Souls.cpp` names, per soul, the actors it brings to life and
   the checks and logic events that need it. The generator writes it to `NPC_SOULS` and `__init__.py` adds the soul to
   those rules. To add or change a soul, edit that table and regenerate.
+- **Dungeon entrance shuffle** (`shuffle_dungeon_entrances`, apworld 0.3): the doors of the four temples lead into a
+  random one of them, coupled (the temple's exit and its boss's blue warp lead back out of the door used). The table
+  `shuffleEntrances` in `Rando/MiscBehavior/EntranceShuffle.cpp` has one row per door (option, way in, way out,
+  scenes, boss room and where its warp lands); the generator checks every row against the region graph and writes it
+  to `ENTRANCE_SHUFFLE`, `connect_entrances` shuffles the rows of each enabled option with Archipelago's
+  `entrance_rando`, and the pairing travels as `entrance_pairs` in the slot data into the save
+  (`RandoSaveInfo::entrancePairs`). The client redirects at one place, the new `BeforeTransitionSetup` hook at the
+  start of `TRANS_MODE_SETUP` in `z_play.c`. A further group of doors is new rows plus a new `RO_*` option. The
+  inverted Stone Tower Temple, boss rooms and the Woodfall prison door are not shuffled.
 
 ## Updating to a new 2S2H release
 

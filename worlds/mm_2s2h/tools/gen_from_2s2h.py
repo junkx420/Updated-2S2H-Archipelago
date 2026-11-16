@@ -465,6 +465,23 @@ def main() -> int:
         if unknown or f"RANDO_INF_OBTAINED_SOUL_OF_NPC_{ri[len('RI_SOUL_NPC_'):]}" not in E("RandoInf"):
             raise SystemExit(f"npcSouls {ri}: unknown checks/events {unknown} or missing RANDO_INF")
 
+    # Entrance shuffle: { RO_X, ENTRANCE(into), ENTRANCE(outOf), inside scene, outside scene, boss scene,
+    # { boss warp targets } } (MiscBehavior/EntranceShuffle.cpp shuffleEntrances); checked against the regions below
+    es_src = strip_comments((rando / "MiscBehavior" / "EntranceShuffle.cpp").read_text(encoding="utf-8"))
+    es_body = re.search(r"shuffleEntrances\s*=\s*\{(.*)\};", es_src, re.S).group(1)
+    ent = r"ENTRANCE\(\s*\w+\s*,\s*\d+\s*\)"
+    es_rows = [(opt, entrance_key(a), entrance_key(b), ins, outs, boss, [entrance_key(w) for w in re.findall(ent, warps)])
+               for opt, a, b, ins, outs, boss, warps in re.findall(
+                   rf"\{{\s*(RO_\w+)\s*,\s*({ent})\s*,\s*({ent})\s*,\s*(SCENE_\w+)\s*,\s*(SCENE_\w+)\s*,\s*(SCENE_\w+)\s*,"
+                   rf"\s*\{{([^{{}}]*)\}}\s*\}}", es_body)]
+    if len(es_rows) != es_body.count("RO_") or not es_rows:
+        raise SystemExit("shuffleEntrances: a row does not match the expected format")
+    entr_scene = parse_enums(strip_comments((root / "mm" / "include" / "z64scene.h").read_text(encoding="utf-8")))["EntranceSceneId"]
+
+    def entrance_value(key: str) -> int:  # z64scene.h ENTRANCE(scene, spawn)
+        scene, spawn = key.split(":")
+        return ((entr_scene[f"ENTR_SCENE_{scene}"] & 0x7F) << 9) | ((int(spawn) & 0x1F) << 4)
+
     # ---- macros from Logic.h ----
     logic_h = strip_comments((rando / "Logic" / "Logic.h").read_text(encoding="utf-8"))
     defines = [d for d in parse_defines(logic_h) if d[0] not in DSL_MACROS and not d[0].endswith("_H")]
@@ -580,6 +597,29 @@ def main() -> int:
             untranslated.append((r["loc"], "canStayOverTime set: time-logic closed form invalid (docs/time-logic.md)", r["can_stay"]))
         out_regions.append((r["id"], r["name"], r["scene"], checks, conns, exits, events, stay))
 
+    # ---- entrance shuffle rows against the region graph ----
+    exits_of = defaultdict(list)  # entrance -> [(source region, its scene, target region)]
+    for rid, _, scene, _, _, exits, _, _ in out_regions:
+        for to, tgt, _ in exits:
+            exits_of[to].append((rid, scene, tgt))
+    entrance_shuffle = []
+    for opt, into, out, inside, outside, boss, warps in es_rows:
+        if opt not in E("RandoOptionId"):
+            raise SystemExit(f"shuffleEntrances: unknown option {opt}")
+        for key, scene in ((into, outside), (out, inside)):
+            if len(exits_of[key]) != 1 or exits_of[key][0][1] != scene:
+                raise SystemExit(f"shuffleEntrances: {key} must be the exit of exactly one region in {scene}, "
+                                 f"found {exits_of[key]}")
+        (door, _, behind), (inner, _, back) = exits_of[into][0], exits_of[out][0]
+        if behind != inner or back != door:  # coupled ER puts you in the reverse exit's region
+            raise SystemExit(f"shuffleEntrances: {into} ({door} -> {behind}) and {out} ({inner} -> {back}) "
+                             f"are not each other's way back")
+        boss_warps = [(rid, w) for w in warps for rid, scene, _ in exits_of[w] if scene == boss]
+        if (boss == "SCENE_MAX") != (not boss_warps):
+            raise SystemExit(f"shuffleEntrances: boss warps {warps} of {boss} are no exit of a {boss} region")
+        entrance_shuffle.append({"option": opt, "into": into, "out": out, "into_value": entrance_value(into),
+                                 "door_region": door, "inside_region": inner, "boss_warps": boss_warps})
+
     # ---- time-logic guard (docs/time-logic.md) ----
     time_ops = {"AT", "BEFORE", "AFTER", "BETWEEN", "IS_DAY1", "IS_NIGHT1", "IS_DAY2", "IS_NIGHT2", "IS_DAY3",
                 "IS_NIGHT3", "IS_DAY", "IS_NIGHT", "FIRST_DAY", "SECOND_DAY", "FINAL_DAY", "MIDNIGHT"}
@@ -620,6 +660,9 @@ def main() -> int:
         fh.write(f"ENEMY_SOULS = {souls!r}\n")
         fh.write("# RI: ([actors], [checks that need the soul], [events that need the soul])\n")
         fh.write(f"NPC_SOULS = {npc_souls!r}\n")
+        fh.write("# shuffleable doors (EntranceShuffle.cpp), in row order: exits `into` (door_region -> inside_region)\n"
+                 "# and `out` (back), `into_value` = game entrance, boss_warps = [(boss region, warp exit)]\n")
+        fh.write(f"ENTRANCE_SHUFFLE = {entrance_shuffle!r}\n")
         ts = re.search(r"enum TimeSlice\s*\{(.*?)\}", logic_h, re.S).group(1)
         names = [x.split("=")[0].strip() for x in ts.split(",") if x.strip()]
         fh.write(f"TIME_SLICE = {dict((n, i) for i, n in enumerate(names))!r}\n")
