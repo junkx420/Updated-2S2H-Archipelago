@@ -1,4 +1,5 @@
 #include "EntranceShuffle.h"
+#include "Rando/Logic/Logic.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 extern "C" {
@@ -18,6 +19,20 @@ const std::vector<ShuffleEntrance> shuffleEntrances = {
     { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(GREAT_BAY_TEMPLE, 0),   ENTRANCE(ZORA_CAPE, 7),   SCENE_SEA,      SCENE_31MISAKI,     SCENE_SEA_BS,     { ENTRANCE(ZORA_CAPE, 9), ENTRANCE(ZORA_CAPE, 8) } },
     // Twinmold is reached through the inverted temple, whose door is not shuffled: its warp stays vanilla
     { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(STONE_TOWER_TEMPLE, 0), ENTRANCE(STONE_TOWER, 2), SCENE_INISIE_N, SCENE_F40,          SCENE_MAX,        {} },
+};
+// clang-format on
+
+// Read from the rules of each door's vanilla way (Logic/Regions), items and songs only; see EntranceShuffle.h.
+// Snowhead has no row: its only check before the Goron Mask block is an enemy drop
+// (SnowheadTemple.cpp, RR_SNOWHEAD_TEMPLE_ENTRANCE_BEFORE_BLOCK).
+// clang-format off
+const std::vector<ShuffleAreaRule> shuffleAreaRules = {
+    // Southern Swamp -> Woodfall, owl platform, door (South.cpp RR_SOUTHERN_SWAMP_SOUTH_UPPER, RR_WOODFALL*)
+    { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(WOODFALL_TEMPLE, 0),    [] { return CAN_BE_DEKU; } },
+    // Zora Cape -> ledge before the temple, door (West.cpp RR_ZORA_CAPE, RR_ZORA_CAPE_BEFORE_GREAT_BAY_TEMPLE)
+    { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(GREAT_BAY_TEMPLE, 0),   [] { return CAN_BE_ZORA && HAS_ITEM(ITEM_HOOKSHOT); } },
+    // Stone Tower climb and door (East.cpp RR_STONE_TOWER_BOTTOM, _MIDDLE, _UPPER, _TOP)
+    { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(STONE_TOWER_TEMPLE, 0), [] { return HAS_ITEM(ITEM_HOOKSHOT) && CAN_PLAY_SONG(ELEGY) && CAN_BE_GORON && CAN_BE_ZORA; } },
 };
 // clang-format on
 

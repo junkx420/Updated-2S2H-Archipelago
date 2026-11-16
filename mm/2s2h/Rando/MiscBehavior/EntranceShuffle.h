@@ -2,6 +2,7 @@
 #define RANDO_ENTRANCE_SHUFFLE_H
 
 #include "Rando/Rando.h"
+#include <functional>
 #include <vector>
 
 namespace Rando {
@@ -23,6 +24,17 @@ struct ShuffleEntrance {
 
 // Append only: a save stores the shuffle per row index (RandoSaveInfo::entrancePairs). Read by the apworld generator.
 extern const std::vector<ShuffleEntrance> shuffleEntrances;
+
+// Items the vanilla way to an area's door guarantees, which the area's own logic may silently rely on. The apworld adds
+// the condition to a door's rule when this area (named by its "into") lies behind another door. Logic only: read by
+// the apworld generator, not evaluated in game (the in-game check tracker does not know it).
+struct ShuffleAreaRule {
+    RandoOptionId option;
+    u16 into;
+    std::function<bool()> condition;
+};
+
+extern const std::vector<ShuffleAreaRule> shuffleAreaRules;
 
 // Writes the pairing from the apworld's slot_data ([door's "into", "into" of the area behind it]) into the save.
 void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs);
