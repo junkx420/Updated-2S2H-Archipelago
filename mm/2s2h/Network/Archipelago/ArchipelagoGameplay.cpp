@@ -31,6 +31,7 @@
 #include "2s2h/BenGui/Notification.h"
 #include "2s2h/Rando/Rando.h"
 #include "2s2h/Rando/StaticData/StaticData.h"
+#include "2s2h/Rando/MiscBehavior/EntranceShuffle.h"
 
 extern "C" {
 #include "variables.h"
@@ -59,6 +60,8 @@ void ApplySlotOptions(const ApSlot::SlotData& options) {
         }
         RANDO_SAVE_OPTIONS[optionId] = value;
     }
+    // Stored in the save, so the shuffled doors work right after loading, before reconnecting.
+    Rando::EntranceShuffle::SetPairs(options.entrancePairs);
 }
 
 // Rewrites RANDO_SAVE_CHECKS so every AP location contains what the

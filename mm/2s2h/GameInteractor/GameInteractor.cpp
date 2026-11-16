@@ -59,6 +59,10 @@ void GameInteractor_ExecuteOnFileSelectSaveLoad(s16 fileNum, bool isOwlSave, Sav
     GameInteractor::Instance->ExecuteHooks<GameInteractor::OnFileSelectSaveLoad>(fileNum, isOwlSave, saveContext);
 }
 
+void GameInteractor_ExecuteBeforeTransitionSetup() {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::BeforeTransitionSetup>();
+}
+
 void GameInteractor_ExecuteBeforeEndOfCycleSave() {
     GameInteractor::Instance->ExecuteHooks<GameInteractor::BeforeEndOfCycleSave>();
 }

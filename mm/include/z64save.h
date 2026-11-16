@@ -391,6 +391,9 @@ typedef struct RandoSaveInfo {
     u8 sariaHintsAvailable;
     u16 sariaPriorityItems[16];
     u32 apItemsReceived; // Archipelago: count of multiworld items already applied to this save (next expected index)
+    // Entrance shuffle, per row of Rando/MiscBehavior/EntranceShuffle.cpp: 1 + the row whose inside is behind this
+    // door; 0 = the door's own inside (unshuffled)
+    u8 entrancePairs[32];
 } RandoSaveInfo;
 
 // These are values added by 2S2H that we need to be persisted to the save file

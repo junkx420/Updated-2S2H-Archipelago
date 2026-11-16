@@ -622,6 +622,10 @@ void Play_UpdateTransition(PlayState* this) {
             if (this->transitionTrigger != TRANS_TRIGGER_END) {
                 s16 sceneLayer = 0;
 
+                // #region 2S2H [Rando] Entrance shuffle may still change nextEntrance here
+                GameInteractor_ExecuteBeforeTransitionSetup();
+                // #endregion
+
                 Interface_SetHudVisibility(HUD_VISIBILITY_NONE);
 
                 if (gSaveContext.nextCutsceneIndex >= 0xFFF0) {

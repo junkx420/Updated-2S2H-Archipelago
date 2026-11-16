@@ -61,6 +61,7 @@ inline void to_json(json& j, const RandoSaveInfo& rando) {
         { "sariaHintsAvailable", rando.sariaHintsAvailable },
         { "sariaPriorityItems", rando.sariaPriorityItems },
         { "apItemsReceived", rando.apItemsReceived },
+        { "entrancePairs", rando.entrancePairs },
     };
 }
 
@@ -85,6 +86,8 @@ inline void from_json(const json& j, RandoSaveInfo& rando) {
     j.at("sariaPriorityItems").get_to(rando.sariaPriorityItems);
     // Added after save version 7; tolerate older saves without a migration
     rando.apItemsReceived = j.value("apItemsReceived", 0u);
+    // Added with the entrance shuffle (apworld 0.3); older saves have every door unshuffled
+    GetGrownArray(j.value("entrancePairs", json::array()), rando.entrancePairs);
 }
 
 inline void to_json(json& j, const Vec3f& vec) {
