@@ -103,3 +103,5 @@ and still has to match.
 * 30 random seeds with `shuffle_npc_souls=true`: **30 / 30**.
 * The client builds locally (MSVC, Release). **Not tested in game yet**: whether each NPC really cannot give its
   checks without the soul, and that nothing else breaks while an NPC is missing.
+* Parity harness rebuilt from the fork with the souls in it, option off: **1200 / 1200 scenarios identical**.
+  `pytest test/general worlds/mm_2s2h/test`: 467 passed.
