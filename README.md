@@ -20,7 +20,7 @@ generated games may not carry over between versions of this repository. Use at y
 | Branch | Contents | State |
 |---|---|---|
 | `client` | 2 Ship 2 Harkinian **5.0.1** with the Archipelago client (client layer ported from `xirba13/2ship2harkinian-archipelago`, branch `archipelago`) | Builds on Windows (MSVC), Linux and macOS in GitHub Actions. Reads all options from the slot data. Expects apworld **0.1**. |
-| `apworld` | Archipelago with the `mm_2s2h` world in `worlds/mm_2s2h` | apworld version **0.1.3**. Logic generated from the 2S2H 5.0.1 sources. |
+| `apworld` | Archipelago with the `mm_2s2h` world in `worlds/mm_2s2h` | apworld version **0.1.4**. Logic generated from the 2S2H 5.0.1 sources. |
 | `main` | This README only | |
 
 Client and apworld have to come from this repository **together**. The client checks the apworld's major.minor
@@ -51,8 +51,11 @@ version and refuses seeds of other versions. Neither side is compatible with MMR
 - Time shuffle (any order / progressive ascending / descending), dungeon and trial access, Majora and Moon
   requirements, dungeon item placement (anywhere / own dungeon / start with), stray fairy and token counts,
   starting health, consumables, rupees, maps and compasses, starting items, hint options, DeathLink.
-- Items for other worlds appear with an Archipelago model; collecting them reports the location.
+- Items for other worlds appear with an Archipelago model; collecting them reports the location. Hints, shops,
+  NPC offers and the "You found ..." message name them with their owner, e.g. "Alice's Hookshot".
 - Universal Tracker support (the world is rebuilt exactly from the slot data).
+- Item and location groups for YAML options and `!hint`: e.g. `Songs`, `Boss Souls`, `Small Keys`, `Stray Fairies`,
+  `Grass`, `Pots`, `Chests`, `Shops`, `Woodfall Temple` (so `exclude_locations: [Grass]` works).
 - Own-dungeon keys and stray fairies are pre-placed in their dungeon before the main fill, like 2S2H does,
   but logic-aware (every one is reachable with the rest of the pool).
 - All logic modes of 2S2H that place items: Glitchless, No Logic (no access rules at all) and Nearly No Logic
