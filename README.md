@@ -20,7 +20,7 @@ generated games may not carry over between versions of this repository. Use at y
 | Branch | Contents | State |
 |---|---|---|
 | `client` | 2 Ship 2 Harkinian **5.0.1** with the Archipelago client (client layer ported from `xirba13/2ship2harkinian-archipelago`, branch `archipelago`) | Builds on Windows (MSVC) and Linux in GitHub Actions. Reads all options from the slot data. Expects apworld **0.1**. |
-| `apworld` | Archipelago with the `mm_2s2h` world in `worlds/mm_2s2h` | apworld version **0.1.0**. Logic generated from the 2S2H 5.0.1 sources. |
+| `apworld` | Archipelago with the `mm_2s2h` world in `worlds/mm_2s2h` | apworld version **0.1.1**. Logic generated from the 2S2H 5.0.1 sources. |
 | `main` | This README only | |
 
 Client and apworld have to come from this repository **together**. The client checks the apworld's major.minor
@@ -52,12 +52,12 @@ version and refuses seeds of other versions. Neither side is compatible with MMR
   requirements, dungeon item placement (anywhere / own dungeon / start with), stray fairy and token counts,
   starting health, consumables, rupees, maps and compasses, starting items, hint options, DeathLink.
 - Items for other worlds appear with an Archipelago model; collecting them reports the location.
+- Universal Tracker support (the world is rebuilt exactly from the slot data).
 
 ## Not supported (yet)
 
 - Glitched logic variants: 2S2H's "No Logic" is passed through, "Nearly No Logic" and "Vanilla" are not offered.
 - Own-dungeon items are restricted by item rules, not pre-placed like 2S2H does; very tight pools may fail to fill.
-- Universal Tracker integration.
 - macOS client build (the CI job does not run on the fork).
 
 ## Testing
