@@ -127,6 +127,23 @@ class MM2S2HWorld(World):
                     self.vanilla_skulltulas.update(rcs[n:])
         self.starting = self._starting_items()
 
+        # Universal Tracker: rebuild exactly the generated world from slot data (options, random rolls)
+        passthrough = getattr(self.multiworld, "re_gen_passthrough", {}).get(self.game)
+        if passthrough:
+            rc_by_id = {v: k for k, v in RC_ID.items()}
+            ri_by_id = {v: k for k, v in RI_ID.items()}
+            self.ro = dict(OPTION_DEFAULTS) | {k: int(v) for k, v in passthrough["options"].items()}
+            self.prices = {rc_by_id[int(k)]: int(v) for k, v in passthrough["prices"].items()}
+            self.vanilla_skulltulas = {rc_by_id[int(i)] for i in passthrough["vanilla_skulltulas"]}
+            self.starting = [ri_by_id[int(i)] for i in passthrough["starting_items"]]
+
+    # Universal Tracker
+    ut_can_gen_without_yaml = True
+
+    @staticmethod
+    def interpret_slot_data(slot_data: dict[str, Any]) -> dict[str, Any]:
+        return slot_data
+
     def _starting_items(self) -> list[str]:
         """Rando::GetStartingItemsFromSave + GetComputedStartingItems."""
         ro = self.ro
