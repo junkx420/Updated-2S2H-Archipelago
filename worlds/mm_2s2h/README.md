@@ -72,6 +72,18 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   door). In game the door actor (`En_Door`, hook `VB_OPEN_KNOB_DOOR`) stays shut and names the missing key; only the
   entrance behind the door decides, so ways out are never locked. Like `shuffleAreaRules`, the in-game check tracker
   does not know the keys. 0.1–0.4 seeds/saves remain supported. **Not tested in game.**
+- **Grottos** (`shuffle_grottos`, apworld 0.6.0, default off): the 26 grottos of the logic (holes and the two
+  scene-exit grottos, Deku Palace bean salesman and Lone Peak Shrine) are shuffled among each other and coupled:
+  through hole A into grotto X, and out of X back at A. They are appended rows of `shuffleEntrances`; the game side
+  is `grottoEntrances` (`EntranceShuffle.cpp`): real entrance, grotto data and kind. A grotto is the pair of real
+  entrance and grotto data (`respawn[RESPAWN_MODE_UNK_3].data`), since 15 grottos share `GROTTOS:4`/`GROTTOS:10`;
+  the client sets both to X's values and keeps A's respawn point as the way back. The generator proves each shared
+  pair against the chest flag and `chestGrottoMap`/`cowGrottoMap`. Hole rules (bombs, songs, day, season) stay at
+  the hole; no grotto needs an area rule. With the option on, grotto 27's way back leads to its hole's region (Great
+  Bay Coast cliffside), as in game; off, the logic is exactly 2S2H's. The in-game check tracker shows the grotto you
+  are in, but its reachability does not know shuffled entrances (also for temples and boss rooms). The save field
+  `entrancePairs` is now `u16[512]` (was `u8[32]`, loaded unchanged). 0.1–0.5 seeds/saves remain supported.
+  See `docs/testing.md`. **Not tested in game.**
 
 ## Updating to a new 2S2H release
 

@@ -361,3 +361,87 @@ inside a locked building as reachable.
 4. Doors with schedules (night closing, Milk Bar membership, Music Box House) behave as before once the key is there.
 5. The key shows the small key model and icon, name "<building> Key"; other worlds' keys show like other items.
 6. Option off and 0.1–0.4 seeds/saves: every door behaves as before.
+
+### Grotto shuffle (apworld 0.6.0, 2026-11-17)
+
+`shuffle_grottos` (`RO_SHUFFLE_GROTTOS`, default off) shuffles the 26 grottos of the logic among each other, coupled.
+26 rows appended to `shuffleEntrances` (logic entrances, including the virtual `GROTTOS:17..31` of `Logic.cpp`) and
+the game side in `grottoEntrances` (`Rando/MiscBehavior/EntranceShuffle.cpp`).
+
+#### Code evidence
+
+* A grotto is the pair (real entrance, grotto data). 13 chest grottos share `GROTTOS:4`, two cow grottos
+  `GROTTOS:10` (`Logic.cpp` GetRegionIdFromEntrance). What lies inside is decided by
+  `respawn[RESPAWN_MODE_UNK_3].data`, written by the hole (`z_door_ana.c:150`), never by the place outside:
+  chests in room 4 by `z_en_torch.c:32-36` (chest flag = data, `Checks.cpp` scene flags, e.g. 0x1b for 0x3B), grass
+  in room 4 by `ObjGrass.cpp` chestGrottoMap (`:286`, `:545`), cow grotto grass/cows/beehive/butterflies by
+  `ObjGrass.cpp:636`, `EnCow.cpp:32`, `ObjComb.cpp:79,120`, `EnButte.cpp:139` (data 31 = Termina Field). All other
+  grotto checks are keyed by (SCENE_KAKUSIANA, room, index), and the room follows from the real entrance. No check
+  reads `respawn[UNK_3].entrance` or `respawn[DOWN]` (only the tracker did).
+* So the client sets both entrance and data to grotto X's values and leaves A's respawn point: holes store it with
+  `Play_SetupRespawnPoint(UNK_3)` (`z_door_ana.c:144`, `z_play.c:2050`), and the grotto exit 0xFFFF returns there
+  with `respawnFlag = 4` (`z_player.c:6496`, spawn at the stored position `z_player.c:11437`).
+* Grottos 12 (Deku Palace) and 16 (Lone Peak Shrine) are scene exits without that respawn point
+  (`BetterMapSelect.c` `UNUSED_GROTTO_RESPAWN`; their way back is a real exit, `DEKU_PALACE:9`,
+  `GORON_VILLAGE_WINTER:3`). Into such a grotto from a hole, its exit is replaced by the hole's respawn; from such
+  an exit into a hole grotto, the way out is replaced by the exit's `outOf` (and the hole respawn is set as fallback).
+* The grotto data per hole come from `BetterMapSelect.c` and agree with chestGrottoMap, the chest flags and
+  `Logic.cpp:53`; the generator checks every shared pair (`check_grottos`) and aborts otherwise.
+* The hole is recognised by the real entrance (and data where shared) outside a grotto, not by the scene: spring and
+  winter variants (`Play_Init` converts winter/poisoned entrances, `z_play.c:2261-2283`) need no extra case, and a
+  death or void reloading a grotto is never redirected twice.
+* Death and void out in a grotto use `respawn[TOP]`/`[DOWN]` (`z_play.c:2073, 2083`), which are not updated inside
+  grottos (`z_play.c:2053`): the player lands in the scene of hole A, never in another grotto. Pause saves keep
+  `save.entrance` and all respawn records (`SavingEnhancements.cpp:46-48, 164-166`), so a reload stays in grotto X
+  with the way back to A.
+* Logic: every way back out of a grotto is `true`; hole rules stay at the hole. No grotto needs a `shuffleAreaRules`
+  row (hot spring water is a global event, also from Beneath the Well; the scrub event is set in Clock Town).
+  Option on: a grotto returns to the region of the hole leading to it; this differs from 2S2H only for grotto 27
+  (`GREAT_BAY_COAST:0` resolves to `RR_GREAT_BAY_COAST`, UNTRANSLATED.md; the hole is on the cliffside). Option off:
+  unchanged.
+* In-game check tracker: with the option on, `Logic.cpp` asks `EntranceShuffle::LogicGrottoEntrance` (real entrance +
+  data), so it shows the grotto the player is in. Its reachability does not know any shuffled entrance (also not
+  temples and boss rooms).
+* Save: `RandoSaveInfo::entrancePairs` is `u16[512]` (was `u8[32]`); same encoding (0 = own area, else row + 1).
+  Old saves load through `GetGrownArray` unchanged. The generator aborts if the rows do not fit the field.
+
+#### Verification
+
+* `pytest test/general worlds/mm_2s2h/test -q`: **600 passed, 0 failed** (139,514 subtests), 229 s.
+* New `test/test_grotto_shuffle.py`: table (26 rows, 15 distinct shared pairs, virtual entrances only for shared
+  grottos, 12/16 scene exits); option off = graph exactly as generated, grotto 27 back to Great Bay Coast; option on
+  = permutation of the 26 grottos only, coupled, every location reachable with all items, beatable, Universal Tracker
+  rebuilds the pairing, hole rules identical to option off; No Logic; together with temples, bosses, door keys and
+  NPC souls (pairing, Universal Tracker, No Logic, own-dungeon items). Legacy slot data of 0.5 rebuilds.
+* 100 random seeds with `shuffle_grottos=true`: **100/100**, 460 s. Other options randomized.
+* 100 random seeds with grottos, temples, bosses, door keys and NPC souls: **98/100**, 387 s. Both failures (seeds 42
+  and 82) are the intended `OptionError` in `create_items` for a sparse option roll: 502 items for 433 locations and
+  456 for 454 (door keys and NPC souls add 55 items). It is raised before entrances are shuffled; grottos add no
+  items.
+* C++ test bench (`tools/entrance_client/run.py ../2s2h`) compiles the real `EntranceShuffle.cpp` and
+  `GetGrownArray`: **571,328 grotto cases passed, all 676 hole/grotto pairings covered** (26 cyclic shifts and 200
+  random permutations, option on and off, each with temples/bosses off and on, hole in two scene variants): into
+  X = X's real entrance and data, A's way back kept; tracker identity = X; death and void out land in A's scene;
+  a reloaded grotto is not redirected; pause save/reload; way out back to A for all four hole/grotto kinds; unknown
+  data stays vanilla; temples and bosses unaffected; the compiled table equals the generated one. Legacy save:
+  32 u8 pairs load into u16[512] and the 8 temple/boss doors resolve as before; new format round trip. The older
+  checks still pass (1,780,704 door-key cases; 4608 option/permutation cases, 36,864 entries, 46,080 warps, 88,704
+  respawn checks, now also with grottos on). It does not run DoorAna, Player or the scene loader.
+* Parity harness rebuilt, all own options off: **1200/1200 identical** (0 mismatching).
+* Client builds locally (MSVC Release). Changed C++ files pass clang-format (`z64save.h` keeps pre-existing
+  upstream differences outside the changed line).
+
+#### In-game checklist — not tested in game
+
+1. Option on: fall through several holes of each kind (visible, bomb-hidden, Woods of Mystery day 2, Mountain Village
+   spring, Path to Snowhead, Ikana) and through the Deku Palace and Lone Peak Shrine ways in; the grotto is the one
+   in the spoiler, and leaving puts you back at the hole you used.
+2. Chest grottos and cow grottos behind foreign holes: chest, grass, cows, beehive and butterflies give the checks of
+   the grotto you are in (compare with the spoiler/tracker).
+3. Deku Palace hole into a chest grotto and back; a chest grotto hole into Deku Palace's grotto and Lone Peak Shrine
+   and back (the two scene-exit cases).
+4. Hole in spring/winter variants (Mountain Village, Path to Goron Village) and cleared swamp: the way back lands in
+   the right variant.
+5. In a shuffled grotto: void out, die, pause save and reload; never stuck in another grotto.
+6. Check tracker shows the grotto you are in.
+7. Option off and 0.1–0.5 seeds/saves: grottos as before; an old save with temple/boss pairs keeps them.

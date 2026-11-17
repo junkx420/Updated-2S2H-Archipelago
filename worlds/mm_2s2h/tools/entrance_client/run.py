@@ -57,6 +57,22 @@ assert not outward & {v for _, vs in into for v in vs}, "a way out is also a way
     f"inline const std::vector<unsigned> doorKeyOutward = {{ {', '.join(map(str, sorted(outward)))} }};\n"
     "inline const std::vector<std::pair<int, std::vector<unsigned>>> doorKeyInto = {"
     + ", ".join(f"{{ {ri}, {{ {', '.join(map(str, vs))} }} }}" for ri, vs in into) + "};\n", encoding="utf-8")
+# Grottos as the apworld was generated: row index, logic "into", game entrance, grotto data (-1 = none), scene exit?
+from worlds.mm_2s2h.enums_generated import ENTRANCE_SHUFFLE  # noqa: E402
+grotto_rows = [(i, row["into_value"], entrance_value(row["grotto"]["game_entrance"]),
+                -1 if row["grotto"]["data"] is None else row["grotto"]["data"], int(row["grotto"]["kind"] == "SCENE_EXIT"))
+               for i, row in enumerate(ENTRANCE_SHUFFLE) if row["grotto"]]
+(build / "grotto_graph.h").write_text(
+    "#pragma once\n#include <array>\n#include <vector>\n"
+    f"inline const size_t generatedRows = {len(ENTRANCE_SHUFFLE)};\n"
+    "inline const std::vector<std::array<int, 5>> generatedGrottos = {"
+    + ", ".join("{ " + ", ".join(map(str, g)) + " }" for g in grotto_rows) + "};\n", encoding="utf-8")
+# The save loader's real tolerant array reader (BenJsonConversions.hpp), verbatim.
+bjc = (root / "mm/2s2h/BenJsonConversions.hpp").read_text(encoding="utf-8")
+grown = re.search(r"template <typename T, size_t N> inline void GetGrownArray\(.*?\n}\n", bjc.replace("\r\n", "\n"), re.S)
+(build / "grown_array.h").write_text("#pragma once\n#include <nlohmann/json.hpp>\nusing json = nlohmann::json;\n"
+                                     + grown.group(0), encoding="utf-8")
+json_include = root / "build/x64/vcpkg/installed/x64-windows-static/include"
 for name in ("Rando/Rando.h", "Rando/Logic/Logic.h", "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h"):
     header = build / name
     header.parent.mkdir(parents=True, exist_ok=True)
@@ -66,10 +82,10 @@ if sys.platform == "win32":
     vcvars = Path(r"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat")
     batch = build / "compile.bat"
     batch.write_text(f'@echo off\ncall "{vcvars}" >nul\n'
-                     f'cl /nologo /std:c++20 /EHsc /O1 /I"{build}" /I"{here}" '
+                     f'cl /nologo /std:c++20 /EHsc /O1 /I"{build}" /I"{here}" /I"{json_include}" '
                      f'/I"{root / "mm/2s2h"}" "{here / "main.cpp"}" /Fe:"{exe}" /Fo:"{build / "main.obj"}"\n', encoding="utf-8")
     subprocess.run(["cmd", "/c", str(batch)], check=True)
 else:
-    subprocess.run([shutil.which("c++") or "c++", "-std=c++20", "-O1", f"-I{build}", f"-I{here}",
+    subprocess.run([shutil.which("c++") or "c++", "-std=c++20", "-O1", f"-I{build}", f"-I{here}", f"-I{json_include}",
                     f"-I{root / 'mm/2s2h'}", str(here / "main.cpp"), "-o", str(exe)], check=True)
 subprocess.run([str(exe)], check=True)

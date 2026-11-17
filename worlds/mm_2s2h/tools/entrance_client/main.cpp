@@ -3,6 +3,8 @@
 #include <array>
 #include <set>
 #include "door_keys_graph.h"
+#include "grotto_graph.h"
+#include "grottos.h"
 
 using namespace Rando::EntranceShuffle;
 
@@ -54,7 +56,8 @@ int main() {
                              ENTRANCE(STONE_TOWER_INVERTED, 1) };
     const unsigned clearFlags[] = { 3, 4, 8, 16 };
     int permutations = 0, warps = 0, respawns = 0, entries = 0;
-    for (int mode = 0; mode < 4; ++mode) {
+    // Bit 2: Shuffle Grottos on as well (a grotto shift per permutation); temples and bosses must not notice.
+    for (int mode = 0; mode < 8; ++mode) {
         do {
             std::array<int, 4> bosses{ 0, 1, 2, 3 };
             do {
@@ -62,7 +65,8 @@ int main() {
                 std::fill(std::begin(options), std::end(options), 0);
                 options[RO_SHUFFLE_DUNGEON_ENTRANCES] = (mode & 1) != 0;
                 options[RO_SHUFFLE_BOSS_ENTRANCES] = (mode & 2) != 0;
-                std::vector<std::pair<int32_t, int32_t>> pairs;
+                options[RO_SHUFFLE_GROTTOS] = (mode & 4) != 0;
+                std::vector<std::pair<int32_t, int32_t>> pairs = GrottoShift(permutations % 26);
                 for (int i = 0; i < 4; ++i) {
                     pairs.emplace_back(shuffleEntrances[i].into, shuffleEntrances[temples[i]].into);
                     pairs.emplace_back(shuffleEntrances[i + 4].into, shuffleEntrances[bosses[i] + 4].into);
@@ -105,7 +109,8 @@ int main() {
                             gSaveContext.save.entrance = expected;
                             playState.position = 123;
                             OnSceneInit(0, 0);
-                            for (const auto& respawn : gSaveContext.respawn) {
+                            for (int mode : { RESPAWN_MODE_DOWN, RESPAWN_MODE_TOP }) {
+                                const auto& respawn = gSaveContext.respawn[mode];
                                 assert(respawn.entrance == expected && respawn.position == 123 && respawn.data == 1);
                                 ++respawns;
                             }
@@ -124,7 +129,8 @@ int main() {
                         gSaveContext.save.entrance = u16(queued.entrance);
                         playState.position = 456;
                         OnSceneInit(0, 0);
-                        for (const auto& respawn : gSaveContext.respawn) {
+                        for (int mode : { RESPAWN_MODE_DOWN, RESPAWN_MODE_TOP }) {
+                            const auto& respawn = gSaveContext.respawn[mode];
                             assert(respawn.entrance == expected && respawn.position == 456);
                             ++respawns;
                         }
@@ -149,7 +155,9 @@ int main() {
     options[RO_SHUFFLE_DUNGEON_ENTRANCES] = 1;
     SetPairs({ { shuffleEntrances[0].into, shuffleEntrances[1].into },
                { shuffleEntrances[1].into, shuffleEntrances[0].into } });
-    for (int i = 4; i < 32; ++i) assert(gSaveContext.save.shipSaveInfo.rando.entrancePairs[i] == 0);
+    for (int i = 2; i < 512; ++i) assert(gSaveContext.save.shipSaveInfo.rando.entrancePairs[i] == 0);
     std::cout << permutations << " option/permutation cases, " << entries << " entries, " << warps
               << " warps, " << respawns << " respawn checks passed\n";
+    TestLegacySave();
+    TestGrottos();
 }

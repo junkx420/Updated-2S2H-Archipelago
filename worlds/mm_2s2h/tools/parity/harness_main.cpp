@@ -38,6 +38,13 @@ bool HaveEnemySoul(ActorId enemyId) { // Souls.cpp, verbatim logic
 #include "logic_cpp.inc"
 #include "timelogic.inc"
 
+// Logic.cpp asks EntranceShuffle.cpp (not part of the harness) for a shuffled grotto; parity runs with it off.
+namespace Rando::EntranceShuffle {
+bool LogicGrottoEntrance(s32, s32*) {
+    return false;
+}
+} // namespace Rando::EntranceShuffle
+
 using namespace Rando::Logic;
 
 static std::unordered_map<int, std::string> Reverse(const std::unordered_map<std::string, int>& m) {

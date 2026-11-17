@@ -12,8 +12,9 @@ using u8 = uint8_t;
 using u16 = uint16_t;
 using s8 = int8_t;
 using s16 = int16_t;
-struct RandoSaveInfo { u8 entrancePairs[32]{}; };
-struct Respawn { u16 entrance = 0; int data = 0; int position = 0; };
+using s32 = int32_t;
+struct RandoSaveInfo { u16 entrancePairs[512]{}; }; // z64save.h
+struct RespawnData { u16 entrance = 0; s8 data = 0; int position = 0; };
 struct SaveContext {
     struct Save {
         struct Ship { RandoSaveInfo rando; } shipSaveInfo;
@@ -21,7 +22,7 @@ struct SaveContext {
     } save;
     u16 nextCutsceneIndex = 0;
     int respawnFlag = 0;
-    Respawn respawn[2];
+    RespawnData respawn[4];
 };
 struct PlayState { u16 nextEntrance = 0; s16 sceneId = 0; int position = 0; };
 inline SaveContext gSaveContext;
@@ -41,7 +42,9 @@ inline unsigned flags = 0;
 enum { WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE = 1, WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON = 2,
        WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE = 4, WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE = 8,
        WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE = 16 };
-enum { RESPAWN_MODE_DOWN, RESPAWN_MODE_TOP, PLAYER_START_MODE_D };
+// z64save.h RespawnMode values; z64player.h start modes are only passed through.
+enum { RESPAWN_MODE_DOWN = 0, RESPAWN_MODE_TOP = 2, RESPAWN_MODE_UNK_3 = 3 };
+enum { PLAYER_START_MODE_D, PLAYER_START_MODE_GROTTO };
 #define PLAYER_PARAMS(room, mode) (mode)
 #define ENTRANCE(scene, spawn) (((ENTR_SCENE_##scene & 0x7F) << 9) | ((spawn & 0x1F) << 4))
 struct GIEventTransition { int entrance; int cutsceneIndex; int transitionType; };
@@ -52,8 +55,11 @@ struct GameInteractor {
 inline GameInteractor gameInteractor;
 inline GameInteractor* GameInteractor::Instance = &gameInteractor;
 inline void Play_SetupRespawnPoint(PlayState* play, int mode, int params) {
-    // z_play.c Play_SetRespawnData clears the spawn bits, retaining entrance scene and scene layer.
-    gSaveContext.respawn[mode] = { u16(gSaveContext.save.entrance & ~0x1F0), 0, play->position };
+    // z_play.c Play_SetupRespawnPoint does nothing inside grottos; Play_SetRespawnData clears the spawn bits,
+    // retaining entrance scene and scene layer.
+    if (play->sceneId != SCENE_KAKUSIANA) {
+        gSaveContext.respawn[mode] = { u16(gSaveContext.save.entrance & ~0x1F0), 0, play->position };
+    }
 }
 inline bool randoInf[RANDO_INF_MAX]{};
 inline int Flags_GetRandoInf(int flag) { return randoInf[flag]; }

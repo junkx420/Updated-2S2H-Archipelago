@@ -152,6 +152,8 @@ ShuffleBossEntrances = _shuffle("ShuffleBossEntrances", "RO_SHUFFLE_BOSS_ENTRANC
                                 "Majora and the Moon are unchanged.")
 ShuffleDoorKeys = _shuffle("ShuffleDoorKeys", "RO_SHUFFLE_DOOR_KEYS", "Shuffle Door Keys",
                            "Buildings in Termina are locked until you find their key, one key per building (it opens all of its doors from outside). Ways out are never locked.")
+ShuffleGrottos = _shuffle("ShuffleGrottos", "RO_SHUFFLE_GROTTOS", "Shuffle Grottos",
+                          "The holes into grottos lead into other grottos, coupled: you come back out at the hole you fell into. Grottos only mix among each other.")
 ShuffleTraps = _shuffle("ShuffleTraps", "RO_SHUFFLE_TRAPS", "Traps", "Adds traps to the pool.")
 PlentifulItems = _shuffle("PlentifulItems", "RO_PLENTIFUL_ITEMS", "Plentiful Items", "Adds a second copy of every major item.")
 TriforceHunt = _shuffle("TriforceHunt", "RO_SHUFFLE_TRIFORCE_PIECES", "Triforce Hunt", "Collect Triforce pieces to win.")
@@ -316,6 +318,7 @@ class MM2S2HOptions(PerGameCommonOptions):
     shuffle_dungeon_entrances: ShuffleDungeonEntrances
     shuffle_boss_entrances: ShuffleBossEntrances
     shuffle_door_keys: ShuffleDoorKeys
+    shuffle_grottos: ShuffleGrottos
     shuffle_traps: ShuffleTraps
     trap_amount: TrapAmount
     plentiful_items: PlentifulItems

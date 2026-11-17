@@ -418,8 +418,45 @@ def parse_regions(path: pathlib.Path):
 def parse_rc_table(src: str):
     out = {}
     for m in re.finditer(r"^\s*RC\((RC_\w+),\s*(RCTYPE_\w+),\s*(SCENE_\w+),\s*(\w+),\s*([\w]+),\s*(RI_\w+)\)", src, re.M):
-        out[m.group(1)] = {"type": m.group(2), "scene": m.group(3), "vanilla": m.group(6)}
+        flag = int(m.group(5), 0) if re.fullmatch(r"0x[0-9a-fA-F]+|\d+", m.group(5)) else m.group(5)
+        out[m.group(1)] = {"type": m.group(2), "scene": m.group(3), "vanilla": m.group(6), "flag": flag}
     return out
+
+
+
+def check_grottos(rows: list[dict], grotto_of: dict, rc_table: dict, out_regions: list, rando) -> None:
+    """A grotto is the pair (real entrance, grotto data). Where grottos share a real entrance, prove each pair from
+    the client's own lookups: chest flag = data & 0x1F (z_en_torch.c), ObjGrass.cpp chestGrottoMap/cowGrottoMap."""
+    if set(grotto_of) != {r["into"] for r in rows if r["grotto"]}:
+        raise SystemExit("grottoEntrances: rows without a shuffleEntrances grotto row")
+    checks_of = {rid: {c for c, _ in checks} for rid, _, _, checks, *_ in out_regions}
+    grass = strip_comments((rando / "ActorBehavior" / "ObjGrass.cpp").read_text(encoding="utf-8"))
+    maps = {}
+    for name in ("chestGrottoMap", "cowGrottoMap"):
+        body = re.search(name + r"\s*=\s*\{(.*?)\n\};", grass, re.S).group(1)
+        maps[name] = {int(k) & 0xFF: rc for k, rc in re.findall(r"\{\s*(-?\d+)\s*,\s*(?:\{\s*\d+\s*,\s*)?(RC_\w+)", body)}
+    by_game = defaultdict(list)
+    for r in rows:
+        if r["grotto"]:
+            by_game[r["grotto"]["game_entrance"]].append(r)
+    for game, shared in by_game.items():
+        if len(shared) == 1:
+            continue
+        datas = [r["grotto"]["data"] for r in shared]
+        if None in datas or len(set(datas)) != len(datas):
+            raise SystemExit(f"grottoEntrances: grottos sharing {game} need distinct data, have {datas}")
+        lookup = {"GROTTOS:4": "chestGrottoMap", "GROTTOS:10": "cowGrottoMap"}.get(game)
+        if lookup is None:
+            raise SystemExit(f"grottoEntrances: no client lookup known for the shared entrance {game}")
+        for r in shared:
+            data, region = r["grotto"]["data"], r["inside_region"]
+            if maps[lookup].get(data) not in checks_of[region]:
+                raise SystemExit(f"grottoEntrances {r['into']}: {lookup}[{data:#x}] = {maps[lookup].get(data)} "
+                                 f"is not in {region}")
+            if lookup == "chestGrottoMap":
+                chests = [c for c in checks_of[region] if rc_table.get(c, {}).get("type") == "RCTYPE_CHEST"]
+                if len(chests) != 1 or rc_table[chests[0]]["flag"] != data & 0x1F:
+                    raise SystemExit(f"grottoEntrances {r['into']}: chest flag of {chests} is not {data & 0x1F:#x}")
 
 
 def parse_ri_table(src: str):
@@ -478,6 +515,23 @@ def main() -> int:
     if len(es_rows) != es_body.count("RO_") or not es_rows:
         raise SystemExit("shuffleEntrances: a row does not match the expected format")
     entr_scene = parse_enums(strip_comments((root / "mm" / "include" / "z64scene.h").read_text(encoding="utf-8")))["EntranceSceneId"]
+    # The save keeps one u16 per row (z64save.h RandoSaveInfo::entrancePairs); rows past its end could not be stored.
+    save_h = strip_comments((root / "mm" / "include" / "z64save.h").read_text(encoding="utf-8"))
+    pair_slots = int(re.search(r"\bu16\s+entrancePairs\[(\d+)\]", save_h).group(1))
+    if len(es_rows) > pair_slots:
+        raise SystemExit(f"shuffleEntrances: {len(es_rows)} rows do not fit entrancePairs[{pair_slots}]")
+    # Grottos: { ENTRANCE(into), ENTRANCE(game entrance), data, GROTTO_KIND } (EntranceShuffle.cpp grottoEntrances)
+    ge_body = re.search(r"grottoEntrances\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
+    ge_rows = re.findall(rf"\{{\s*({ent})\s*,\s*({ent})\s*,\s*(-1|0x[0-9A-Fa-f]+)\s*,\s*(GROTTO_HOLE|GROTTO_SCENE_EXIT)\s*\}}",
+                         ge_body)
+    if len(ge_rows) != ge_body.count("GROTTO_") or not ge_rows:
+        raise SystemExit("grottoEntrances: a row does not match the expected format")
+    grotto_of = {}
+    for a, game, data, kind in ge_rows:
+        if entrance_key(a) in grotto_of:
+            raise SystemExit(f"grottoEntrances: {entrance_key(a)} twice")
+        grotto_of[entrance_key(a)] = {"game_entrance": entrance_key(game), "data": None if data == "-1" else int(data, 16),
+                                      "kind": kind[len("GROTTO_"):]}
 
     def entrance_value(key: str) -> int:  # z64scene.h ENTRANCE(scene, spawn)
         scene, spawn = key.split(":")
@@ -607,14 +661,24 @@ def main() -> int:
     for opt, into, out, inside, outside, boss, warps, temple_exit in es_rows:
         if opt not in E("RandoOptionId"):
             raise SystemExit(f"shuffleEntrances: unknown option {opt}")
-        for key, scene in ((into, outside), (out, inside)):
-            if len(exits_of[key]) != 1 or exits_of[key][0][1] != scene:
-                raise SystemExit(f"shuffleEntrances: {key} must be the exit of exactly one region in {scene}, "
-                                 f"found {exits_of[key]}")
-        (door, _, behind), (inner, _, back) = exits_of[into][0], exits_of[out][0]
-        if behind != inner or (temple_exit is None and back != door):
+        grotto = opt == "RO_SHUFFLE_GROTTOS"
+        if len(exits_of[into]) != 1 or exits_of[into][0][1] != outside:
+            raise SystemExit(f"shuffleEntrances: {into} must be the exit of exactly one region in {outside}, "
+                             f"found {exits_of[into]}")
+        door, _, behind = exits_of[into][0]
+        # A grotto's way back is not unique (11 grottos return to TERMINA_FIELD:0): take the one of its own region.
+        outs = [x for x in exits_of[out] if not grotto or x[0] == behind]
+        if len(outs) != 1 or outs[0][1] != inside:
+            raise SystemExit(f"shuffleEntrances: {out} must be the exit of exactly one region in {inside}, found {outs}")
+        inner, _, back = outs[0]
+        # Grotto 27's way back GREAT_BAY_COAST:0 is ambiguous and resolves to RR_GREAT_BAY_COAST (UNTRANSLATED.md),
+        # while its hole is on the cliffside. Shuffled, a grotto returns to its hole's region, as in game.
+        back_scene = next(scene for rid, _, scene, *_ in out_regions if rid == back)
+        if behind != inner or (temple_exit is None and back != door and not (grotto and back_scene == outside)):
             raise SystemExit(f"shuffleEntrances: {into} ({door} -> {behind}) and {out} ({inner} -> {back}) "
                              f"are not each other's way back")
+        if grotto != (into in grotto_of):
+            raise SystemExit(f"shuffleEntrances: {into} must have a grottoEntrances row exactly if it is a grotto")
         boss_warps = [(rid, w) for w in warps for rid, scene, _ in exits_of[w] if scene == boss]
         if (boss == "SCENE_MAX") != (not boss_warps):
             raise SystemExit(f"shuffleEntrances: boss warps {warps} of {boss} are no exit of a {boss} region")
@@ -625,7 +689,9 @@ def main() -> int:
             exterior_region = exits_of[temple_exit][0][2]
         entrance_shuffle.append({"option": opt, "into": into, "out": out, "into_value": entrance_value(into),
                                  "door_region": door, "inside_region": inner, "boss_warps": boss_warps,
-                                 "temple_exit": temple_exit, "exterior_region": exterior_region})
+                                 "temple_exit": temple_exit, "exterior_region": exterior_region,
+                                 "grotto": grotto_of.get(into)})
+    check_grottos(entrance_shuffle, grotto_of, rc_table, out_regions, rando)
 
     # Door keys: { RI_DOOR_KEY_X, "Building", { ENTRANCE(into), ... } } (MiscBehavior/DoorKeys.cpp doorKeys). Every
     # "into" must be the exit of exactly one region and lead into another scene; one key per building, in enum order.

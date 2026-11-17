@@ -34,7 +34,9 @@ class EntranceShuffleOff(MM2S2HTestBase):
         for row in ENTRANCE_SHUFFLE:
             self.assertEqual(connected(world, row["door_region"], row["into"]), region_name(row["inside_region"]))
             if row["temple_exit"] is None:
-                self.assertEqual(connected(world, row["inside_region"], row["out"]), region_name(row["door_region"]))
+                # As generated; only grotto 27's ambiguous way back differs from its hole's region (the cliffside).
+                self.assertEqual(connected(world, row["inside_region"], row["out"]),
+                                 vanilla_target(row["inside_region"], row["out"]))
             for boss_rr, warp in row["boss_warps"]:
                 self.assertEqual(connected(world, boss_rr, warp), vanilla_target(boss_rr, warp))
 
@@ -246,13 +248,15 @@ class EntranceShuffleLegacySlots(MM2S2HTestBase):
 
     def test_old_slot_data(self) -> None:
         original = cast(MM2S2HWorld, self.world)
-        for version in ("0.1.5", "0.2.0", "0.3.1"):
+        for version in ("0.1.5", "0.2.0", "0.3.1", "0.5.0"):
             with self.subTest(version=version):
                 data = original.fill_slot_data()
                 data["apworld_version"] = version
                 data["options"] = dict(data["options"])
-                data["options"].pop("RO_SHUFFLE_BOSS_ENTRANCES")
-                if version != "0.3.1":
+                data["options"].pop("RO_SHUFFLE_GROTTOS")
+                if version != "0.5.0":
+                    data["options"].pop("RO_SHUFFLE_BOSS_ENTRANCES")
+                if version not in ("0.3.1", "0.5.0"):
                     data["options"].pop("RO_SHUFFLE_DUNGEON_ENTRANCES")
                     data.pop("entrance_pairs")
                 mw = setup_multiworld(MM2S2HWorld, steps=(), seed=999)
@@ -260,7 +264,9 @@ class EntranceShuffleLegacySlots(MM2S2HTestBase):
                 for step in gen_steps:
                     call_all(mw, step)
                 rebuilt = cast(MM2S2HWorld, mw.worlds[1])
-                self.assertFalse(rebuilt.ro["RO_SHUFFLE_BOSS_ENTRANCES"])
+                self.assertFalse(rebuilt.ro["RO_SHUFFLE_GROTTOS"])
+                if version != "0.5.0":
+                    self.assertFalse(rebuilt.ro["RO_SHUFFLE_BOSS_ENTRANCES"])
                 for rr, key in original.exit_entrances:
-                    expected = connected(original, rr, key) if version == "0.3.1" else vanilla_target(rr, key)
+                    expected = connected(original, rr, key) if version in ("0.3.1", "0.5.0") else vanilla_target(rr, key)
                     self.assertEqual(connected(rebuilt, rr, key), expected, (version, rr, key))

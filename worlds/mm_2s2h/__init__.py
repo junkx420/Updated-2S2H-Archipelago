@@ -71,7 +71,9 @@ LOGIC_GLITCHLESS, LOGIC_NEARLY_NO_LOGIC = 0, 2
 
 
 def _door_name(row: dict) -> str:
-    """'WOODFALL_TEMPLE:0' -> 'Woodfall Temple'"""
+    """'WOODFALL_TEMPLE:0' -> 'Woodfall Temple'; a grotto by its region, 'RR_ZORA_CAPE_GROTTO' -> 'Zora Cape Grotto'"""
+    if row.get("grotto"):
+        return region_name(row["inside_region"])
     return row["into"].split(":")[0].replace("_", " ").title()
 
 
@@ -562,7 +564,7 @@ class MM2S2HWorld(World):
     def _connect_boss_warps(self) -> None:
         by_value = {row["into_value"]: row for row in ENTRANCE_SHUFFLE}
         door_for = {inside: by_value[door] for door, inside in self.entrance_pairs}
-        temples = {row["out"]: row for row in ENTRANCE_SHUFFLE if row["temple_exit"] is None}
+        temples = {row["out"]: row for row in ENTRANCE_SHUFFLE if row["temple_exit"] is None and not row.get("grotto")}
         for boss in ENTRANCE_SHUFFLE:
             if boss["temple_exit"] is None:
                 continue
