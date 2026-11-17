@@ -3405,6 +3405,7 @@ typedef enum {
     RO_SHUFFLE_DOOR_KEYS,
     RO_SHUFFLE_GROTTOS,
     RO_SHUFFLE_INTERIORS,
+    RO_SHUFFLE_OVERWORLD,
     RO_MAX,
 } RandoOptionId;
 

@@ -7,11 +7,15 @@
 extern "C" {
 #include "variables.h"
 #include "functions.h"
+#include "z64horse.h"
 }
 
 namespace Rando {
 
 namespace EntranceShuffle {
+
+// Time macros in shuffleAreaRules (AFTER, ...) live in Rando::Logic, like in the region files.
+using namespace Rando::Logic;
 
 // clang-format off
 const std::vector<ShuffleEntrance> shuffleEntrances = {
@@ -89,6 +93,86 @@ const std::vector<ShuffleEntrance> shuffleEntrances = {
     { RO_SHUFFLE_INTERIORS, ENTRANCE(ZORA_HALL_ROOMS, 0),         ENTRANCE(ZORA_HALL, 6),                SCENE_BANDROOM,     SCENE_33ZORACITY,       SCENE_MAX, {} },
     { RO_SHUFFLE_INTERIORS, ENTRANCE(MUSIC_BOX_HOUSE, 0),         ENTRANCE(IKANA_CANYON, 2),             SCENE_MUSICHOUSE,   SCENE_IKANA,            SCENE_MAX, {} },
     { RO_SHUFFLE_INTERIORS, ENTRANCE(GHOST_HUT, 0),               ENTRANCE(IKANA_CANYON, 1),             SCENE_TOUGITES,     SCENE_IKANA,            SCENE_MAX, {} },
+    // Overworld (Regions/*.cpp): two rows per transition, one per direction. A row is one exit: "into" is where it
+    // arrives (in insideScene), "outOf" is the arrival of the opposite direction (the next row's "into"), outsideScene is
+    // where the exit is. Every row names a place, never a scene variant: base entrances (WINTER, POISONED) and scenes;
+    // z_play.c Play_Init picks the spring/cleared scene and the scene layer. One-way, water and cutscene ways stay out.
+    // Clock Town (Central.cpp)
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(EAST_CLOCK_TOWN, 1),              ENTRANCE(SOUTH_CLOCK_TOWN, 7),             SCENE_TOWN,             SCENE_CLOCKTOWER,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTH_CLOCK_TOWN, 7),             ENTRANCE(EAST_CLOCK_TOWN, 1),              SCENE_CLOCKTOWER,       SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(EAST_CLOCK_TOWN, 3),              ENTRANCE(SOUTH_CLOCK_TOWN, 2),             SCENE_TOWN,             SCENE_CLOCKTOWER,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTH_CLOCK_TOWN, 2),             ENTRANCE(EAST_CLOCK_TOWN, 3),              SCENE_CLOCKTOWER,       SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(EAST_CLOCK_TOWN, 5),              ENTRANCE(NORTH_CLOCK_TOWN, 1),             SCENE_TOWN,             SCENE_BACKTOWN,         SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(NORTH_CLOCK_TOWN, 1),             ENTRANCE(EAST_CLOCK_TOWN, 5),              SCENE_BACKTOWN,         SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(NORTH_CLOCK_TOWN, 2),             ENTRANCE(SOUTH_CLOCK_TOWN, 4),             SCENE_BACKTOWN,         SCENE_CLOCKTOWER,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTH_CLOCK_TOWN, 4),             ENTRANCE(NORTH_CLOCK_TOWN, 2),             SCENE_CLOCKTOWER,       SCENE_BACKTOWN,         SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(WEST_CLOCK_TOWN, 2),              ENTRANCE(SOUTH_CLOCK_TOWN, 3),             SCENE_ICHIBA,           SCENE_CLOCKTOWER,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTH_CLOCK_TOWN, 3),             ENTRANCE(WEST_CLOCK_TOWN, 2),              SCENE_CLOCKTOWER,       SCENE_ICHIBA,           SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(WEST_CLOCK_TOWN, 1),              ENTRANCE(SOUTH_CLOCK_TOWN, 5),             SCENE_ICHIBA,           SCENE_CLOCKTOWER,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTH_CLOCK_TOWN, 5),             ENTRANCE(WEST_CLOCK_TOWN, 1),              SCENE_CLOCKTOWER,       SCENE_ICHIBA,           SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(LAUNDRY_POOL, 0),                 ENTRANCE(SOUTH_CLOCK_TOWN, 6),             SCENE_ALLEY,            SCENE_CLOCKTOWER,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTH_CLOCK_TOWN, 6),             ENTRANCE(LAUNDRY_POOL, 0),                 SCENE_CLOCKTOWER,       SCENE_ALLEY,            SCENE_MAX, {} },
+    // Clock Town gates (TerminaField.cpp, Central.cpp)
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTH_CLOCK_TOWN, 1),             ENTRANCE(TERMINA_FIELD, 6),                SCENE_CLOCKTOWER,       SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 6),                ENTRANCE(SOUTH_CLOCK_TOWN, 1),             SCENE_00KEIKOKU,        SCENE_CLOCKTOWER,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(EAST_CLOCK_TOWN, 0),              ENTRANCE(TERMINA_FIELD, 7),                SCENE_TOWN,             SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 7),                ENTRANCE(EAST_CLOCK_TOWN, 0),              SCENE_00KEIKOKU,        SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(NORTH_CLOCK_TOWN, 0),             ENTRANCE(TERMINA_FIELD, 8),                SCENE_BACKTOWN,         SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 8),                ENTRANCE(NORTH_CLOCK_TOWN, 0),             SCENE_00KEIKOKU,        SCENE_BACKTOWN,         SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(WEST_CLOCK_TOWN, 0),              ENTRANCE(TERMINA_FIELD, 0),                SCENE_ICHIBA,           SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 0),                ENTRANCE(WEST_CLOCK_TOWN, 0),              SCENE_00KEIKOKU,        SCENE_ICHIBA,           SCENE_MAX, {} },
+    // Termina Field (TerminaField.cpp, South.cpp, East.cpp, MilkRoad.cpp, North.cpp, West.cpp)
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0),       ENTRANCE(TERMINA_FIELD, 1),                SCENE_24KEMONOMITI,     SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 1),                ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0),       SCENE_00KEIKOKU,        SCENE_24KEMONOMITI,     SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ROAD_TO_IKANA, 0),                ENTRANCE(TERMINA_FIELD, 4),                SCENE_IKANAMAE,         SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 4),                ENTRANCE(ROAD_TO_IKANA, 0),                SCENE_00KEIKOKU,        SCENE_IKANAMAE,         SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(MILK_ROAD, 0),                    ENTRANCE(TERMINA_FIELD, 5),                SCENE_ROMANYMAE,        SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 5),                ENTRANCE(MILK_ROAD, 0),                    SCENE_00KEIKOKU,        SCENE_ROMANYMAE,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 0),     ENTRANCE(TERMINA_FIELD, 3),                SCENE_13HUBUKINOMITI,   SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 3),                ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 0),     SCENE_00KEIKOKU,        SCENE_13HUBUKINOMITI,   SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(GREAT_BAY_COAST, 0),              ENTRANCE(TERMINA_FIELD, 2),                SCENE_30GYOSON,         SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 2),                ENTRANCE(GREAT_BAY_COAST, 0),              SCENE_00KEIKOKU,        SCENE_30GYOSON,         SCENE_MAX, {} },
+    // Southern Swamp (South.cpp)
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTHERN_SWAMP_POISONED, 0),      ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 1),       SCENE_20SICHITAI,       SCENE_24KEMONOMITI,     SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 1),       ENTRANCE(SOUTHERN_SWAMP_POISONED, 0),      SCENE_24KEMONOMITI,     SCENE_20SICHITAI,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(WOODS_OF_MYSTERY, 0),             ENTRANCE(SOUTHERN_SWAMP_POISONED, 7),      SCENE_26SARUNOMORI,     SCENE_20SICHITAI,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTHERN_SWAMP_POISONED, 7),      ENTRANCE(WOODS_OF_MYSTERY, 0),             SCENE_20SICHITAI,       SCENE_26SARUNOMORI,     SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(DEKU_PALACE, 0),                  ENTRANCE(SOUTHERN_SWAMP_POISONED, 3),      SCENE_22DEKUCITY,       SCENE_20SICHITAI,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTHERN_SWAMP_POISONED, 3),      ENTRANCE(DEKU_PALACE, 0),                  SCENE_20SICHITAI,       SCENE_22DEKUCITY,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(DEKU_PALACE, 5),                  ENTRANCE(SOUTHERN_SWAMP_POISONED, 4),      SCENE_22DEKUCITY,       SCENE_20SICHITAI,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTHERN_SWAMP_POISONED, 4),      ENTRANCE(DEKU_PALACE, 5),                  SCENE_20SICHITAI,       SCENE_22DEKUCITY,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(WOODFALL, 0),                     ENTRANCE(SOUTHERN_SWAMP_POISONED, 2),      SCENE_21MITURINMAE,     SCENE_20SICHITAI,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SOUTHERN_SWAMP_POISONED, 2),      ENTRANCE(WOODFALL, 0),                     SCENE_20SICHITAI,       SCENE_21MITURINMAE,     SCENE_MAX, {} },
+    // Milk Road (MilkRoad.cpp)
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ROMANI_RANCH, 0),                 ENTRANCE(MILK_ROAD, 1),                    SCENE_F01,              SCENE_ROMANYMAE,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(MILK_ROAD, 1),                    ENTRANCE(ROMANI_RANCH, 0),                 SCENE_ROMANYMAE,        SCENE_F01,              SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(GORMAN_TRACK, 0),                 ENTRANCE(MILK_ROAD, 3),                    SCENE_KOEPONARACE,      SCENE_ROMANYMAE,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(MILK_ROAD, 3),                    ENTRANCE(GORMAN_TRACK, 0),                 SCENE_ROMANYMAE,        SCENE_KOEPONARACE,      SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(GORMAN_TRACK, 3),                 ENTRANCE(MILK_ROAD, 2),                    SCENE_KOEPONARACE,      SCENE_ROMANYMAE,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(MILK_ROAD, 2),                    ENTRANCE(GORMAN_TRACK, 3),                 SCENE_ROMANYMAE,        SCENE_KOEPONARACE,      SCENE_MAX, {} },
+    // Mountains (North.cpp)
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 6),      ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 1),     SCENE_10YUKIYAMANOMURA, SCENE_13HUBUKINOMITI,   SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 1),     ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 6),      SCENE_13HUBUKINOMITI,   SCENE_10YUKIYAMANOMURA, SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 2),      SCENE_17SETUGEN,        SCENE_10YUKIYAMANOMURA, SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 2),      ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), SCENE_10YUKIYAMANOMURA, SCENE_17SETUGEN,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PATH_TO_SNOWHEAD, 0),             ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 4),      SCENE_14YUKIDAMANOMITI, SCENE_10YUKIYAMANOMURA, SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 4),      ENTRANCE(PATH_TO_SNOWHEAD, 0),             SCENE_10YUKIYAMANOMURA, SCENE_14YUKIDAMANOMITI, SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(SNOWHEAD, 0),                     ENTRANCE(PATH_TO_SNOWHEAD, 1),             SCENE_12HAKUGINMAE,     SCENE_14YUKIDAMANOMITI, SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PATH_TO_SNOWHEAD, 1),             ENTRANCE(SNOWHEAD, 0),                     SCENE_14YUKIDAMANOMITI, SCENE_12HAKUGINMAE,     SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(GORON_VILLAGE_WINTER, 0),         ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 1), SCENE_11GORONNOSATO,    SCENE_17SETUGEN,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 1), ENTRANCE(GORON_VILLAGE_WINTER, 0),         SCENE_17SETUGEN,        SCENE_11GORONNOSATO,    SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(GORON_RACETRACK, 0),              ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 2), SCENE_GORONRACE,        SCENE_17SETUGEN,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 2), ENTRANCE(GORON_RACETRACK, 0),              SCENE_17SETUGEN,        SCENE_GORONRACE,        SCENE_MAX, {} },
+    // Great Bay (West.cpp)
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ZORA_CAPE, 0),                    ENTRANCE(GREAT_BAY_COAST, 1),              SCENE_31MISAKI,         SCENE_30GYOSON,         SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(GREAT_BAY_COAST, 1),              ENTRANCE(ZORA_CAPE, 0),                    SCENE_30GYOSON,         SCENE_31MISAKI,         SCENE_MAX, {} },
+    // Ikana (East.cpp)
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(IKANA_CANYON, 0),                 ENTRANCE(ROAD_TO_IKANA, 1),                SCENE_IKANA,            SCENE_IKANAMAE,         SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ROAD_TO_IKANA, 1),                ENTRANCE(IKANA_CANYON, 0),                 SCENE_IKANAMAE,         SCENE_IKANA,            SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(IKANA_GRAVEYARD, 0),              ENTRANCE(ROAD_TO_IKANA, 2),                SCENE_BOTI,             SCENE_IKANAMAE,         SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ROAD_TO_IKANA, 2),                ENTRANCE(IKANA_GRAVEYARD, 0),              SCENE_IKANAMAE,         SCENE_BOTI,             SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(STONE_TOWER, 0),                  ENTRANCE(IKANA_CANYON, 3),                 SCENE_F40,              SCENE_IKANA,            SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(IKANA_CANYON, 3),                 ENTRANCE(STONE_TOWER, 0),                  SCENE_IKANA,            SCENE_F40,              SCENE_MAX, {} },
 };
 
 // Hours of every interior row, read from its door's rule in the logic (Regions/*.cpp) and its schedule
@@ -185,6 +269,17 @@ const std::vector<ShuffleAreaRule> shuffleAreaRules = {
     { RO_SHUFFLE_INTERIORS, ENTRANCE(MUSIC_BOX_HOUSE, 0), [] { return RANDO_EVENTS[RE_BREAK_SHARP_CURSE]; } },
     // West.cpp:416: the band room doors need Zora; Evan's check (West.cpp:367) does not say so. Cautious: never looser.
     { RO_SHUFFLE_INTERIORS, ENTRANCE(ZORA_HALL_ROOMS, 3), [] { return CAN_BE_ZORA; } },
+    // Overworld: only where the arrival's region has no way in that lacks the vanilla guarantee (owl statues count as
+    // such a way: RO_SHUFFLE_OWL_STATUES). South.cpp:496 is Woodfall's only way in; its grass (South.cpp:545) has no rule.
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(WOODFALL, 0),                     [] { return CAN_BE_DEKU; } },
+    // South.cpp:497: the palace treetop; it shares RR_DEKU_PALACE_OUTSIDE with the ground.
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(DEKU_PALACE, 5),                  [] { return CAN_BE_DEKU; } },
+    // North.cpp:416 is the racetrack's only way in; its 30 pots and 10 trees have no rule.
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(GORON_RACETRACK, 0),              [] { return HAS_ITEM(ITEM_POWDER_KEG) && CAN_BE_GORON; } },
+    // Out of the racetrack: in front of its boulder, inside RR_PATH_TO_GORON_VILLAGE (North.cpp:416).
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 2), [] { return HAS_ITEM(ITEM_POWDER_KEG) && CAN_BE_GORON; } },
+    // Out of the ranch: past the boulder (MilkRoad.cpp:141), inside RR_MILK_ROAD with the way to Termina Field.
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(MILK_ROAD, 1),                    [] { return AFTER(TIME_DAY3_AM_06_00) || RANDO_EVENTS[RE_DESTROY_MILK_ROAD_BOULDER]; } },
 };
 // clang-format on
 
@@ -460,12 +555,104 @@ static bool RedirectInterior(PlayState* play) {
     return false;
 }
 
+// ---- Overworld ----
+
+static bool IsOverworldRow(size_t row) {
+    return shuffleEntrances[row].option == RO_SHUFFLE_OVERWORLD;
+}
+
+// The place an entrance leads to, without its variant: the spring and cleared entrance groups have the spawns of the
+// winter and poisoned ones (Play_Init swaps only the scene and keeps spawn and layer, z_play.c:2264-2299), and the
+// layer bits (0-3) are chosen per arrival. Rows are written with these base entrances.
+static u16 PlaceOf(u16 entrance) {
+    s32 scene = entrance >> 9;
+    switch (scene) {
+        case ENTR_SCENE_MOUNTAIN_VILLAGE_SPRING:
+            scene = ENTR_SCENE_MOUNTAIN_VILLAGE_WINTER;
+            break;
+        case ENTR_SCENE_GORON_VILLAGE_SPRING:
+            scene = ENTR_SCENE_GORON_VILLAGE_WINTER;
+            break;
+        case ENTR_SCENE_PATH_TO_GORON_VILLAGE_SPRING:
+            scene = ENTR_SCENE_PATH_TO_GORON_VILLAGE_WINTER;
+            break;
+        case ENTR_SCENE_SOUTHERN_SWAMP_CLEARED:
+            scene = ENTR_SCENE_SOUTHERN_SWAMP_POISONED;
+            break;
+        default:
+            break;
+    }
+    return Entrance_Create(scene, (entrance >> 4) & 0x1F, 0);
+}
+
+// Riding through a redirected exit would bring Epona into any scene (gHorseIsMounted, z_player.c:6578, and
+// Horse_SpawnOverworld, z_horse.c:124, which tests only the layer). Link gets off instead and Epona waits at the exit,
+// as after dismounting (z_player.c:17188). In a horse scene she still appears next to him with Epona's Song.
+static void LeaveEponaAtExit(PlayState* play) {
+    if (!gHorseIsMounted) {
+        return;
+    }
+    gHorseIsMounted = false;
+    Player* player = GET_PLAYER(play);
+    Actor* horse = player != nullptr ? player->rideActor : nullptr;
+    if (horse != nullptr && CHECK_QUEST_ITEM(QUEST_SONG_EPONA)) {
+        gSaveContext.save.saveInfo.horseData.sceneId = play->sceneId;
+        gSaveContext.save.saveInfo.horseData.pos.x = horse->world.pos.x;
+        gSaveContext.save.saveInfo.horseData.pos.y = horse->world.pos.y;
+        gSaveContext.save.saveInfo.horseData.pos.z = horse->world.pos.z;
+        gSaveContext.save.saveInfo.horseData.yaw = horse->shape.rot.y;
+    }
+}
+
+// Overworld rows only, one row per exit. Through exit A (scene and place of A's row): arrive where A's partner row
+// arrives, and let Play_Init choose that place's variant. Returns true if the transition was an overworld exit.
+static bool RedirectOverworld(PlayState* play) {
+    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_OVERWORLD] == RO_GENERIC_OFF) {
+        return false;
+    }
+    // Only real scene exits: 0, or -2 for an exit that recorded itself as void-out point (z_player.c:6510); Play_Init
+    // resets the flag (z_play.c:2497). Void outs (1), deaths (-1, -6), grotto returns (4) and warp songs (-3) reload
+    // a place already reached (z_play.c:2074, 2084, z_game_over.c:97, z_player.c:6497, z_kankyo.c:3143).
+    if (gSaveContext.respawnFlag != 0 && gSaveContext.respawnFlag != -2) {
+        return false;
+    }
+    // Scripted transitions (e.g. Cremia's escort) keep their destination.
+    if (play->csCtx.state != CS_STATE_IDLE) {
+        return false;
+    }
+    u16 next = play->nextEntrance;
+    u16 place = PlaceOf(next);
+    s16 scene = Play_GetOriginalSceneId(play->sceneId);
+    for (size_t row = 0; row < shuffleEntrances.size() && row < MAX_ROWS; row++) {
+        if (!IsOverworldRow(row) || scene != shuffleEntrances[row].outsideScene ||
+            place != shuffleEntrances[row].into) {
+            continue;
+        }
+        size_t target = InsideBehind(row);
+        if (target == row) {
+            return true;
+        }
+        play->nextEntrance = shuffleEntrances[target].into;
+        // A layer chosen for A's destination must not apply; Play_Init then picks the target's (z_play.c:2261).
+        if (gSaveContext.nextCutsceneIndex >= 0xFFF0) {
+            gSaveContext.nextCutsceneIndex = 0xFFEF;
+        }
+        // An exit may record itself as the void-out point before the transition (z_player.c:6508).
+        if (gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance == next) {
+            gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = play->nextEntrance;
+        }
+        LeaveEponaAtExit(play);
+        return true;
+    }
+    return false;
+}
+
 void OnBeforeTransitionSetup() {
     PlayState* play = gPlayState;
     if (play == nullptr) {
         return;
     }
-    if (RedirectGrotto(play) || RedirectInterior(play)) {
+    if (RedirectGrotto(play) || RedirectInterior(play) || RedirectOverworld(play)) {
         return;
     }
     u16 next = play->nextEntrance;
@@ -475,7 +662,8 @@ void OnBeforeTransitionSetup() {
     // "into" entrance, which must not be redirected a second time.
     for (size_t door = 0; door < shuffleEntrances.size() && door < MAX_ROWS; door++) {
         const ShuffleEntrance& doorRow = shuffleEntrances[door];
-        if (RANDO_SAVE_OPTIONS[doorRow.option] == RO_GENERIC_OFF || IsGrottoRow(door) || IsInteriorRow(door)) {
+        if (RANDO_SAVE_OPTIONS[doorRow.option] == RO_GENERIC_OFF || IsGrottoRow(door) || IsInteriorRow(door) ||
+            IsOverworldRow(door)) {
             continue;
         }
         size_t inside = InsideBehind(door);
