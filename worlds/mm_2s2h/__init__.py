@@ -72,6 +72,7 @@ NNL_TYPE_BLACKLIST = {"RI_SONG_EPONA": "RCTYPE_COW"}
 LOGIC_GLITCHLESS, LOGIC_NEARLY_NO_LOGIC = 0, 2
 # Overworld shuffle (EntranceShuffle.cpp, RO_SHUFFLE_OVERWORLD): exit groups, apart from the other options' 1, 2, ...
 OVERWORLD = "RO_SHUFFLE_OVERWORLD"
+DUNGEONS_OPTION, BOSSES_OPTION = "RO_SHUFFLE_DUNGEON_ENTRANCES", "RO_SHUFFLE_BOSS_ENTRANCES"
 CLOCK_TOWN_SCENES = {"SCENE_CLOCKTOWER", "SCENE_TOWN", "SCENE_BACKTOWN", "SCENE_ICHIBA", "SCENE_ALLEY"}
 OW_GROUP = 1001
 
@@ -599,6 +600,16 @@ class MM2S2HWorld(World):
             for k, exit_ in enumerate(over_exits):
                 self._reconnect(exit_, over[over_to.get(k, k)]["inside_region"])
         else:
+            # With the overworld shuffled, a blue warp's vanilla target may be a place that GER would count as reached
+            # through it, while _connect_boss_warps later sends the warp to the door used (seen: Zora Cape and Laundry
+            # Pool left as an island). During GER the warps lead back into their own boss room, so they open nothing.
+            # Without the overworld every warp target is reachable on its vanilla way: nothing changes there.
+            if over and any(row["option"] in (DUNGEONS_OPTION, BOSSES_OPTION) for row in rows):
+                for boss in ENTRANCE_SHUFFLE:
+                    for boss_rr, warp in boss["boss_warps"] if boss["temple_exit"] is not None else ():
+                        exit_ = self.exit_entrances[(boss_rr, warp)]
+                        if exit_ not in insides:  # a shuffled boss row's own warp is GER's to place
+                            self._reconnect(exit_, boss_rr)
             # Interiors mix only within one hours class (EntranceShuffle.cpp interiorEntrances); OWN_HOURS stays.
             moving = [i for i, row in enumerate(rows) if row.get("hours") != "OWN_HOURS"]
             groups = sorted({(rows[i]["option"], rows[i].get("hours") or "") for i in moving})
@@ -613,14 +624,19 @@ class MM2S2HWorld(World):
             # Overworld: the Clock Town gates always lead out of Clock Town. GER's group lookup cannot promise that (it
             # may end with a gate and a Clock Town place left), so the gates are placed first, each to the place of a
             # random exit outside Clock Town, coupled; GER mixes the rest in one group.
+            # Since 0.9 the Bombers' passage from East Clock Town counts as a gate too. Water rows (arrival under water,
+            # EntranceShuffle.cpp overworldWaterEntrances) are never a gate's partner and pair only among each other.
             in_town = [REGIONS[row["door_region"]][1] in CLOCK_TOWN_SCENES for row in over]
             gates = [k for k, row in enumerate(over) if in_town[k] and REGIONS[row["inside_region"]][1]
                      not in CLOCK_TOWN_SCENES]
-            for gate, m in zip(gates, self.random.sample([k for k in range(len(over)) if not in_town[k]], len(gates))):
+            outside = [k for k in range(len(over)) if not in_town[k] and not over[k]["water"]]
+            for gate, m in zip(gates, self.random.sample(outside, len(gates))):
                 over_to[gate], over_to[m] = over_index[over[m]["out"]], over_index[over[gate]["out"]]
                 self._reconnect(over_exits[gate], over[m]["door_region"])
                 self._reconnect(over_exits[m], over[gate]["door_region"])
-            free = [over_exits[k] for k in range(len(over)) if k not in over_to]
+            # Water exits stay vanilla while GER places the rest (GER deadlocked in tests when they were in its pool or
+            # paired before it), and are paired among each other afterwards.
+            free = [over_exits[k] for k in range(len(over)) if k not in over_to and not over[k]["water"]]
             for exit_ in free:
                 exit_.randomization_type = EntranceType.TWO_WAY
                 exit_.randomization_group = OW_GROUP
@@ -644,6 +660,29 @@ class MM2S2HWorld(World):
             for source, target in placement.pairings:
                 if source in over_at and target in over_at:
                     over_to[over_at[source]] = over_index[over[over_at[target]]["out"]]
+            # The water exits, at random and coupled: an exit on a coast (a scene with land rows: Great Bay Coast, Zora
+            # Cape) always pairs with one out of a dead end (the moat, Zora Hall). Two dead ends paired with each other
+            # would only reach each other: Zora Hall's door by land has no region in the logic (UNTRANSLATED.md).
+            land_scenes = {REGIONS[row["door_region"]][1] for row in over if not row["water"]}
+            coast = [k for k in range(len(over)) if over[k]["water"] and REGIONS[over[k]["door_region"]][1] in land_scenes]
+            inner = [over_index[over[k]["out"]] for k in coast]
+            if sorted(coast + inner) != [k for k in range(len(over)) if over[k]["water"]]:
+                raise RuntimeError("overworld water rows: every transition needs one coast side and one dead end")
+            pairs = list(zip(coast, self.random.sample(inner, len(inner))))
+            if any(over_index[over[a]["out"]] != b for a, b in pairs):
+                # GER only proved the graph with the water ways vanilla. A crossed pairing that loses a region
+                # reachable with all items (seen in tests: Zora Cape's only way in then led through Zora Hall) stays
+                # vanilla instead.
+                before = self._reachable_regions()
+                for a, b in pairs:
+                    self._reconnect(over_exits[a], over[b]["door_region"])
+                    self._reconnect(over_exits[b], over[a]["door_region"])
+                if not before <= self._reachable_regions():
+                    pairs = [(a, over_index[over[a]["out"]]) for a in coast]
+            for a, b in pairs:
+                over_to[a], over_to[b] = over_index[over[b]["out"]], over_index[over[a]["out"]]
+                self._reconnect(over_exits[a], over[b]["door_region"])
+                self._reconnect(over_exits[b], over[a]["door_region"])
         for i, (row, door) in enumerate(zip(rows, doors)):
             inside = rows[behind.get(i, i)]
             if door.connected_region is not self.regions_by_rr[inside["inside_region"]]:
@@ -689,6 +728,10 @@ class MM2S2HWorld(World):
                 # Fixed points must retain the original prison/spring/cape/canyon destinations, even with boss ER on.
                 vanilla = next(target for key, target, _ in REGIONS[boss_rr][4] if key == warp)
                 self._reconnect(self.exit_entrances[(boss_rr, warp)], exterior if moved else vanilla)
+
+    def _reachable_regions(self) -> set:
+        """Regions of this player reachable with every item (as GER checks its placements)."""
+        return set(self.multiworld.get_all_state(False).reachable_regions[self.player])
 
     def _reconnect(self, exit_: Entrance, rr: str) -> None:
         if exit_.connected_region is not None:

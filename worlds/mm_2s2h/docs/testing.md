@@ -731,3 +731,181 @@ land, Great Fairy fountains, Ikana Castle, Sakon's hideout. Entrance cutscenes b
 9. Cremia's escort and other scripted transitions keep their vanilla destination.
 10. Together with temples, bosses, grottos, interiors and door keys: holes, doors and temple doors behave as before.
 11. Option off and 0.1–0.7 seeds/saves: everything as before.
+
+### Stage 6b: remaining transitions (apworld 0.9.0, 2026-11-18)
+
+Every two-way exit of the logic that was in no table: 100 exits, of which 26 join the older pools, 12 form the new
+pool `shuffle_special_areas` and 62 stay fixed (table below). Mixing the pools with each other is stage 6c. 23 rows
+appended to `shuffleEntrances` (rows 134–156), so the saved row numbers of 0.3–0.8 stay valid.
+
+#### Pools and criteria
+
+| Option | New rows | What |
+|---|---|---|
+| `shuffle_overworld` | 4 (land) | Astral Observatory: Bombers' passage from East Clock Town `Central.cpp:111/31`, door to Termina Field `Central.cpp:15/44` |
+| `shuffle_overworld` | 4 (water) | Great Bay Coast–Pirates' Fortress moat `West.cpp:151`/`PiratesFortress.cpp:171`, Zora Cape–Zora Hall tunnel `West.cpp:359/413` |
+| `shuffle_interiors` | 9 | Great Fairy fountains `Central.cpp:183/137`, `South.cpp:559/539`, `North.cpp:580/539`, `West.cpp:334/217`, `East.cpp:186/287`; Goron Shop `North.cpp:39/104`; Goron Graveyard `North.cpp:313/15`; Deku King's chamber `South.cpp:112/51` and cell `South.cpp:122/46`, all "always open" |
+| `shuffle_special_areas` (new) | 6 | Swamp Spider House `South.cpp:479`/`SpiderHouses.cpp:221`, Oceanside Spider House `West.cpp:152`/`SpiderHouses.cpp:64`, Beneath the Well `East.cpp:184`/`BeneathTheWell.cpp:83`, Ikana Castle `East.cpp:185`/`IkanaCastle.cpp:91`, Secret Shrine `East.cpp:158/408`, Deku Shrine `South.cpp:168/177` |
+
+#### Code evidence
+
+* **Water.** An arrival is reached only through the exit on the other side, in the same form. A land exit (any form)
+  therefore never leads under water, where a Deku or Goron would void out and respawn at the same entrance forever.
+  Both ways of the two water transitions are taken swimming (Zora in the logic); `overworldWaterEntrances` lists
+  their four rows, `CanPair` refuses land/water pairs whatever the slot data says, the generator refuses a transition
+  listed on one side only. Human Link dives as well (`z_player.c:8931`, every form but Zora), so Pinnacle Rock (SWIM
+  only) and Waterfall Rapids (Hookshot) stay fixed: a Human could arrive in a Zora-only place. Zora Hall's door by
+  land (`ZORA_HALL:1`) has no region in the logic (`UNTRANSLATED.md`): the apworld pairs a coast's water exit (Great
+  Bay Coast, Zora Cape) always with a dead end's (moat, Zora Hall), so the water pool is vanilla or crossed. GER is
+  not used for the water rows: in its pool, or paired before it, it deadlocked in tests (its first stage only places
+  exits that open new regions); they stay vanilla during GER and are paired afterwards. GER only proved the graph with
+  vanilla water, so a crossed pairing is kept only if it loses no region reachable with all items; otherwise the water
+  stays vanilla. Without this check 4 of 400 seeds with own-dungeon items failed in `pre_fill` (e.g. Zora Cape was
+  then reachable through nothing but itself; 0.8.0: 0 of 300); with it 0 of 400.
+* **Blue warps during GER** (correction of the 0.8 code, seen in 0.9 testing): with the overworld shuffled, GER counted
+  a place as reached through a blue warp's vanilla target, which `_connect_boss_warps` afterwards points at the door
+  used. Overworld batch seed 8 (dungeon entrances on, Great Bay Temple behind Stone Tower's door) left Zora Cape and
+  Laundry Pool as an island and failed the accessibility check. Now, with the overworld and temples or bosses
+  shuffled, every blue warp leads back into its own boss room while GER runs. Without the overworld nothing changes,
+  every warp target is reachable on its vanilla way (the 40 fills without interiors stay those of 0.8.0).
+* **Area rules** (`shuffleAreaRules`): `ASTRAL_OBSERVATORY:0` projectile (the passage leads on to the observatory with
+  `true`, `Central.cpp:34`, the way in from East Clock Town asks for the balloon, `Central.cpp:111`);
+  `PIRATES_FORTRESS_EXTERIOR:0` and `ZORA_HALL:0` Zora and SWIM (the moat's regions and Zora Hall's tunnel back,
+  `West.cpp:413`, assume it); `DEKU_KINGS_CHAMBER:0/1` Deku (the palace inside is Deku only, `South.cpp:171`; the
+  princess event `South.cpp:55` does not say so); `SWAMP_SPIDER_HOUSE:0` its own door's rule (`South.cpp:479`). No
+  rule for the other special areas: Ikana Canyon's upper part is also reached by owl (`East.cpp:197`), the Secret
+  Shrine checks Light Arrows (`East.cpp:411`), the Deku Shrine its event (`South.cpp:180`), Darmani Lens of Truth
+  (`North.cpp:12`).
+* **Gates.** The Bombers' passage leads out of Clock Town like the four gates and is placed first like them.
+* **Interiors.** The fountains are walk-in exits, one spawn per fountain in `SCENE_YOUSEI_IZUMI` like the Zora Hall
+  rooms. The hours proof of 0.7 covers the new rows (757 = 26² + 9² door/building pairs).
+* **Special areas.** `RedirectSpecialArea` compares as the overworld does: the place (`PlaceOf`: cleared swamp group
+  and layer bits) and the original scene (`Play_GetOriginalSceneId`), only real exits (respawn flag 0 or −2), no
+  running cutscene; it resets a layer chosen for the old place and moves the recorded void-out point. Void outs and
+  deaths inside reload the area's own entrance from its own scene, never redirected again. The generator checks base
+  names, one scene per area, no shared entrance with another option.
+* **Older seeds.** A 0.8 (or older) seed has no saved pair for the 23 new rows: `InsideBehind` keeps them vanilla
+  even with Shuffle Overworld or Interiors on; the Universal Tracker rebuilds missing rows as themselves; Shuffle
+  Special Areas is off when its option is missing.
+
+#### Verification
+
+* `pytest test/general worlds/mm_2s2h/test -q`: **752 passed, 0 failed** (151,144 subtests), 167 s; 53 tests more than 0.8.0 (699). New: `test_special_areas.py` (table, option off
+  with every other own option on, option on with coupling, pairs only among the six, Universal Tracker and
+  reachability inherited, area rule through a forced pairing, No Logic, all own options together, own-dungeon items,
+  real 0.8 slot data, fixed-exit inventory); in `test_overworld_shuffle.py` water rows, water only with water and
+  coast with dead end over 10 seeds, area rules of observatory and water through forced pairings, two regression
+  seeds; interior counts and the hours proof over 757 pairs; `test_golden_without_interiors`.
+* Old seeds: the real slot data of two 0.8.0 seeds (all own options plus overworld; overworld only, in `test/data`)
+  rebuild exactly in the Universal Tracker, all 23 new rows stay vanilla, the seed stays beatable.
+* Golden: `GOLDEN` recomputed for 0.9.0 (0 of 38 equal, as expected: all 38 rolls have Shuffle Interiors on, whose pool
+  grew). `GOLDEN_WITHOUT_INTERIORS`, the same 40 rolls without it, computed with 0.8.0 before any change: **40/40
+  equal** with 0.9.0.
+* Random seeds (`tools/random_seeds.py 100`): only special areas **100/100**; only overworld **100/100** (99/100 before
+  the blue-warp correction: seed 8, see above); all own options together **100/100**.
+* Own-dungeon items with all own options and the overworld, `pre_fill`: 0.8.0 0 of 300 seeds failed; 0.9 before the
+  water check 4 of 400; with it 0 of 400; with the final code (also the blue-warp correction) **0 of 200**.
+* GER deadlock (water rows in GER's pool or paired before it): 2 of 12 seeds; water paired after GER: **0 of 40**.
+* C++ test bench (`tools/entrance_client/run.py ../2s2h`), real `EntranceShuffle.cpp`: special areas **163,347 cases,
+  all 36 pairings** (both directions, every scene and entrance form, respawn flags, cutscenes, void-out point, songs
+  and owls, with and without the other options, pairs with other options refused); overworld **2,759,104
+  transitions, 5776 pairings** (76², of them 1152 land/water pairings refused); interiors **380,061 cases, 763
+  pairings**; real 0.8 slot data: **260 cases**, the 0.8 pairs as saved, all 23 new rows vanilla both ways. Older
+  parts unchanged (door keys 3,632,128; temples/bosses 9216 cases; grottos 571,328).
+* Parity harness rebuilt, all own options off: **1200/1200 identical** (0 mismatching).
+* Client builds locally (MSVC Release, `2ship.exe`), no warning in `EntranceShuffle.cpp`; changed C++ lines pass
+  clang-format.
+
+
+#### In-game checklist — not tested in game
+
+1. Astral Observatory: through foreign exits into the Bombers' passage and into the observatory; the balloon, the
+   telescope and the Moon's Tear as in vanilla; both ways out lead back to the exits used.
+2. Water, crossed pairing (spoiler): Zora Cape's tunnel into the Pirates' Fortress moat and Great Bay Coast's into
+   Zora Hall's pool, as Zora; the arrivals are in water and you can swim back. As Human (outside the logic): never
+   trapped (land to stand on, Song of Time).
+3. Water exits as Deku and Goron: no water exit can be reached at all (no void-out loop).
+4. Each Great Fairy fountain behind a foreign door: the right Great Fairy, her reward and scene, the way out in front of
+   the door used. Goron Shop and Goron Graveyard (Darmani) behind foreign doors; the shop door in the Goron Shrine leads
+   into another building.
+5. Deku King's chamber and the monkey's cell entered as Human through a foreign door: what the guards do and where you
+   land; returning the princess there.
+6. Each special area behind a foreign door, both ways: spider houses (also with the swamp cleared), Beneath the Well
+   (its back exit into the castle courtyard, then out of the castle's front door in front of the castle's door), Ikana
+   Castle, Secret Shrine, Deku Shrine (the butler race and its end), Ikana Canyon's layers on the way back.
+7. Void out, die, pause save and reload, Song of Time, Song of Soaring and owls in every new area: you land at its
+   entrance or the usual place, never in a loop.
+8. A 0.8 seed and save with Shuffle Overworld and Shuffle Interiors on: observatory, water ways, fountains, Goron
+   Shop/Graveyard and the King's chamber as in vanilla; Shuffle Special Areas off.
+9. All options off: everything as before.
+
+#### Exits that stay fixed (62)
+
+Every two-way exit of the logic in no table, one row per exit. `FixedExitInventory` in `test_special_areas.py` holds
+the same list (and the 15 one-way exits) and fails as soon as one is added to a table or a region file changes.
+Stage 6c decides from this list what "shuffle everything" covers.
+
+| Exit (region → entrance) | File:line | Reason |
+|---|---|---|
+| `RR_BENEATH_THE_WELL_BACK_EXIT` → `IKANA_CASTLE:0` | `BeneathTheWell.cpp:33` | Inside Ikana Castle and the well's back exit: inner ways of two special areas, they move with their front doors. |
+| `RR_CLOCK_TOWER_INTERIOR` → `SOUTH_CLOCK_TOWN:0` | `Central.cpp:70` | Clock Tower: start of the game, Happy Mask Salesman and Song of Time scenes, every cycle starts here. |
+| `RR_CLOCK_TOWN_SOUTH` → `CLOCK_TOWER_INTERIOR:1` | `Central.cpp:229` | Clock Tower: start of the game, Happy Mask Salesman and Song of Time scenes, every cycle starts here. |
+| `RR_BENEATH_THE_GRAVEYARD_NIGHT_1_GRAVE` → `IKANA_GRAVEYARD:3` | `East.cpp:52` | Beneath the Graveyard: open one night each (hours of its own, like `INTERIOR_OWN_HOURS`), the hole appears after the Stalchild. |
+| `RR_BENEATH_THE_GRAVEYARD_NIGHT_2_GRAVE_BEFORE_PIT` → `IKANA_GRAVEYARD:2` | `East.cpp:95` | Beneath the Graveyard: open one night each (hours of its own, like `INTERIOR_OWN_HOURS`), the hole appears after the Stalchild. |
+| `RR_IKANA_CANYON_CAVE` → `IKANA_CANYON:13` | `East.cpp:112` | Ikana Canyon cave: both sides in one scene (as in 0.8). |
+| `RR_IKANA_CANYON_LOWER` → `SAKONS_HIDEOUT:0` | `East.cpp:157` | Sakon's Hideout: open only on night 3 from 18:00 with Kafei, mandatory scene, respawn of its own (−7, `z_play.c:2063`). |
+| `RR_IKANA_CANYON_UPPER` → `IKANA_CANYON:14` | `East.cpp:187` | Ikana Canyon cave: both sides in one scene (as in 0.8). |
+| `RR_IKANA_GRAVEYARD_LOWER` → `BENEATH_THE_GRAVERYARD:0` | `East.cpp:257` | Beneath the Graveyard: open one night each (hours of its own, like `INTERIOR_OWN_HOURS`), the hole appears after the Stalchild. |
+| `RR_IKANA_GRAVEYARD_LOWER` → `BENEATH_THE_GRAVERYARD:1` | `East.cpp:258` | Beneath the Graveyard: open one night each (hours of its own, like `INTERIOR_OWN_HOURS`), the hole appears after the Stalchild. |
+| `RR_SAKON_HIDEOUT` → `IKANA_CANYON:6` | `East.cpp:372` | Sakon's Hideout: open only on night 3 from 18:00 with Kafei, mandatory scene, respawn of its own (−7, `z_play.c:2063`). |
+| `RR_STONE_TOWER_INVERTED_LOWER` → `STONE_TOWER:1` | `East.cpp:481` | Stone Tower inversion: turns the scene over (as in 0.8). |
+| `RR_STONE_TOWER_INVERTED_NEAR_TEMPLE` → `STONE_TOWER_TEMPLE_INVERTED:0` | `East.cpp:490` | Inverted Stone Tower Temple: Twinmold's door and the boss warp composition (0.4) depend on it; candidate for 6c with the temples. |
+| `RR_STONE_TOWER_TOP` → `STONE_TOWER_INVERTED:0` | `East.cpp:545` | Stone Tower inversion: turns the scene over (as in 0.8). |
+| `RR_IKANA_CASTLE_BEFORE_THRONE` → `IGOS_DU_IKANAS_LAIR:0` | `IkanaCastle.cpp:12` | Inside Ikana Castle and the well's back exit: inner ways of two special areas, they move with their front doors. |
+| `RR_IKANA_CASTLE_COURTYARD` → `BENEATH_THE_WELL:1` | `IkanaCastle.cpp:58` | Inside Ikana Castle and the well's back exit: inner ways of two special areas, they move with their front doors. |
+| `RR_IKANA_CASTLE_COURTYARD` → `IKANA_CASTLE:3` | `IkanaCastle.cpp:59` | Inside Ikana Castle and the well's back exit: inner ways of two special areas, they move with their front doors. |
+| `RR_IKANA_CASTLE_MAIN_ROOM` → `IKANA_CASTLE:2` | `IkanaCastle.cpp:115` | Inside Ikana Castle and the well's back exit: inner ways of two special areas, they move with their front doors. |
+| `RR_IKANA_CASTLE_THRONE_ROOM` → `IKANA_CASTLE:6` | `IkanaCastle.cpp:176` | Inside Ikana Castle and the well's back exit: inner ways of two special areas, they move with their front doors. |
+| `RR_MOON_DEKU_TRIAL` → `THE_MOON:0` | `Moon.cpp:15` | Moon: endgame; all four ways back end at `THE_MOON:0` (no place per door), mask requirements. |
+| `RR_MOON_GORON_TRIAL` → `THE_MOON:0` | `Moon.cpp:39` | Moon: endgame; all four ways back end at `THE_MOON:0` (no place per door), mask requirements. |
+| `RR_MOON_LINK_TRIAL` → `THE_MOON:0` | `Moon.cpp:62` | Moon: endgame; all four ways back end at `THE_MOON:0` (no place per door), mask requirements. |
+| `RR_MOON_ZORA_TRIAL` → `THE_MOON:0` | `Moon.cpp:82` | Moon: endgame; all four ways back end at `THE_MOON:0` (no place per door), mask requirements. |
+| `RR_MOON` → `MOON_DEKU_TRIAL:0` | `Moon.cpp:91` | Moon: endgame; all four ways back end at `THE_MOON:0` (no place per door), mask requirements. |
+| `RR_MOON` → `MOON_GORON_TRIAL:0` | `Moon.cpp:97` | Moon: endgame; all four ways back end at `THE_MOON:0` (no place per door), mask requirements. |
+| `RR_MOON` → `MOON_ZORA_TRIAL:0` | `Moon.cpp:103` | Moon: endgame; all four ways back end at `THE_MOON:0` (no place per door), mask requirements. |
+| `RR_MOON` → `MOON_LINK_TRIAL:0` | `Moon.cpp:109` | Moon: endgame; all four ways back end at `THE_MOON:0` (no place per door), mask requirements. |
+| `RR_GORON_SHRINE` → `GORON_VILLAGE_WINTER:2` | `North.cpp:38` | Goron Shrine: door rule `FIRST_DAY() || CAN_BE_GORON` (hours of its own) and no dead end (Goron Shop). |
+| `RR_GORON_VILLAGE` → `GORON_SHRINE:0` | `North.cpp:141` | Goron Shrine: door rule `FIRST_DAY() || CAN_BE_GORON` (hours of its own) and no dead end (Goron Shop). |
+| `RR_PIRATES_FORTRESS_CAPTAIN_ROOM_UPPER` → `PIRATES_FORTRESS:2` | `PiratesFortress.cpp:18` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_CAPTAIN_ROOM` → `PIRATES_FORTRESS:1` | `PiratesFortress.cpp:36` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_INSIDE_3_GUARD_ROOM` → `PIRATES_FORTRESS:3` | `PiratesFortress.cpp:47` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_INSIDE_CHEST_EGG_ROOM` → `PIRATES_FORTRESS:8` | `PiratesFortress.cpp:65` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_INSIDE_GREEN_GUARD` → `PIRATES_FORTRESS:5` | `PiratesFortress.cpp:79` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_INSIDE_LINE_GUARD` → `PIRATES_FORTRESS:7` | `PiratesFortress.cpp:88` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_INSIDE_MAZE_GUARD` → `PIRATES_FORTRESS:5` | `PiratesFortress.cpp:99` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_LEFT_CLAM_EGG_ROOM` → `PIRATES_FORTRESS:4` | `PiratesFortress.cpp:134` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_LEFT_PLATFORM` → `PIRATES_FORTRESS_INTERIOR:3` | `PiratesFortress.cpp:146` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_MOAT_HIGHER` → `PIRATES_FORTRESS:0` | `PiratesFortress.cpp:154` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_MOAT_HIGHER` → `PIRATES_FORTRESS_INTERIOR:10` | `PiratesFortress.cpp:155` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_MOAT_LOWER` → `PIRATES_FORTRESS_INTERIOR:9` | `PiratesFortress.cpp:172` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_MOAT_PLATFORM` → `PIRATES_FORTRESS:12` | `PiratesFortress.cpp:189` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_PLAZA_LEFT_EXIT` → `PIRATES_FORTRESS_INTERIOR:7` | `PiratesFortress.cpp:198` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_PLAZA_LEFT_LOWER` → `PIRATES_FORTRESS_INTERIOR:7` | `PiratesFortress.cpp:206` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_PLAZA_LEFT_UPPER` → `PIRATES_FORTRESS_INTERIOR:2` | `PiratesFortress.cpp:221` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_PLAZA_RIGHT_EXIT` → `PIRATES_FORTRESS_INTERIOR:5` | `PiratesFortress.cpp:234` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_PLAZA_RIGHT` → `PIRATES_FORTRESS_EXTERIOR:5` | `PiratesFortress.cpp:245` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_PLAZA_RIGHT` → `PIRATES_FORTRESS_INTERIOR:4` | `PiratesFortress.cpp:246` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_PLAZA_TOWER` → `PIRATES_FORTRESS_INTERIOR:1` | `PiratesFortress.cpp:258` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_PLAZA` → `PIRATES_FORTRESS_INTERIOR:0` | `PiratesFortress.cpp:279` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_PLAZA` → `PIRATES_FORTRESS_EXTERIOR:1` | `PiratesFortress.cpp:280` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_RIGHT_CLAM_EGG_ROOM` → `PIRATES_FORTRESS:6` | `PiratesFortress.cpp:303` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_SEWERS_PREGATE` → `PIRATES_FORTRESS_EXTERIOR:2` | `PiratesFortress.cpp:356` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_PIRATES_FORTRESS_TELESCOPE_ROOM` → `PIRATES_FORTRESS_EXTERIOR:6` | `PiratesFortress.cpp:378` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
+| `RR_WOODFALL` → `WOODFALL_TEMPLE:2` | `South.cpp:560` | Deku Princess's room: second door into the temple scene, open only after the temple; belongs to the temple. |
+| `RR_STONE_TOWER_TEMPLE_INVERTED_ENTRANCE` → `STONE_TOWER_INVERTED:1` | `StoneTowerTemple.cpp:241` | Inverted Stone Tower Temple: Twinmold's door and the boss warp composition (0.4) depend on it; candidate for 6c with the temples. |
+| `RR_GREAT_BAY_COAST` → `PINNACLE_ROCK:0` | `West.cpp:149` | Pinnacle Rock: under water, but the logic asks only for SWIM and Human Link dives too (`z_player.c:8931`): a Human could arrive in a Zora-only place. |
+| `RR_PINNACLE_ROCK_ENTRANCE` → `GREAT_BAY_COAST:3` | `West.cpp:244` | Pinnacle Rock: under water, but the logic asks only for SWIM and Human Link dives too (`z_player.c:8931`): a Human could arrive in a Zora-only place. |
+| `RR_WATERFALL_RAPIDS` → `ZORA_CAPE:4` | `West.cpp:283` | Waterfall Rapids: way in by Hookshot (Human), arrival in the river: land and water mixed. |
+| `RR_ZORA_CAPE_BEFORE_GREAT_BAY_TEMPLE` → `ZORA_HALL:1` | `West.cpp:295` | Zora Hall by land: `ZORA_HALL:1` has no region in the logic (`UNTRANSLATED.md`), so no way back. |
+| `RR_ZORA_CAPE` → `WATERFALL_RAPIDS:0` | `West.cpp:360` | Waterfall Rapids: way in by Hookshot (Human), arrival in the river: land and water mixed. |
+| `RR_WOODFALL_TEMPLE_DEKU_PRINCESS_ROOM` → `WOODFALL:3` | `WoodfallTemple.cpp:90` | Deku Princess's room: second door into the temple scene, open only after the temple; belongs to the temple. |

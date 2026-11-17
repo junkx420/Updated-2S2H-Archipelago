@@ -490,11 +490,13 @@ VARIANT_SCENES = ("SCENE_20SICHITAI2", "SCENE_10YUKIYAMANOMURA2", "SCENE_11GORON
                   "SCENE_F41", "SCENE_INISIE_R")
 
 
-def check_overworld(rows: list[dict], es_rows: list, out_regions: list) -> None:
+def check_overworld(rows: list[dict], es_rows: list, out_regions: list, water: list[str]) -> None:
     """Overworld rows are single exits, two per transition: row i and the row whose "into" is i's "out" are each other's
     way back. Every row names a place (no scene variant), leaves its scene for another, and shares no entrance with a
     row of another option, so the client's redirects never overlap."""
     over = [r for r in rows if r["option"] == "RO_SHUFFLE_OVERWORLD"]
+    if not set(water) <= {r["into"] for r in over}:
+        raise SystemExit(f"overworldWaterEntrances: {set(water) - {r['into'] for r in over}} are no overworld rows")
     if not over:
         return
     by_into = {r["into"]: r for r in over}
@@ -520,6 +522,31 @@ def check_overworld(rows: list[dict], es_rows: list, out_regions: list) -> None:
             raise SystemExit(f"shuffleEntrances: overworld {r['into']} shares an entrance with another option's row")
         if r["boss_warps"] or r["temple_exit"] is not None:
             raise SystemExit(f"shuffleEntrances: overworld {r['into']} cannot have boss warps")
+        # Both ways of a transition are under water or neither: a water exit is taken swimming, a land exit by any form.
+        if r["water"] != back["water"]:
+            raise SystemExit(f"overworldWaterEntrances: {r['into']} and its way back {r['out']} must both be listed or neither")
+
+
+def check_special_areas(rows: list[dict], es_rows: list) -> None:
+    """Special-area rows are a door and the area behind it, like the temples, but the client compares them as places
+    (Play_GetOriginalSceneId, base entrances) because their outside may be a cleared variant: no variant names, no boss
+    warps, no entrance shared with another option's row, and each area in a scene of its own."""
+    special = [r for r in rows if r["option"] == "RO_SHUFFLE_SPECIAL_AREAS"]
+    scenes = {into: (ins, outs) for opt, into, _, ins, outs, *_ in es_rows if opt == "RO_SHUFFLE_SPECIAL_AREAS"}
+    others = {e for r in rows if r["option"] != "RO_SHUFFLE_SPECIAL_AREAS"
+              for e in (r["into"], r["out"]) if not (e == r["out"] and (r["grotto"] or {}).get("kind") == "HOLE")}
+    inside_scenes = [scenes[r["into"]][0] for r in special]
+    for r in special:
+        inside, outside = scenes[r["into"]]
+        names = {r["into"].split(":")[0], r["out"].split(":")[0]}
+        if inside == outside or names & set(VARIANT_ENTRANCES) or {inside, outside} & set(VARIANT_SCENES):
+            raise SystemExit(f"shuffleEntrances: special area {r['into']} must name base places ({outside} -> {inside})")
+        if inside_scenes.count(inside) != 1:
+            raise SystemExit(f"shuffleEntrances: special area {r['into']} shares its scene {inside} with another row")
+        if r["into"] in others or r["out"] in others:
+            raise SystemExit(f"shuffleEntrances: special area {r['into']} shares an entrance with another option's row")
+        if r["boss_warps"] or r["temple_exit"] is not None or r["water"]:
+            raise SystemExit(f"shuffleEntrances: special area {r['into']} cannot have boss warps or water")
 
 
 def parse_ri_table(src: str):
@@ -607,6 +634,13 @@ def main() -> int:
         if entrance_key(a) in hours_of:
             raise SystemExit(f"interiorEntrances: {entrance_key(a)} twice")
         hours_of[entrance_key(a)] = hours
+
+    # Overworld rows arriving under water: { ENTRANCE(into), ... } (EntranceShuffle.cpp overworldWaterEntrances); they
+    # pair only among each other (check_overworld)
+    ow_body = re.search(r"overworldWaterEntrances\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
+    water = [entrance_key(a) for a in re.findall(ent, ow_body)]
+    if len(water) != ow_body.count("ENTRANCE") or len(set(water)) != len(water):
+        raise SystemExit("overworldWaterEntrances: a row does not match the expected format (or is listed twice)")
 
     def entrance_value(key: str) -> int:  # z64scene.h ENTRANCE(scene, spawn)
         scene, spawn = key.split(":")
@@ -774,10 +808,11 @@ def main() -> int:
         entrance_shuffle.append({"option": opt, "into": into, "out": out, "into_value": entrance_value(into),
                                  "door_region": door, "inside_region": inner, "boss_warps": boss_warps,
                                  "temple_exit": temple_exit, "exterior_region": exterior_region,
-                                 "grotto": grotto_of.get(into), "hours": hours_of.get(into)})
+                                 "grotto": grotto_of.get(into), "hours": hours_of.get(into), "water": into in water})
     check_grottos(entrance_shuffle, grotto_of, rc_table, out_regions, rando)
     check_interiors(entrance_shuffle, hours_of, out_regions)
-    check_overworld(entrance_shuffle, es_rows, out_regions)
+    check_overworld(entrance_shuffle, es_rows, out_regions, water)
+    check_special_areas(entrance_shuffle, es_rows)
 
     # Door keys: { RI_DOOR_KEY_X, "Building", { ENTRANCE(into), ... } } (MiscBehavior/DoorKeys.cpp doorKeys). Every
     # "into" must be the exit of exactly one region and lead into another scene; one key per building, in enum order.

@@ -7,7 +7,7 @@ from worlds.AutoWorld import call_all
 from .. import MM2S2HWorld, region_name
 from ..enums_generated import DOOR_KEYS, ENTRANCE_SHUFFLE
 from ..items_generated import ITEMS
-from ..regions_generated import REGIONS
+from ..regions_generated import ENTRANCE_AREA_RULES, REGIONS
 from ..time_logic import TIME_SLICE_COUNT, TimeContext, half_day_mask
 from . import MM2S2HTestBase
 from . import test_dungeon_items as di, test_entrance_shuffle as es
@@ -49,13 +49,14 @@ def with_pairs(original: MM2S2HWorld, swaps: list[tuple[str, str]]) -> MM2S2HWor
 
 
 class InteriorTable(MM2S2HTestBase):
-    """32 doors in three hours classes; the Inn's two doors share one region. The generator already proves that
-    every row is a plain door into a dead end and back."""
+    """41 doors in three hours classes (32, and 9 appended in 0.9: Great Fairy fountains, Goron Shop, Goron Graveyard,
+    Deku King's chamber and cell); the Inn's two doors share one region. The generator already proves that every row is
+    a plain door into a dead end and back."""
 
     def test_table(self) -> None:
-        self.assertEqual(len(INTERIORS), 32)
+        self.assertEqual(len(INTERIORS), 41)
         classes = {h: {row["into"] for row in INTERIORS if row["hours"] == h} for h in ("ALWAYS_OPEN", "DAYTIME", "OWN_HOURS")}
-        self.assertEqual([len(classes[h]) for h in classes], [17, 9, 6])
+        self.assertEqual([len(classes[h]) for h in classes], [26, 9, 6])
         self.assertEqual(classes["OWN_HOURS"], {"CURIOSITY_SHOP:0", "CURIOSITY_SHOP:1", "POST_OFFICE:0", "MILK_BAR:0",
                                                 "STOCK_POT_INN:0", "RANCH_HOUSE:0"})
         self.assertEqual([row["into"] for row in INTERIORS if row["inside_region"] == "RR_INN"],
@@ -63,9 +64,19 @@ class InteriorTable(MM2S2HTestBase):
         zora = next(row for row in DOOR_KEYS if row["key"] == "RI_DOOR_KEY_ZORA_HALL_ROOMS")
         self.assertEqual(sorted(zora["into"]), [f"ZORA_HALL_ROOMS:{i}" for i in (0, 1, 2, 3, 5)])
         # appended after every older row: saved row numbers of 0.3-0.6 pairings stay valid (0.8 appends after them)
-        first = ENTRANCE_SHUFFLE.index(INTERIORS[0])
-        self.assertEqual(ENTRANCE_SHUFFLE[first:first + len(INTERIORS)], INTERIORS)
-        self.assertEqual(first + len(INTERIORS), 66)
+        old, new = INTERIORS[:32], INTERIORS[32:]
+        first = ENTRANCE_SHUFFLE.index(old[0])
+        self.assertEqual(ENTRANCE_SHUFFLE[first:first + len(old)], old)
+        self.assertEqual(first + len(old), 66)
+        # 0.9 rows after the 0.8 overworld rows (134) and its 8 new ones: older saved pairs stay valid
+        start = ENTRANCE_SHUFFLE.index(new[0])
+        self.assertEqual((start, ENTRANCE_SHUFFLE[start:start + len(new)]), (142, new))
+        self.assertEqual({row["into"] for row in new},
+                         {f"FAIRY_FOUNTAIN:{i}" for i in range(5)} | {"GORON_SHOP:0", "GORON_GRAVERYARD:0",
+                                                                    "DEKU_KINGS_CHAMBER:0", "DEKU_KINGS_CHAMBER:1"})
+        self.assertTrue(all(row["hours"] == "ALWAYS_OPEN" for row in new))
+        self.assertEqual({into for into in ENTRANCE_AREA_RULES if into in BY_INTO},
+                         {"MUSIC_BOX_HOUSE:0", "ZORA_HALL_ROOMS:3", "DEKU_KINGS_CHAMBER:0", "DEKU_KINGS_CHAMBER:1"})
 
 
 class InteriorHoursClasses(MM2S2HTestBase):
@@ -107,7 +118,7 @@ class InteriorHoursClasses(MM2S2HTestBase):
                             if need & half:
                                 self.assertTrue(need & hours[door["into"]] & half, (cls, door["into"], inside["into"], name, h))
                     pairs += 1
-        self.assertEqual(pairs, 17 * 17 + 9 * 9)
+        self.assertEqual(pairs, 26 * 26 + 9 * 9)
 
 
 class InteriorShuffleOff(MM2S2HTestBase):
@@ -132,7 +143,7 @@ class InteriorShuffleOn(es.EntranceShuffleOn):
         for seed in range(8):
             self.world_setup(seed)
             world = cast(MM2S2HWorld, self.world)
-            self.assertEqual(len(world.entrance_pairs), 32)
+            self.assertEqual(len(world.entrance_pairs), 41)
             for door_value, inside_value in world.entrance_pairs:
                 door, inside = BY_VALUE[door_value], BY_VALUE[inside_value]
                 self.assertTrue(door["hours"] and door["hours"] == inside["hours"], (door["into"], inside["into"]))

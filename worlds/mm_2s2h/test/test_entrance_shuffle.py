@@ -145,7 +145,7 @@ class EntranceShuffleAreaRules(MM2S2HTestBase):
 
     def test_area_rules(self) -> None:
         temple_rows = {r["into"] for r in ENTRANCE_SHUFFLE
-                       if r["option"] not in ("RO_SHUFFLE_INTERIORS", "RO_SHUFFLE_OVERWORLD")}
+                       if r["option"] not in ("RO_SHUFFLE_INTERIORS", "RO_SHUFFLE_OVERWORLD", "RO_SHUFFLE_SPECIAL_AREAS")}
         self.assertEqual(set(ENTRANCE_AREA_RULES) & temple_rows, set(AREA_ITEMS) | set(BOSS_AREA_ITEMS))
         foreign = 0
         for seed in range(12):

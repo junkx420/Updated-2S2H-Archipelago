@@ -4,6 +4,7 @@ Usage from archipelago: python worlds/mm_2s2h/tools/entrance_client/run.py ../2s
 Requires MSVC on Windows, or c++ on other systems. Only game state/API boundaries are mocked.
 """
 from pathlib import Path
+import json
 import shutil
 import re
 import subprocess
@@ -96,6 +97,22 @@ over_index = {ENTRANCE_SHUFFLE[i]["into"]: i for i in over}
     "inline const std::vector<std::array<int, 3>> generatedOverworld = {"
     + ", ".join(f"{{ {i}, {ENTRANCE_SHUFFLE[i]['into_value']}, {over_index[ENTRANCE_SHUFFLE[i]['out']]} }}" for i in over)
     + "};\n", encoding="utf-8")
+# Special areas as generated: row index, "into". Real 0.8 slot data (test/data): its options and pairs.
+special = [(i, row["into_value"]) for i, row in enumerate(ENTRANCE_SHUFFLE) if row["option"] == "RO_SHUFFLE_SPECIAL_AREAS"]
+legacy = []
+for name in ("all_own", "overworld"):
+    data = json.loads((here.parents[1] / "test" / "data" / f"slot_data_0_8_0_{name}.json").read_text(encoding="utf-8"))
+    assert data["apworld_version"].startswith("0.8"), data["apworld_version"]
+    on = [k for k, v in data["options"].items() if k.startswith("RO_SHUFFLE_") and v and k in enums["RandoOptionId"]]
+    legacy.append("{ { " + ", ".join(on) + " }, { " + ", ".join(f"{{ {a}, {b} }}" for a, b in data["entrance_pairs"])
+                  + " } }")
+(build / "special_graph.h").write_text(
+    "#pragma once\n#include <array>\n#include <utility>\n#include <vector>\n"
+    "inline const std::vector<std::array<int, 2>> generatedSpecial = {"
+    + ", ".join(f"{{ {i}, {v} }}" for i, v in special) + "};\n"
+    "struct LegacySlot { std::vector<int> options; std::vector<std::pair<int32_t, int32_t>> pairs; };\n"
+    "inline const size_t rows08 = 134; // shuffleEntrances rows of apworld 0.8\n"
+    "inline const std::vector<LegacySlot> legacy08 = {" + ", ".join(legacy) + "};\n", encoding="utf-8")
 json_include = root / "build/x64/vcpkg/installed/x64-windows-static/include"
 for name in ("Rando/Rando.h", "Rando/Logic/Logic.h", "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h", "z64horse.h"):
     header = build / name

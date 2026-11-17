@@ -78,7 +78,7 @@ inline void TestInteriors() {
         assert(HoursOfRow(rows[i]) == generatedInteriors[i][2]);
     }
     auto always = RowsOf(INTERIOR_ALWAYS_OPEN), day = RowsOf(INTERIOR_DAYTIME), own = RowsOf(INTERIOR_OWN_HOURS);
-    assert(always.size() == 17 && day.size() == 9 && own.size() == 6);
+    assert(always.size() == 26 && day.size() == 9 && own.size() == 6); // 17 + 9 since apworld 0.9
 
     long cases = 0;
     std::set<std::pair<size_t, size_t>> covered;

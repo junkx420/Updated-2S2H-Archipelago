@@ -52,7 +52,7 @@ def build(options: dict, seed: int, fill: bool = True) -> MultiWorld:
 
 
 # Options added after 0.7.0: off, they are only a new key in the slot data, which the 0.7.0 fingerprints cannot have.
-NEW_OPTIONS = {"RO_SHUFFLE_OVERWORLD"}  # 0.8.0
+NEW_OPTIONS = {"RO_SHUFFLE_OVERWORLD", "RO_SHUFFLE_SPECIAL_AREAS"}  # 0.8.0, 0.9.0
 
 
 def fingerprint(mw: MultiWorld) -> str:
@@ -72,48 +72,96 @@ def golden_cases() -> dict[int, dict]:
     return {i: roll(rng) | OWN for i in range(40)}
 
 
-# Computed with 0.7.0 (before trimming existed): every seed that generated before must keep exactly this fill.
-# Depends on roll() in tools/random_seeds.py; if its option lists change, recompute these with the 0.7.0 code.
+# First computed with 0.7.0 (before trimming existed): every seed that generated before kept exactly this fill up to
+# 0.8.0. Recomputed with 0.9.0 and said so: all 40 rolls have Shuffle Interiors on, whose pool gained 9 rows in 0.9
+# (Great Fairy fountains, Goron Shop, Goron Graveyard, Deku King's chamber and cell), so every interior pairing and
+# hence every fill changed (0 of 38 equal). GOLDEN_WITHOUT_INTERIORS proves nothing else changed.
+# Depends on roll() in tools/random_seeds.py; if its option lists change, recompute these.
 # A later change that legitimately alters fills (new items, logic) must recompute them too and say so.
-GOLDEN = [  # (option roll / seed, fingerprint); rolls 24 and 34 raised OptionError
-    (0, '53a87237acf029d9'),
-    (1, '1f1374a414cc9aff'),
-    (2, 'a3d20427c0307edd'),
-    (3, '058194135988badb'),
-    (4, '0f2d83128a388096'),
-    (5, 'fefb55289ab2fa85'),
-    (6, '765d92e941ce3c30'),
-    (7, 'a9b99f60deb8b2f4'),
-    (8, '5b2102376d08b3c8'),
-    (9, '53ddbeaed1a842d2'),
-    (10, '6a729fbe9d196635'),
-    (11, '2efce5933c24708a'),
-    (12, '235e1d7ddec3342c'),
-    (13, '805d774739f7fa21'),
-    (14, '4275120d5f06fffe'),
-    (15, 'e4d8d513cb21ba1d'),
-    (16, '32b19faa78afbabe'),
-    (17, '90331bf562b0ddb8'),
-    (18, 'e5333114ca33e1e8'),
-    (19, 'a7176cd297fa95d1'),
-    (20, '9507b74606e403e5'),
-    (21, '7fdc0bfa47e92a92'),
-    (22, '4fe08bc2d03f76ff'),
-    (23, '3a78ed3f9829b789'),
-    (25, '4f0d85a773030d21'),
-    (26, '06167e8a9182c064'),
-    (27, 'e7ee8a1eb3880163'),
-    (28, 'c6a7cdbedbc19c43'),
-    (29, 'f0850113f916c7b5'),
-    (30, '1eaa630706add02d'),
-    (31, '3f5a6f0344bcf8b7'),
-    (32, 'bd3f12c9764707af'),
-    (33, '324ef12de2481132'),
-    (35, '94df9bae1d153d2b'),
-    (36, 'd0cf71220b3d1b44'),
-    (37, 'b618a2ca831c385f'),
-    (38, 'c8a26b1f10a2d486'),
-    (39, '5f5548a6238afe4b'),
+GOLDEN = [  # (option roll / seed, fingerprint); rolls 24 and 34 raised OptionError in 0.7.0
+    (0, '8793db5584e70b89'),
+    (1, '8056cab367cf2e07'),
+    (2, '4854b99b5eafb22f'),
+    (3, 'cd9f661748454433'),
+    (4, 'ad7c658f5faf0cf9'),
+    (5, '76a4295200657416'),
+    (6, 'c019a5134ce98c64'),
+    (7, '8be215d518b3d248'),
+    (8, 'a09193be62d87916'),
+    (9, 'ed90324ae910339c'),
+    (10, '364ec1563ce595de'),
+    (11, 'c59830df8c20a225'),
+    (12, '3a3a6ccf1b7b0506'),
+    (13, '1a0390cdf0e60552'),
+    (14, '6336ff6db9c58ffd'),
+    (15, '009f12753e0a9738'),
+    (16, '2e3bda3018a46607'),
+    (17, 'c57907aefd493655'),
+    (18, '7e09f4cfcef22044'),
+    (19, '72e51c0d27191dd3'),
+    (20, '561cc011e1c37c1d'),
+    (21, '7c63b805ca16d351'),
+    (22, '39f68fee71ae979b'),
+    (23, '2cb6ae53a0eea688'),
+    (25, '40f030fe08e00944'),
+    (26, '0e1eb69dd2f63a02'),
+    (27, '0605ed4270a47199'),
+    (28, '0d1c661f59788ee8'),
+    (29, 'b5338c6beeac4231'),
+    (30, 'e315109bc1a98a6f'),
+    (31, 'c647a9c6e6fe6786'),
+    (32, 'ed595502900472f0'),
+    (33, '15aa8ddc09f0c24f'),
+    (35, 'd4c8d6e5641d6441'),
+    (36, '05814549cf437f4b'),
+    (37, '135ad4370f0108f8'),
+    (38, '374af20bc783b1a5'),
+    (39, '53b6d50d8fed498b'),
+]
+
+# The same 40 rolls with Shuffle Interiors off (every other own option on), computed with 0.8.0 before any 0.9
+# change: with the options of 0.8 and the new ones off, 0.9 must fill exactly like 0.8.
+GOLDEN_WITHOUT_INTERIORS = [
+    (0, 'd5685fb95703b0cf'),
+    (1, '0f7947c933a1f76c'),
+    (2, 'ed0cbdb99978c56d'),
+    (3, 'ececb3a6e20142e2'),
+    (4, '2c396fa8f69e090b'),
+    (5, '9dc32b3dfd37aa8b'),
+    (6, 'c5dc5ed107bba2d3'),
+    (7, '6eeca526ddeb005e'),
+    (8, '2e5eae47f48db3d0'),
+    (9, 'dcabeb40cf0ef57b'),
+    (10, '7ea24783966f77fa'),
+    (11, 'ce54ce12f314ab5e'),
+    (12, 'c5ae5749cae49a2b'),
+    (13, 'ab75999dbb20ce4b'),
+    (14, 'ab142393ea27064b'),
+    (15, '13e0f7912609ce61'),
+    (16, 'a76fee09c6998309'),
+    (17, '2987f65487fdfcf4'),
+    (18, '2d88833ab5168080'),
+    (19, 'edf2844d689c3381'),
+    (20, '91f03762a197b43c'),
+    (21, 'f3313b0356645327'),
+    (22, '275bd0293e466e1f'),
+    (23, '9cda207d198210c9'),
+    (24, '3116a567ddba1b5b'),
+    (25, 'eb0c384719cc78d4'),
+    (26, '4593289f832ac5a5'),
+    (27, 'edeef7ee394a276f'),
+    (28, 'd9d3595581ffa5b2'),
+    (29, 'c5b116ae2038fc76'),
+    (30, '03c341f1b286c003'),
+    (31, 'eba74672ac483d64'),
+    (32, 'f071274e52bebf70'),
+    (33, '6ea17136f07bd348'),
+    (34, '84b2a1b15ef0bc14'),
+    (35, 'a36d63484eb52a1e'),
+    (36, 'd8ee5d16b6860e69'),
+    (37, '315d1a971785623e'),
+    (38, '5a18069887ebae86'),
+    (39, '389090adc0eede2b'),
 ]
 
 
@@ -124,6 +172,13 @@ class TestUnchangedSeeds(unittest.TestCase):
         for seed, expected in GOLDEN:
             with self.subTest(seed=seed):
                 self.assertEqual(fingerprint(build(cases[seed], seed)), expected)
+
+    def test_golden_without_interiors(self) -> None:
+        cases = golden_cases()
+        self.assertEqual(len(GOLDEN_WITHOUT_INTERIORS), 40)
+        for seed, expected in GOLDEN_WITHOUT_INTERIORS:
+            with self.subTest(seed=seed):
+                self.assertEqual(fingerprint(build(cases[seed] | {"shuffle_interiors": False}, seed)), expected)
 
 
 class TestTrim(unittest.TestCase):

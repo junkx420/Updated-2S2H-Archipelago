@@ -155,9 +155,11 @@ ShuffleDoorKeys = _shuffle("ShuffleDoorKeys", "RO_SHUFFLE_DOOR_KEYS", "Shuffle D
 ShuffleGrottos = _shuffle("ShuffleGrottos", "RO_SHUFFLE_GROTTOS", "Shuffle Grottos",
                           "The holes into grottos lead into other grottos, coupled: you come back out at the hole you fell into. Grottos only mix among each other.")
 ShuffleInteriors = _shuffle("ShuffleInteriors", "RO_SHUFFLE_INTERIORS", "Shuffle Interiors",
-                            "The doors into buildings lead into other buildings, coupled: you come back out at the door you went in. Only buildings with the same opening hours mix (always open, or daytime); buildings with hours of their own stay. A door keeps its opening hours and its key.")
+                            "The doors into buildings lead into other buildings, coupled: you come back out at the door you went in. Great Fairy fountains, the Goron Shop, the Goron Graveyard and the Deku King's chamber count as always-open buildings. Only buildings with the same opening hours mix (always open, or daytime); buildings with hours of their own stay. A door keeps its opening hours and its key.")
 ShuffleOverworld = _shuffle("ShuffleOverworld", "RO_SHUFFLE_OVERWORLD", "Shuffle Overworld",
-                            "Exits between outdoor areas (Termina Field, Clock Town, roads, Swamp, Mountains, Great Bay Coast, Ikana) lead to other outdoor areas, coupled: you come back the way you came. Water, one-way and cutscene ways stay. The Clock Town gates always lead out of Clock Town. Riding Epona through a shuffled exit, Link gets off and Epona waits there.")
+                            "Exits between outdoor areas (Termina Field, Clock Town, roads, Swamp, Mountains, Great Bay Coast, Ikana, Astral Observatory) lead to other outdoor areas, coupled: you come back the way you came. The underwater ways into Pirates' Fortress and Zora Hall mix only with each other. Other water, one-way and cutscene ways stay. The Clock Town gates always lead out of Clock Town. Riding Epona through a shuffled exit, Link gets off and Epona waits there.")
+ShuffleSpecialAreas = _shuffle("ShuffleSpecialAreas", "RO_SHUFFLE_SPECIAL_AREAS", "Shuffle Special Areas",
+                               "The entrances of the Swamp and Oceanside Spider Houses, Beneath the Well, Ikana Castle, the Secret Shrine and the Deku Shrine lead into a random one of these areas, coupled: you come back out where you went in. They mix only among each other.")
 ShuffleTraps = _shuffle("ShuffleTraps", "RO_SHUFFLE_TRAPS", "Traps", "Adds traps to the pool.")
 PlentifulItems = _shuffle("PlentifulItems", "RO_PLENTIFUL_ITEMS", "Plentiful Items", "Adds a second copy of every major item.")
 TriforceHunt = _shuffle("TriforceHunt", "RO_SHUFFLE_TRIFORCE_PIECES", "Triforce Hunt", "Collect Triforce pieces to win.")
@@ -325,6 +327,7 @@ class MM2S2HOptions(PerGameCommonOptions):
     shuffle_grottos: ShuffleGrottos
     shuffle_interiors: ShuffleInteriors
     shuffle_overworld: ShuffleOverworld
+    shuffle_special_areas: ShuffleSpecialAreas
     shuffle_traps: ShuffleTraps
     trap_amount: TrapAmount
     plentiful_items: PlentifulItems

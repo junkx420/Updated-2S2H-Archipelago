@@ -8,6 +8,7 @@
 #include "interior_graph.h"
 #include "interiors.h"
 #include "overworld.h"
+#include "special_areas.h"
 
 using namespace Rando::EntranceShuffle;
 
@@ -173,4 +174,6 @@ int main() {
     TestGrottos();
     TestInteriors();
     OverworldTest::TestOverworld();
+    TestSpecialAreas();
+    TestLegacy08();
 }

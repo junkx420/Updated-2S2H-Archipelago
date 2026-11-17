@@ -108,12 +108,33 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   through a shuffled exit, Link gets off and Epona waits there. Area rules for Woodfall, the Deku Palace treetop, the
   Goron Racetrack (both sides of its boulder) and Milk Road past the boulder (`shuffleAreaRules`). 0.1–0.7
   seeds/saves remain supported. See `docs/testing.md`. **Not tested in game.**
+- **Stage 6b** (apworld 0.9.0): the remaining two-way transitions of the logic, 23 rows appended to
+  `shuffleEntrances` (rows 134–156; older row numbers stay valid).
+  - `shuffle_overworld` gains the Astral Observatory (Bombers' passage from East Clock Town, now a fifth "gate", and
+    the door to Termina Field) and the underwater ways into Pirates' Fortress and Zora Hall. These are listed in
+    `overworldWaterEntrances` and pair only among each other, always a coast's exit with a dead end's (Zora Hall's
+    door by land has no region in the logic): a land exit never leads under water. They are paired after GER; a
+    crossed pairing that would lose a region reachable with all items stays vanilla. Pinnacle Rock and Waterfall Rapids
+    stay fixed, a Human can reach them (Human Link dives too).
+  - `shuffle_interiors` gains 9 "always open" rows: the five Great Fairy fountains, the Goron Shop, the Goron
+    Graveyard, the Deku King's chamber and the monkey's cell (area rule Deku for the last two).
+  - New `shuffle_special_areas` (`RO_SHUFFLE_SPECIAL_AREAS`, default off): Swamp and Oceanside Spider Houses,
+    Beneath the Well and Ikana Castle (front doors; the well's back exit stays joined to the castle courtyard), Secret
+    Shrine and Deku Shrine, coupled among each other. The client compares them as places (cleared swamp, layers).
+    Area rule only for the Swamp Spider House (its own door's guarantee).
+  - Seeds of 0.8 or older keep every 0.9 row vanilla, in the client (no saved pair) and in the Universal Tracker,
+    also with the overworld or interior option on (`test_special_areas.py`, real 0.8 slot data in `test/data`).
+  - Correction of the 0.8 code: with the overworld and temples or bosses shuffled, blue warps lead back into their own
+    boss room while GER runs, so GER never counts a place as reached through a warp that is redirected afterwards.
+  - The 62 two-way exits that stay fixed, with reason, are listed in `docs/testing.md`; `FixedExitInventory` fails as
+    soon as one moves. **Not tested in game.**
 - **Pool trimming** (apworld 0.7.1, no new ids or options, client unchanged): when the item pool is larger than the
   shuffled locations, `create_items` removes junk (as before), then traps, then extra Plentiful Items copies (picked
   at random; every original item stays). Each trimmed trap/copy count is logged as a warning. Only if the pool is
   still too large without all of these does it raise `OptionError`, naming the counts and the options that help.
   This path is only reached where 0.7.0 raised `OptionError`, so every seed that generated before is unchanged
-  (`test/test_pool_trim.py` pins 38 fills from 0.7.0).
+  (`test/test_pool_trim.py` pinned 38 fills from 0.7.0; recomputed for 0.9.0 because those rolls have Shuffle
+  Interiors on, plus 40 fills of 0.8.0 without it that 0.9.0 keeps exactly).
 
 ## Updating to a new 2S2H release
 

@@ -4,6 +4,7 @@
 // bits), every clear-flag state, real exits against void outs, deaths, grotto returns and warp songs, cutscenes,
 // Epona and the void-out point, with and without the other entrance options.
 #include "overworld_graph.h"
+#include <set>
 
 namespace OverworldTest {
 using namespace Rando::EntranceShuffle;
@@ -72,7 +73,7 @@ inline void TestOverworld() {
             rows.push_back(i);
         }
     }
-    assert(rows.size() == generatedOverworld.size() && rows.size() == 68);
+    assert(rows.size() == generatedOverworld.size() && rows.size() == 76); // 68 + 8 since apworld 0.9
     for (size_t n = 0; n < rows.size(); ++n) {
         const auto& generated = generatedOverworld[n];
         assert(size_t(generated[0]) == rows[n] && shuffleEntrances[rows[n]].into == generated[1]);
@@ -83,7 +84,16 @@ inline void TestOverworld() {
     Actor horse;
     horse.world.pos = { 10, 20, 30 };
     horse.shape.rot.y = 77;
-    long cases = 0, redirected = 0, kept = 0, loads = 0;
+    long cases = 0, redirected = 0, kept = 0, loads = 0, refused = 0;
+    std::set<size_t> water;
+    for (u16 into : overworldWaterEntrances) {
+        for (size_t row : rows) {
+            if (shuffleEntrances[row].into == into) {
+                water.insert(row);
+            }
+        }
+    }
+    assert(water.size() == 4 && overworldWaterEntrances.size() == 4);
     for (int others = 0; others < 2; ++others) {
         for (size_t exitRow : rows) {
             for (size_t target : rows) {
@@ -97,6 +107,12 @@ inline void TestOverworld() {
                 std::vector<std::pair<int32_t, int32_t>> pairs{ { exit.into, arrival.into } };
                 pairs.emplace_back(shuffleEntrances[opposite[target]].into, shuffleEntrances[opposite[exitRow]].into);
                 SetPairs(pairs);
+                // A land exit never leads under water and a water exit never onto land: such pairs are refused.
+                bool pairable = water.count(exitRow) == water.count(target);
+                if (!pairable) {
+                    assert(gSaveContext.save.shipSaveInfo.rando.entrancePairs[exitRow] == 0);
+                    ++refused;
+                }
                 for (int on = 0; on < 2; ++on) {
                     options[RO_SHUFFLE_OVERWORLD] = on;
                     for (s16 scene : SceneForms(exit.outsideScene)) {
@@ -116,7 +132,7 @@ inline void TestOverworld() {
                                         playState.player = &player;
                                         OnBeforeTransitionSetup();
                                         bool real = on && (flag == 0 || flag == -2) && cutscene == 0;
-                                        bool moved = real && target != exitRow;
+                                        bool moved = real && target != exitRow && pairable;
                                         assert(playState.nextEntrance == (moved ? arrival.into : form));
                                         assert(gSaveContext.nextCutsceneIndex == (moved ? 0xFFEF : 0xFFF1));
                                         assert(gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance ==
@@ -179,7 +195,8 @@ inline void TestOverworld() {
         }
     }
     std::cout << "Overworld: " << cases << " transitions (" << rows.size() * rows.size() << " pairings, "
-              << redirected << " redirected, " << kept << " kept, " << loads << " variant loads) passed\n";
+              << redirected << " redirected, " << kept << " kept, " << loads << " variant loads, " << refused
+              << " land/water pairings refused) passed\n";
 }
 
 } // namespace OverworldTest

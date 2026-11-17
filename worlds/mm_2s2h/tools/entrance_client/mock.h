@@ -54,6 +54,9 @@ inline unsigned flags = 0;
 #define HAS_MAGIC true
 #define HAS_ITEM(item) true
 #define CAN_PLAY_SONG(song) true
+#define CAN_USE_PROJECTILE true
+#define CAN_USE_ABILITY(ability) true
+#define CAN_LIGHT_TORCH_NEAR_ANOTHER true
 inline int randoEvents[RE_MAX + 1]{};
 #define RANDO_EVENTS randoEvents
 #define SET_WEEKEVENTREG(flag) (flags |= (flag))
