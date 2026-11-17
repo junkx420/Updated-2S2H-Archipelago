@@ -6,6 +6,7 @@ and Rando/StartingItems.cpp.
 """
 from __future__ import annotations
 
+import logging
 import re
 from collections import Counter, defaultdict
 from typing import Any, ClassVar
@@ -491,24 +492,55 @@ class MM2S2HWorld(World):
                 if "RI_HEART_PIECE" not in pool:
                     break
                 pool.remove("RI_HEART_PIECE")
+        copies: list[str] = []  # the extra copies of Plentiful Items (the originals stay in pool)
         if ro["RO_PLENTIFUL_ITEMS"]:
-            pool += [ri for ri in pool if ri not in ("RI_TRIFORCE_PIECE", "RI_SKELETON_KEY") and (
+            copies = [ri for ri in pool if ri not in ("RI_TRIFORCE_PIECE", "RI_SKELETON_KEY") and (
                 ITEMS[ri][1] in ("RITYPE_BOSS_KEY", "RITYPE_SMALL_KEY", "RITYPE_MASK", "RITYPE_MAJOR")
                 or (ITEMS[ri][1] == "RITYPE_LESSER" and ITEMS[ri][2] not in ("ITEM_TINGLE_MAP", "ITEM_DUNGEON_MAP", "ITEM_COMPASS")))]
-        if ro["RO_SHUFFLE_TRAPS"]:
-            pool += ["RI_TRAP"] * ro["RO_TRAP_AMOUNT"]
-        pool = [ri for ri in pool if ri not in ("RI_UNKNOWN", "RI_NONE")]
+        traps = ["RI_TRAP"] * ro["RO_TRAP_AMOUNT"] if ro["RO_SHUFFLE_TRAPS"] else []
+        keep = lambda ri: ri not in ("RI_UNKNOWN", "RI_NONE")  # noqa: E731
+        is_junk = lambda ri: ITEMS[ri][1] == "RITYPE_JUNK" or ri == "RI_JUNK"  # noqa: E731
+        pool = [ri for ri in pool + copies + traps if keep(ri)]
         # balance against the number of locations (2S2H fills with junk the same way)
         n_locs = len(self.shuffled)
         if len(pool) > n_locs:
-            junk = [i for i, ri in enumerate(pool) if ITEMS[ri][1] == "RITYPE_JUNK" or ri == "RI_JUNK"]
+            junk = [i for i, ri in enumerate(pool) if is_junk(ri)]
             for i in reversed(junk[:len(pool) - n_locs]):
                 pool.pop(i)
-            if len(pool) > n_locs:
-                raise OptionError(f"{self.player_name}: {len(pool)} items for {n_locs} locations; "
-                                  "enable more check types or fewer item-adding options")
+            if len(pool) > n_locs:  # all junk is gone; before 0.7.1 this was an OptionError
+                pool = self._trim_pool(pool, [ri for ri in copies if keep(ri) and not is_junk(ri)],
+                                       [ri for ri in traps if keep(ri) and not is_junk(ri)], n_locs)
         pool += [JUNK_FILL] * (n_locs - len(pool))
         self.multiworld.itempool += [self.create_item(ITEMS[ri][0]) for ri in pool]
+
+    def _trim_pool(self, pool: list[str], copies: list[str], traps: list[str], n_locs: int) -> list[str]:
+        """Pool still too large without junk. pool ends with the copies, then the traps (both without junk). Trim
+        traps first, then extra Plentiful copies (chosen at random); every original item stays. Only reached where
+        0.7.0 raised OptionError, so seeds that generated before stay identical."""
+        n_items = len(pool)
+        base = pool[:n_items - len(copies) - len(traps)]
+        excess = n_items - n_locs
+        cut_traps = min(excess, len(traps))
+        excess -= cut_traps
+        cut_copies = min(excess, len(copies))
+        excess -= cut_copies
+        if excess > 0:
+            raise OptionError(
+                f"{self.player_name}: {len(base)} items for {n_locs} locations, even without junk, traps and the extra "
+                "copies of Plentiful Items. Enable more check types (e.g. shuffle_pots, shuffle_grass, shuffle_crates, "
+                "shuffle_freestanding) or fewer item-adding options (NPC, enemy or boss souls, clock_shuffle, "
+                "shuffle_ocarina_buttons, triforce_hunt with many pieces, low starting_health).")
+        kept = (sorted(self.random.sample(range(len(copies)), len(copies) - cut_copies)) if cut_copies
+                else list(range(len(copies))))
+        if cut_traps:
+            logging.warning(f"{self.player_name} (Majora's Mask 2S2H): {n_items} items for {n_locs} locations; "
+                            f"removed {cut_traps} of {len(traps)} traps.")
+        if cut_copies:
+            logging.warning(f"{self.player_name} (Majora's Mask 2S2H): removed {cut_copies} of {len(copies)} extra "
+                            "Plentiful copies (every original item stays): "
+                            + ", ".join(f"{ITEMS[ri][0]} x{n}" for ri, n in sorted(Counter(
+                                copies[i] for i in set(range(len(copies))) - set(kept)).items())))
+        return base + [copies[i] for i in kept] + traps[:len(traps) - cut_traps]
 
     # ------------------------------------------------------------------------------------------
     def collect(self, state: CollectionState, item: Item) -> bool:

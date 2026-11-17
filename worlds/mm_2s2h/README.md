@@ -98,6 +98,12 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   testing the exterior scene (cleared swamp, spring village). Door keys gain the Zora Hall Rooms Key (five doors); the
   client locks those doors only for seeds of 0.7 and newer (`RANDO_INF_DOOR_KEYS_ZORA_HALL`), so 0.5/0.6 saves keep
   them open. 0.1–0.6 seeds/saves remain supported. See `docs/testing.md`. **Not tested in game.**
+- **Pool trimming** (apworld 0.7.1, no new ids or options, client unchanged): when the item pool is larger than the
+  shuffled locations, `create_items` removes junk (as before), then traps, then extra Plentiful Items copies (picked
+  at random; every original item stays). Each trimmed trap/copy count is logged as a warning. Only if the pool is
+  still too large without all of these does it raise `OptionError`, naming the counts and the options that help.
+  This path is only reached where 0.7.0 raised `OptionError`, so every seed that generated before is unchanged
+  (`test/test_pool_trim.py` pins 38 fills from 0.7.0).
 
 ## Updating to a new 2S2H release
 

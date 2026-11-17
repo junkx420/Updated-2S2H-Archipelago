@@ -60,7 +60,8 @@ including playthrough:
 * **199 / 200 generated**, avg. 2.8 s, max 3.6 s per seed.
 * The 1 failure is an intentional refusal: plentiful items + triforce hunt (40 pieces) + traps with only 468
   locations means 502 items for 468 locations. 2S2H refuses the same pool ("can't balance"). The apworld raises a
-  clear `OptionError` naming the counts.
+  clear `OptionError` naming the counts. Since 0.7.1 such a pool is trimmed first (traps, then extra Plentiful
+  copies), see "Pool trimming" below.
 
 ### Own-dungeon items (apworld 0.1.2)
 
@@ -572,3 +573,36 @@ each other, coupled: through door A into building X, out of X back in front of A
 9. Door keys on: a locked door names its own key, not the building behind it; the Zora Hall doors need the Zora Hall
    Rooms Key; a 0.5/0.6 save with door keys keeps the Zora Hall doors open.
 10. Option off and 0.1–0.6 seeds/saves: doors as before.
+
+### Pool trimming (apworld 0.7.1, 2026-11-17)
+
+Plentiful Items doubles every key, mask and major item. In sparse option rolls that made more items than locations,
+and `create_items` raised `OptionError` after removing only junk (5 of 100 random seeds with all own options). Since
+0.7.1 it trims in this order: junk (unchanged), traps, then the extra Plentiful copies (chosen with the world's
+random). Every original item stays. Trimmed traps and copies are logged as warnings (`logging.warning`, with the
+trimmed copies by name). Only if the pool is still too large after that does it raise `OptionError`, which now names
+the counts and the options that help. No ids, options or logic change; the client is unchanged (it accepts `0.7`).
+
+#### Verification
+
+* `pytest test/general worlds/mm_2s2h/test -q`: **654 passed, 0 failed** (143,574 subtests), 174 s.
+* New `test/test_pool_trim.py`:
+  * Unchanged seeds: fingerprints (every location's item, starting items, slot data incl. entrance pairs, without the world version) of 38
+    option rolls 0–39 of `random_seeds.py` with all own options, computed with 0.7.0 before the change. 0.7.1 gives
+    the same fingerprint for **38/38**. Rolls 24 and 34 raised `OptionError` in 0.7.0 and are left out.
+  * Crowded pool (default checks, Plentiful, 30 traps, NPC souls, door keys): 442 items for 284 locations; trims
+    30 of 30 traps and 128 of 143 copies, two warnings, no trap left, every item of the same pool without Plentiful
+    and traps still present, exactly 15 copies extra, beatable after fill.
+  * Same without Plentiful: only traps are trimmed (15 of 30).
+  * Too full without Plentiful (souls, clock, ocarina buttons, 1 heart, traps): `OptionError` with "339 items for 284
+    locations, even without junk, traps ...".
+* Spoiler comparison with `Generate.py --spoiler 3`, option rolls 0–29 with all own options, 0.7.0 (via
+  `git stash`) against 0.7.1: settings, entrances, every location and the start inventory have the same content for
+  **29/29** (roll 24 failed in 0.7.0, generates in 0.7.1). With `PYTHONHASHSEED=0` on both sides even the text before
+  the playthrough is byte-identical for 29/29. Differences that remain are only the order of the start-inventory
+  lines and the playthrough/paths section; 0.7.0 against itself (two runs, same seed, same hash seed) shows the same
+  kind of differences, so they are already nondeterministic in 0.7.0 and not caused by this change.
+* 100 random seeds with interiors, temples, bosses, grottos, door keys and NPC souls: **100/100**, 272 s (0.7.0:
+  95/100). The five former failures now trim: seed 24: 391 items for 284 locations, 17 of 17
+  traps and 90 of 149 copies; 34: 3 of 134 copies; 58: 13 of 214; 66: 19 of 208; 71: 17 of 144.
+* Parity harness rebuilt, all own options off: **1200/1200 identical** (0 mismatching).
