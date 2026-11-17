@@ -5,6 +5,11 @@
 
 namespace Rando {
 
+namespace EntranceShuffle {
+// MiscBehavior/EntranceShuffle.cpp; false unless Shuffle Grottos is on.
+bool LogicGrottoEntrance(s32 entrance, s32* logicEntrance);
+} // namespace EntranceShuffle
+
 namespace Logic {
 
 std::map<RandoRegionId, RandoRegion> Regions = {};
@@ -47,7 +52,10 @@ RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
     }
 
     s32 modifiedEntrance = entrance;
-    if (entrance == ENTRANCE(GROTTOS, 4)) {
+    if (EntranceShuffle::LogicGrottoEntrance(entrance, &modifiedEntrance)) {
+        // Shuffle Grottos: decided by the real entrance and the grotto data, since the place outside (respawn DOWN)
+        // may belong to another grotto's hole.
+    } else if (entrance == ENTRANCE(GROTTOS, 4)) {
         switch (gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance) {
             case ENTRANCE(TERMINA_FIELD, 0):
                 modifiedEntrance = gSaveContext.respawn[RESPAWN_MODE_UNK_3].data == 0x3F ? ENTRANCE(GROTTOS, 19)

@@ -38,6 +38,32 @@ struct ShuffleAreaRule {
 
 extern const std::vector<ShuffleAreaRule> shuffleAreaRules;
 
+// How the game enters the area of a grotto row (option RO_SHUFFLE_GROTTOS).
+enum GrottoKind : u8 {
+    // A DoorAna hole: it stores itself as respawn[RESPAWN_MODE_UNK_3] (z_door_ana.c:144), the grotto's exit returns
+    // there (exit 0xFFFF, z_player.c:6496).
+    GROTTO_HOLE,
+    // A plain scene exit without that respawn point; the grotto's exit is the row's outOf.
+    GROTTO_SCENE_EXIT,
+};
+
+// Game side of a grotto row of shuffleEntrances (matched by "into"). Several grottos share one real entrance; the
+// grotto data then decides which one the room is (Logic.cpp GetRegionIdFromEntrance, ObjGrass.cpp chestGrottoMap). A
+// grotto is always the pair of both: redirecting a hole sets both to the target's values. Read by the apworld
+// generator.
+struct GrottoEntrance {
+    u16 into;         // the row's logical "into", may be one of the logic's virtual ENTRANCE(GROTTOS, 17..31)
+    u16 gameEntrance; // the entrance the game really loads
+    s16 data;         // respawn[RESPAWN_MODE_UNK_3].data its hole writes (z_door_ana.c:150), -1 if none
+    GrottoKind kind;
+};
+
+extern const std::vector<GrottoEntrance> grottoEntrances;
+
+// In-game check tracker: with Shuffle Grottos on, the logic entrance of the grotto the player is in, decided by the
+// real entrance and the grotto data instead of the place outside (the grotto may lie behind another hole).
+bool LogicGrottoEntrance(s32 entrance, s32* logicEntrance);
+
 // Writes the pairing from the apworld's slot_data ([door's "into", "into" of the area behind it]) into the save.
 void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs);
 
