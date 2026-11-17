@@ -41,6 +41,11 @@ const std::vector<DoorKey> doorKeys = {
     { RI_DOOR_KEY_MUSIC_BOX_HOUSE,        "Music Box House",        { ENTRANCE(MUSIC_BOX_HOUSE, 0) } },
     { RI_DOOR_KEY_GHOST_HUT,              "Ghost Hut",              { ENTRANCE(GHOST_HUT, 0) } },
     { RI_DOOR_KEY_DAMPES_HOUSE,           "Dampe's House",          { ENTRANCE(DAMPES_HOUSE, 0) } },
+    // apworld 0.7: the five knob doors of Zora Hall (z_en_door.c DOOR_DL_ZORA_HALL, West.cpp RR_ZORA_HALL), shop
+    // and band rooms. Locked only when the seed has this key (RANDO_INF_DOOR_KEYS_ZORA_HALL): older seeds do not.
+    { RI_DOOR_KEY_ZORA_HALL_ROOMS,        "Zora Hall Rooms",        { ENTRANCE(ZORA_HALL_ROOMS, 0), ENTRANCE(ZORA_HALL_ROOMS, 1),
+                                                                      ENTRANCE(ZORA_HALL_ROOMS, 2), ENTRANCE(ZORA_HALL_ROOMS, 3),
+                                                                      ENTRANCE(ZORA_HALL_ROOMS, 5) } },
 };
 // clang-format on
 
@@ -63,7 +68,11 @@ bool IsEntranceLocked(u16 entrance) {
         return false;
     }
     const DoorKey* doorKey = FindByEntrance(entrance);
-    return doorKey != nullptr && !Flags_GetRandoInf(DOOR_KEY_RI_TO_RANDO_INF(doorKey->key));
+    if (doorKey == nullptr ||
+        (doorKey->key == RI_DOOR_KEY_ZORA_HALL_ROOMS && !Flags_GetRandoInf(RANDO_INF_DOOR_KEYS_ZORA_HALL))) {
+        return false;
+    }
+    return !Flags_GetRandoInf(DOOR_KEY_RI_TO_RANDO_INF(doorKey->key));
 }
 
 } // namespace DoorKeys

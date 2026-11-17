@@ -60,6 +60,24 @@ struct GrottoEntrance {
 
 extern const std::vector<GrottoEntrance> grottoEntrances;
 
+// Opening hours of an interior row (option RO_SHUFFLE_INTERIORS). The time logic gives every region the same mask
+// (docs/time-logic.md), so a door's time rule only says that it opens at some time, and checks inside a building
+// silently rely on the hours of its own door (e.g. the Town Shooting Gallery only tests the bow). Doors are therefore
+// shuffled only among rows of one class; the apworld test proves each class against the logic's own door rules.
+enum InteriorHours : u8 {
+    INTERIOR_ALWAYS_OPEN, // at every time of day (some with a short gap no check depends on)
+    INTERIOR_DAYTIME,     // daytime into the evening; no check inside needs the night
+    INTERIOR_OWN_HOURS,   // hours of its own (night-only checks, items or events): stays at its own door
+};
+
+// Game side of an interior row of shuffleEntrances (matched by "into"). Read by the apworld generator.
+struct InteriorEntrance {
+    u16 into;
+    InteriorHours hours;
+};
+
+extern const std::vector<InteriorEntrance> interiorEntrances;
+
 // In-game check tracker: with Shuffle Grottos on, the logic entrance of the grotto the player is in, decided by the
 // real entrance and the grotto data instead of the place outside (the grotto may lie behind another hole).
 bool LogicGrottoEntrance(s32 entrance, s32* logicEntrance);

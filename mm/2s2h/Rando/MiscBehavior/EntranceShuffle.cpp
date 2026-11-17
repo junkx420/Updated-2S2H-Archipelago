@@ -54,6 +54,78 @@ const std::vector<ShuffleEntrance> shuffleEntrances = {
     { RO_SHUFFLE_GROTTOS, ENTRANCE(GROTTOS, 29), ENTRANCE(IKANA_CANYON, 0),                 SCENE_KAKUSIANA, SCENE_IKANA,            SCENE_MAX, {} },
     { RO_SHUFFLE_GROTTOS, ENTRANCE(GROTTOS, 30), ENTRANCE(IKANA_GRAVEYARD, 0),              SCENE_KAKUSIANA, SCENE_BOTI,             SCENE_MAX, {} },
     { RO_SHUFFLE_GROTTOS, ENTRANCE(GROTTOS, 31), ENTRANCE(ROAD_TO_IKANA, 0),                SCENE_KAKUSIANA, SCENE_IKANAMAE,         SCENE_MAX, {} },
+    // Interiors (Regions/*.cpp): knob doors from outside into a dead-end building, one row per door; their hours are in
+    // interiorEntrances below. outsideScene is the vanilla exterior; for interiors the redirect does not test it,
+    // because the exterior may be its cleared or spring variant (Southern Swamp, Mountain Village).
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(TRADING_POST, 0),            ENTRANCE(WEST_CLOCK_TOWN, 5),          SCENE_8ITEMSHOP,    SCENE_ICHIBA,           SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(BOMB_SHOP, 0),               ENTRANCE(WEST_CLOCK_TOWN, 6),          SCENE_BOMYA,        SCENE_ICHIBA,           SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(CURIOSITY_SHOP, 0),          ENTRANCE(WEST_CLOCK_TOWN, 4),          SCENE_AYASHIISHOP,  SCENE_ICHIBA,           SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(CURIOSITY_SHOP, 1),          ENTRANCE(LAUNDRY_POOL, 1),             SCENE_AYASHIISHOP,  SCENE_ALLEY,            SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(SWORDMANS_SCHOOL, 0),        ENTRANCE(WEST_CLOCK_TOWN, 3),          SCENE_DOUJOU,       SCENE_ICHIBA,           SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(POST_OFFICE, 0),             ENTRANCE(WEST_CLOCK_TOWN, 7),          SCENE_POSTHOUSE,    SCENE_ICHIBA,           SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(LOTTERY_SHOP, 0),            ENTRANCE(WEST_CLOCK_TOWN, 8),          SCENE_TAKARAKUJI,   SCENE_ICHIBA,           SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(HONEY_AND_DARLINGS_SHOP, 0), ENTRANCE(EAST_CLOCK_TOWN, 6),          SCENE_BOWLING,      SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(MILK_BAR, 0),                ENTRANCE(EAST_CLOCK_TOWN, 11),         SCENE_MILK_BAR,     SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(MAYORS_RESIDENCE, 0),        ENTRANCE(EAST_CLOCK_TOWN, 7),          SCENE_SONCHONOIE,   SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(TOWN_SHOOTING_GALLERY, 0),   ENTRANCE(EAST_CLOCK_TOWN, 8),          SCENE_SYATEKI_MIZU, SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(TREASURE_CHEST_SHOP, 0),     ENTRANCE(EAST_CLOCK_TOWN, 4),          SCENE_TAKARAYA,     SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(STOCK_POT_INN, 0),           ENTRANCE(EAST_CLOCK_TOWN, 9),          SCENE_YADOYA,       SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(STOCK_POT_INN, 1),           ENTRANCE(EAST_CLOCK_TOWN, 10),         SCENE_YADOYA,       SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(DEKU_SCRUB_PLAYGROUND, 0),   ENTRANCE(NORTH_CLOCK_TOWN, 4),         SCENE_DEKUTES,      SCENE_BACKTOWN,         SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(TOURIST_INFORMATION, 0),     ENTRANCE(SOUTHERN_SWAMP_POISONED, 1),  SCENE_MAP_SHOP,     SCENE_20SICHITAI,       SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(MAGIC_HAGS_POTION_SHOP, 0),  ENTRANCE(SOUTHERN_SWAMP_POISONED, 5),  SCENE_WITCH_SHOP,   SCENE_20SICHITAI,       SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(SWAMP_SHOOTING_GALLERY, 0),  ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 2),   SCENE_SYATEKI_MORI, SCENE_24KEMONOMITI,     SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(MOUNTAIN_SMITHY, 0),         ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 1),  SCENE_KAJIYA,       SCENE_10YUKIYAMANOMURA, SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(RANCH_HOUSE, 0),             ENTRANCE(ROMANI_RANCH, 2),             SCENE_OMOYA,        SCENE_F01,              SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(RANCH_HOUSE, 1),             ENTRANCE(ROMANI_RANCH, 3),             SCENE_OMOYA,        SCENE_F01,              SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(CUCCO_SHACK, 0),             ENTRANCE(ROMANI_RANCH, 4),             SCENE_F01C,         SCENE_F01,              SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(DOGGY_RACETRACK, 0),         ENTRANCE(ROMANI_RANCH, 5),             SCENE_F01_B,        SCENE_F01,              SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(MARINE_RESEARCH_LAB, 0),     ENTRANCE(GREAT_BAY_COAST, 7),          SCENE_LABO,         SCENE_30GYOSON,         SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(FISHERMANS_HUT, 0),          ENTRANCE(GREAT_BAY_COAST, 4),          SCENE_FISHERMAN,    SCENE_30GYOSON,         SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(ZORA_HALL_ROOMS, 5),         ENTRANCE(ZORA_HALL, 2),                SCENE_BANDROOM,     SCENE_33ZORACITY,       SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(ZORA_HALL_ROOMS, 2),         ENTRANCE(ZORA_HALL, 3),                SCENE_BANDROOM,     SCENE_33ZORACITY,       SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(ZORA_HALL_ROOMS, 3),         ENTRANCE(ZORA_HALL, 4),                SCENE_BANDROOM,     SCENE_33ZORACITY,       SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(ZORA_HALL_ROOMS, 1),         ENTRANCE(ZORA_HALL, 5),                SCENE_BANDROOM,     SCENE_33ZORACITY,       SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(ZORA_HALL_ROOMS, 0),         ENTRANCE(ZORA_HALL, 6),                SCENE_BANDROOM,     SCENE_33ZORACITY,       SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(MUSIC_BOX_HOUSE, 0),         ENTRANCE(IKANA_CANYON, 2),             SCENE_MUSICHOUSE,   SCENE_IKANA,            SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(GHOST_HUT, 0),               ENTRANCE(IKANA_CANYON, 1),             SCENE_TOUGITES,     SCENE_IKANA,            SCENE_MAX, {} },
+};
+
+// Hours of every interior row, read from its door's rule in the logic (Regions/*.cpp) and its schedule
+// (z_en_door.c sDoorSch_*). A building's checks assume its own door's hours; INTERIOR_OWN_HOURS rows never move.
+const std::vector<InteriorEntrance> interiorEntrances = {
+    { ENTRANCE(TRADING_POST, 0),            INTERIOR_ALWAYS_OPEN }, // logic true; locked 21-22 (sDoorSch_TradingPost)
+    { ENTRANCE(BOMB_SHOP, 0),               INTERIOR_ALWAYS_OPEN }, // sDoorSch_BombShop: never locked
+    { ENTRANCE(CURIOSITY_SHOP, 0),          INTERIOR_OWN_HOURS },   // nights 22-5 (Central.cpp WCT exit)
+    { ENTRANCE(CURIOSITY_SHOP, 1),          INTERIOR_OWN_HOURS },   // Kafei's events and hours (Central.cpp laundry)
+    { ENTRANCE(SWORDMANS_SCHOOL, 0),        INTERIOR_ALWAYS_OPEN }, // locked only night 3 23-24
+    { ENTRANCE(POST_OFFICE, 0),             INTERIOR_OWN_HOURS },   // afternoons/evenings and letter events
+    { ENTRANCE(LOTTERY_SHOP, 0),            INTERIOR_DAYTIME },     // 6-23, checks by day
+    { ENTRANCE(HONEY_AND_DARLINGS_SHOP, 0), INTERIOR_DAYTIME },     // until 22
+    { ENTRANCE(MILK_BAR, 0),                INTERIOR_OWN_HOURS },   // 10-21, nights with Romani's Mask
+    { ENTRANCE(MAYORS_RESIDENCE, 0),        INTERIOR_DAYTIME },     // 10-20, day 3 from 10
+    { ENTRANCE(TOWN_SHOOTING_GALLERY, 0),   INTERIOR_DAYTIME },     // until 22; checks only test the bow
+    { ENTRANCE(TREASURE_CHEST_SHOP, 0),     INTERIOR_DAYTIME },     // until 22
+    { ENTRANCE(STOCK_POT_INN, 0),           INTERIOR_OWN_HOURS },   // 8-20:30 or Room Key
+    { ENTRANCE(STOCK_POT_INN, 1),           INTERIOR_ALWAYS_OPEN }, // upstairs, Deku only (sDoorSch_InnUpperEntrance)
+    { ENTRANCE(DEKU_SCRUB_PLAYGROUND, 0),   INTERIOR_ALWAYS_OPEN },
+    { ENTRANCE(TOURIST_INFORMATION, 0),     INTERIOR_ALWAYS_OPEN },
+    { ENTRANCE(MAGIC_HAGS_POTION_SHOP, 0),  INTERIOR_ALWAYS_OPEN }, // sDoorSch_MagicHagsPotionShop: never locked
+    { ENTRANCE(SWAMP_SHOOTING_GALLERY, 0),  INTERIOR_DAYTIME },     // until 22; checks only test the bow
+    { ENTRANCE(MOUNTAIN_SMITHY, 0),         INTERIOR_ALWAYS_OPEN },
+    { ENTRANCE(RANCH_HOUSE, 0),             INTERIOR_OWN_HOURS },   // barn: night 1 until 2:30, day 2, day 3 until 20
+    { ENTRANCE(RANCH_HOUSE, 1),             INTERIOR_DAYTIME },     // until 20
+    { ENTRANCE(CUCCO_SHACK, 0),             INTERIOR_DAYTIME },     // until 20
+    { ENTRANCE(DOGGY_RACETRACK, 0),         INTERIOR_DAYTIME },     // until 20
+    { ENTRANCE(MARINE_RESEARCH_LAB, 0),     INTERIOR_ALWAYS_OPEN },
+    { ENTRANCE(FISHERMANS_HUT, 0),          INTERIOR_ALWAYS_OPEN },
+    { ENTRANCE(ZORA_HALL_ROOMS, 5),         INTERIOR_ALWAYS_OPEN }, // shop
+    { ENTRANCE(ZORA_HALL_ROOMS, 2),         INTERIOR_ALWAYS_OPEN }, // Lulu
+    { ENTRANCE(ZORA_HALL_ROOMS, 3),         INTERIOR_ALWAYS_OPEN }, // Evan
+    { ENTRANCE(ZORA_HALL_ROOMS, 1),         INTERIOR_ALWAYS_OPEN }, // Japas
+    { ENTRANCE(ZORA_HALL_ROOMS, 0),         INTERIOR_ALWAYS_OPEN }, // Mikau
+    { ENTRANCE(MUSIC_BOX_HOUSE, 0),         INTERIOR_ALWAYS_OPEN }, // once Sharp's curse is broken
+    { ENTRANCE(GHOST_HUT, 0),               INTERIOR_ALWAYS_OPEN },
 };
 
 // The grotto data of each hole: DeveloperTools/BetterMapSelect.c (grottoRespawn.data); for the shared chest and cow
@@ -109,6 +181,10 @@ const std::vector<ShuffleAreaRule> shuffleAreaRules = {
     { RO_SHUFFLE_BOSS_ENTRANCES, ENTRANCE(GYORGS_LAIR, 0),    [] { return CAN_BE_ZORA; } },
     // East.cpp:545 guarantees Bow, Light Arrows and magic on the way to the inverted temple (and hence Twinmold).
     { RO_SHUFFLE_BOSS_ENTRANCES, ENTRANCE(TWINMOLDS_LAIR, 0), [] { return HAS_ITEM(ITEM_BOW) && HAS_ITEM(ITEM_ARROW_LIGHT) && HAS_MAGIC; } },
+    // East.cpp:182: its own door needs Sharp's curse broken; the father's check (East.cpp:292) only tests the song.
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(MUSIC_BOX_HOUSE, 0), [] { return RANDO_EVENTS[RE_BREAK_SHARP_CURSE]; } },
+    // West.cpp:416: the band room doors need Zora; Evan's check (West.cpp:367) does not say so. Cautious: never looser.
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(ZORA_HALL_ROOMS, 3), [] { return CAN_BE_ZORA; } },
 };
 // clang-format on
 
@@ -119,16 +195,43 @@ static u16* SavedPairs() {
     return gSaveContext.save.shipSaveInfo.rando.entrancePairs;
 }
 
+static bool IsInteriorRow(size_t row) {
+    return shuffleEntrances[row].option == RO_SHUFFLE_INTERIORS;
+}
+
+// Hours class of an interior row; rows of different classes are never paired.
+static InteriorHours HoursOf(size_t row) {
+    for (const InteriorEntrance& interior : interiorEntrances) {
+        if (interior.into == shuffleEntrances[row].into) {
+            return interior.hours;
+        }
+    }
+    return INTERIOR_OWN_HOURS;
+}
+
+static bool CanPair(size_t door, size_t inside) {
+    if (shuffleEntrances[door].option != shuffleEntrances[inside].option) {
+        return false;
+    }
+    return !IsInteriorRow(door) ||
+           (HoursOf(door) == HoursOf(inside) && (HoursOf(door) != INTERIOR_OWN_HOURS || door == inside));
+}
+
+// ENTRANCE(scene, spawn) sets bits 4-15; bits 0-3 pick a variant of that entrance (z_scene_table.c, e.g. the Milk
+// Bar's show layers). Interior doors compare without them and always load the target's base entrance.
+static constexpr u16 ENTRANCE_WITHOUT_LAYER = 0xFFF0;
+
+static bool SameDoor(u16 a, u16 b) {
+    return (a & ENTRANCE_WITHOUT_LAYER) == (b & ENTRANCE_WITHOUT_LAYER);
+}
+
 // Row of the area behind this door.
 static size_t InsideBehind(size_t door) {
     if (RANDO_SAVE_OPTIONS[shuffleEntrances[door].option] == RO_GENERIC_OFF) {
         return door;
     }
     u16 value = SavedPairs()[door];
-    return (value == 0 || value > shuffleEntrances.size() ||
-            shuffleEntrances[value - 1].option != shuffleEntrances[door].option)
-               ? door
-               : value - 1;
+    return (value == 0 || value > shuffleEntrances.size() || !CanPair(door, value - 1)) ? door : value - 1;
 }
 
 static size_t DoorForInside(size_t inside) {
@@ -153,7 +256,7 @@ void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs) {
     for (const auto& [doorInto, insideInto] : pairs) {
         size_t door = rowOf(doorInto);
         size_t inside = rowOf(insideInto);
-        if (door < MAX_ROWS && inside < MAX_ROWS && shuffleEntrances[door].option == shuffleEntrances[inside].option) {
+        if (door < MAX_ROWS && inside < MAX_ROWS && CanPair(door, inside)) {
             SavedPairs()[door] = (u16)(inside + 1);
         }
     }
@@ -314,12 +417,55 @@ static bool RedirectGrotto(PlayState* play) {
     return true;
 }
 
+// ---- Interiors ----
+
+// Interior rows only. Into door A (any scene but A's own building): load building X = the base entrance of X's door.
+// Out of X (its own way out, from X's scene): back in front of A. A void out or death inside X respawns at X's
+// entrance from X's own scene, which is never redirected again; songs, owls and warps lead to no table entrance.
+static bool RedirectInterior(PlayState* play) {
+    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_INTERIORS] == RO_GENERIC_OFF) {
+        return false;
+    }
+    u16 next = play->nextEntrance;
+    s16 scene = play->sceneId;
+    for (size_t row = 0; row < shuffleEntrances.size() && row < MAX_ROWS; row++) {
+        if (!IsInteriorRow(row)) {
+            continue;
+        }
+        // No test of the exterior scene: it may be its cleared or spring variant (z_play.c Play_Init converts the
+        // scene, not the entrance), so the entrance alone names the door.
+        if (scene != shuffleEntrances[row].insideScene && SameDoor(next, shuffleEntrances[row].into)) {
+            size_t inside = InsideBehind(row);
+            if (inside != row) {
+                play->nextEntrance = shuffleEntrances[inside].into;
+                // A cutscene layer chosen for A's building (z_play.c:632) must not play in X.
+                if (gSaveContext.nextCutsceneIndex >= 0xFFF0) {
+                    gSaveContext.nextCutsceneIndex = 0xFFEF;
+                }
+            }
+        } else if (scene == shuffleEntrances[row].insideScene && SameDoor(next, shuffleEntrances[row].outOf)) {
+            size_t door = DoorForInside(row);
+            if (door != row) {
+                play->nextEntrance = shuffleEntrances[door].outOf;
+            }
+        } else {
+            continue;
+        }
+        // An exit may record itself as the void-out point before the transition (z_player.c func_808354A4).
+        if (play->nextEntrance != next && gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance == next) {
+            gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = play->nextEntrance;
+        }
+        return true;
+    }
+    return false;
+}
+
 void OnBeforeTransitionSetup() {
     PlayState* play = gPlayState;
     if (play == nullptr) {
         return;
     }
-    if (RedirectGrotto(play)) {
+    if (RedirectGrotto(play) || RedirectInterior(play)) {
         return;
     }
     u16 next = play->nextEntrance;
@@ -329,7 +475,7 @@ void OnBeforeTransitionSetup() {
     // "into" entrance, which must not be redirected a second time.
     for (size_t door = 0; door < shuffleEntrances.size() && door < MAX_ROWS; door++) {
         const ShuffleEntrance& doorRow = shuffleEntrances[door];
-        if (RANDO_SAVE_OPTIONS[doorRow.option] == RO_GENERIC_OFF || IsGrottoRow(door)) {
+        if (RANDO_SAVE_OPTIONS[doorRow.option] == RO_GENERIC_OFF || IsGrottoRow(door) || IsInteriorRow(door)) {
             continue;
         }
         size_t inside = InsideBehind(door);
@@ -359,7 +505,7 @@ void OnBeforeTransitionSetup() {
         u16 exterior = shuffleEntrances[bossDoor].templeExit;
         bool moved = bossDoor != boss;
         for (size_t temple = 0; temple < shuffleEntrances.size() && temple < MAX_ROWS; temple++) {
-            if (!IsGrottoRow(temple) && shuffleEntrances[temple].templeExit == 0 &&
+            if (shuffleEntrances[temple].option == RO_SHUFFLE_DUNGEON_ENTRANCES &&
                 shuffleEntrances[temple].outOf == exterior) {
                 size_t templeDoor = DoorForInside(temple);
                 exterior = shuffleEntrances[templeDoor].outOf;

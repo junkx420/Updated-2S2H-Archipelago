@@ -25,6 +25,7 @@
 
 #include <unordered_set>
 #include <algorithm>
+#include <cstdio>
 
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/ShipInit.hpp"
@@ -62,6 +63,15 @@ void ApplySlotOptions(const ApSlot::SlotData& options) {
     }
     // Stored in the save, so the shuffled doors work right after loading, before reconnecting.
     Rando::EntranceShuffle::SetPairs(options.entrancePairs);
+    // apworld 0.7 added the Zora Hall Rooms key. Older seeds have none in their pool: their Zora Hall doors stay open.
+    int major = 0, minor = 0;
+    bool hasZoraHallKey =
+        sscanf(options.apworldVersion.c_str(), "%d.%d", &major, &minor) == 2 && (major > 0 || minor >= 7);
+    if (hasZoraHallKey) {
+        Flags_SetRandoInf(RANDO_INF_DOOR_KEYS_ZORA_HALL);
+    } else {
+        Flags_ClearRandoInf(RANDO_INF_DOOR_KEYS_ZORA_HALL);
+    }
 }
 
 // Rewrites RANDO_SAVE_CHECKS so every AP location contains what the
