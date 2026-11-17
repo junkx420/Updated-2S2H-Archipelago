@@ -1,5 +1,11 @@
 # Testing mm_2s2h (Phase 3 results, 2S2H 5.0.1)
 
+Release channels (2026-11-17): **0.1.5** is the regular release (apworld **0.1.4**); **0.4.0** is the experimental
+pre-release. The results below describe the relevant source versions, not additional in-game testing.
+Preview packaging waits for the exact client commit's Windows/Linux/macOS builds and checks ZIP integrity,
+apworld version and package contents. Its manifest records source commits and SHA-256 hashes.
+[Publication progress](https://github.com/junkx420/Updated-2S2H-Archipelago/actions/workflows/publish-preview.yml).
+
 ## 1. Logic parity with 2S2H (`tools/parity/`)
 
 The apworld's logic is compared against 2S2H's **own C++ logic**, compiled outside the game:
