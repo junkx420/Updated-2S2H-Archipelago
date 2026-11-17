@@ -459,6 +459,29 @@ def check_grottos(rows: list[dict], grotto_of: dict, rc_table: dict, out_regions
                     raise SystemExit(f"grottoEntrances {r['into']}: chest flag of {chests} is not {data & 0x1F:#x}")
 
 
+def check_interiors(rows: list[dict], hours_of: dict, out_regions: list) -> None:
+    """Interiors are dead ends behind knob doors: every way out of an interior scene to another scene is the way back
+    of one of its interior rows, and no interior door stands inside another interior (no nesting)."""
+    interiors = [r for r in rows if r["hours"]]
+    if set(hours_of) != {r["into"] for r in interiors}:
+        raise SystemExit("interiorEntrances: rows without a shuffleEntrances interior row")
+    scene_of = {rid: scene for rid, _, scene, *_ in out_regions}
+    inside_scenes = {scene_of[r["inside_region"]] for r in interiors}
+    outs = {r["out"] for r in interiors}
+    for r in interiors:
+        if scene_of[r["door_region"]] in inside_scenes:
+            raise SystemExit(f"interiorEntrances: {r['into']} is a door inside another interior")
+    for rid, _, scene, _, _, exits, _, _ in out_regions:
+        if scene not in inside_scenes:
+            continue
+        for to, tgt, _ in exits:
+            if scene_of[tgt] != scene and to not in outs:
+                raise SystemExit(f"interiorEntrances: {rid} in {scene} leaves through {to}, no interior's way back")
+    for r in rows:
+        if not r["hours"] and scene_of[r["inside_region"]] in inside_scenes:
+            raise SystemExit(f"shuffleEntrances: {r['into']} leads into an interior scene but is no interior row")
+
+
 def parse_ri_table(src: str):
     out = {}
     for m in re.finditer(r'^\s*RI\((RI_\w+),\s*"([^"]*)",\s*"([^"]*)",\s*(RITYPE_\w+),\s*(\w+),', src, re.M):
@@ -532,6 +555,18 @@ def main() -> int:
             raise SystemExit(f"grottoEntrances: {entrance_key(a)} twice")
         grotto_of[entrance_key(a)] = {"game_entrance": entrance_key(game), "data": None if data == "-1" else int(data, 16),
                                       "kind": kind[len("GROTTO_"):]}
+
+    # Interiors: { ENTRANCE(into), INTERIOR_HOURS } (EntranceShuffle.cpp interiorEntrances); rows pair only within one
+    # hours class, OWN_HOURS rows never move (test_interior_shuffle.py proves the classes against the door rules)
+    ie_body = re.search(r"interiorEntrances\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
+    ie_rows = re.findall(rf"\{{\s*({ent})\s*,\s*INTERIOR_(ALWAYS_OPEN|DAYTIME|OWN_HOURS)\s*\}}", ie_body)
+    if len(ie_rows) != ie_body.count("INTERIOR_") or not ie_rows:
+        raise SystemExit("interiorEntrances: a row does not match the expected format")
+    hours_of = {}
+    for a, hours in ie_rows:
+        if entrance_key(a) in hours_of:
+            raise SystemExit(f"interiorEntrances: {entrance_key(a)} twice")
+        hours_of[entrance_key(a)] = hours
 
     def entrance_value(key: str) -> int:  # z64scene.h ENTRANCE(scene, spawn)
         scene, spawn = key.split(":")
@@ -679,6 +714,11 @@ def main() -> int:
                              f"are not each other's way back")
         if grotto != (into in grotto_of):
             raise SystemExit(f"shuffleEntrances: {into} must have a grottoEntrances row exactly if it is a grotto")
+        interior = opt == "RO_SHUFFLE_INTERIORS"
+        if interior != (into in hours_of):
+            raise SystemExit(f"shuffleEntrances: {into} must have an interiorEntrances row exactly if it is an interior")
+        if interior and (behind == door or back != door or boss != "SCENE_MAX" or warps or temple_exit is not None):
+            raise SystemExit(f"shuffleEntrances: interior {into} must be a plain door into a dead end and back")
         boss_warps = [(rid, w) for w in warps for rid, scene, _ in exits_of[w] if scene == boss]
         if (boss == "SCENE_MAX") != (not boss_warps):
             raise SystemExit(f"shuffleEntrances: boss warps {warps} of {boss} are no exit of a {boss} region")
@@ -690,8 +730,9 @@ def main() -> int:
         entrance_shuffle.append({"option": opt, "into": into, "out": out, "into_value": entrance_value(into),
                                  "door_region": door, "inside_region": inner, "boss_warps": boss_warps,
                                  "temple_exit": temple_exit, "exterior_region": exterior_region,
-                                 "grotto": grotto_of.get(into)})
+                                 "grotto": grotto_of.get(into), "hours": hours_of.get(into)})
     check_grottos(entrance_shuffle, grotto_of, rc_table, out_regions, rando)
+    check_interiors(entrance_shuffle, hours_of, out_regions)
 
     # Door keys: { RI_DOOR_KEY_X, "Building", { ENTRANCE(into), ... } } (MiscBehavior/DoorKeys.cpp doorKeys). Every
     # "into" must be the exit of exactly one region and lead into another scene; one key per building, in enum order.

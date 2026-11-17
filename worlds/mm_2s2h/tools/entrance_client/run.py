@@ -20,7 +20,7 @@ enums = {}
 for path in (root / "mm/include/z64scene.h", root / "mm/2s2h/Rando/Types.h"):
     enums.update(parse_enums(strip_comments(path.read_text(encoding="utf-8"))))
 lines = []
-for name in ("RandoOptionId", "EntranceSceneId", "RandoItemId", "RandoInf"):
+for name in ("RandoOptionId", "EntranceSceneId", "RandoItemId", "RandoInf", "RandoEvent"):
     lines.append("enum " + name + " {" + ",".join(f"{k}={v}" for k, v in enums[name].items()) + "};")
 lines.append("constexpr int RO_GENERIC_OFF = 0;")
 scene_table = (root / "mm/include/tables/scene_table.h").read_text(encoding="utf-8")
@@ -67,6 +67,16 @@ grotto_rows = [(i, row["into_value"], entrance_value(row["grotto"]["game_entranc
     f"inline const size_t generatedRows = {len(ENTRANCE_SHUFFLE)};\n"
     "inline const std::vector<std::array<int, 5>> generatedGrottos = {"
     + ", ".join("{ " + ", ".join(map(str, g)) + " }" for g in grotto_rows) + "};\n", encoding="utf-8")
+# Interiors as the apworld was generated: row index, "into", hours class (0 always open, 1 daytime, 2 own hours); and
+# the entrances songs and owls lead to (RR_MAX's exits: Song of Time and the owl statues), never redirected.
+hours_id = {"ALWAYS_OPEN": 0, "DAYTIME": 1, "OWN_HOURS": 2}
+interior_rows = [(i, row["into_value"], hours_id[row["hours"]]) for i, row in enumerate(ENTRANCE_SHUFFLE) if row["hours"]]
+warps = sorted({entrance_value(k) for k, _, _ in REGIONS["RR_MAX"][4]} | {entrance_value("SOUTH_CLOCK_TOWN:0")})
+(build / "interior_graph.h").write_text(
+    "#pragma once\n#include <array>\n#include <vector>\n"
+    "inline const std::vector<std::array<int, 3>> generatedInteriors = {"
+    + ", ".join("{ " + ", ".join(map(str, r)) + " }" for r in interior_rows) + "};\n"
+    f"inline const std::vector<unsigned> songAndOwlEntrances = {{ {', '.join(map(str, warps))} }};\n", encoding="utf-8")
 # The save loader's real tolerant array reader (BenJsonConversions.hpp), verbatim.
 bjc = (root / "mm/2s2h/BenJsonConversions.hpp").read_text(encoding="utf-8")
 grown = re.search(r"template <typename T, size_t N> inline void GetGrownArray\(.*?\n}\n", bjc.replace("\r\n", "\n"), re.S)

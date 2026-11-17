@@ -5,6 +5,8 @@
 #include "door_keys_graph.h"
 #include "grotto_graph.h"
 #include "grottos.h"
+#include "interior_graph.h"
+#include "interiors.h"
 
 using namespace Rando::EntranceShuffle;
 
@@ -27,8 +29,11 @@ static void TestDoorKeys() {
         assert(!DK::IsEntranceLocked(u16(e))); // option off: no door is ever locked
     }
     options[RO_SHUFFLE_DOOR_KEYS] = 1;
+    // zora = 0: a seed from before apworld 0.7 (no Zora Hall Rooms key in its pool), those doors never lock.
+    for (int zora = 0; zora < 2; ++zora)
     for (int have = -1; have < int(DK::doorKeys.size()); ++have) { // -1: no key at all, else only key `have`
         std::fill(std::begin(randoInf), std::end(randoInf), false);
+        randoInf[RANDO_INF_DOOR_KEYS_ZORA_HALL] = zora != 0;
         if (have >= 0) {
             randoInf[DOOR_KEY_RI_TO_RANDO_INF(DK::doorKeys[have].key)] = true;
         }
@@ -36,7 +41,8 @@ static void TestDoorKeys() {
             const DK::DoorKey* row = DK::FindByEntrance(u16(e));
             bool isInto = listed.count(e & 0xFFF0) != 0; // the scene layer (bits 0-3) does not matter
             assert((row != nullptr) == isInto);
-            bool expected = isInto && (have < 0 || row != &DK::doorKeys[have]);
+            bool zoraRow = row != nullptr && row->key == RI_DOOR_KEY_ZORA_HALL_ROOMS;
+            bool expected = isInto && (have < 0 || row != &DK::doorKeys[have]) && (zora || !zoraRow);
             assert(DK::IsEntranceLocked(u16(e)) == expected);
         }
         for (unsigned out : doorKeyOutward) {
@@ -56,8 +62,9 @@ int main() {
                              ENTRANCE(STONE_TOWER_INVERTED, 1) };
     const unsigned clearFlags[] = { 3, 4, 8, 16 };
     int permutations = 0, warps = 0, respawns = 0, entries = 0;
-    // Bit 2: Shuffle Grottos on as well (a grotto shift per permutation); temples and bosses must not notice.
-    for (int mode = 0; mode < 8; ++mode) {
+    // Bit 2: Shuffle Grottos on as well (a grotto shift per permutation), bit 3: Shuffle Interiors (an interior shift);
+    // temples and bosses must not notice.
+    for (int mode = 0; mode < 16; ++mode) {
         do {
             std::array<int, 4> bosses{ 0, 1, 2, 3 };
             do {
@@ -66,7 +73,10 @@ int main() {
                 options[RO_SHUFFLE_DUNGEON_ENTRANCES] = (mode & 1) != 0;
                 options[RO_SHUFFLE_BOSS_ENTRANCES] = (mode & 2) != 0;
                 options[RO_SHUFFLE_GROTTOS] = (mode & 4) != 0;
+                options[RO_SHUFFLE_INTERIORS] = (mode & 8) != 0;
                 std::vector<std::pair<int32_t, int32_t>> pairs = GrottoShift(permutations % 26);
+                auto interiors = InteriorShift(permutations % 17);
+                pairs.insert(pairs.end(), interiors.begin(), interiors.end());
                 for (int i = 0; i < 4; ++i) {
                     pairs.emplace_back(shuffleEntrances[i].into, shuffleEntrances[temples[i]].into);
                     pairs.emplace_back(shuffleEntrances[i + 4].into, shuffleEntrances[bosses[i] + 4].into);
@@ -160,4 +170,5 @@ int main() {
               << " warps, " << respawns << " respawn checks passed\n";
     TestLegacySave();
     TestGrottos();
+    TestInteriors();
 }

@@ -445,3 +445,130 @@ the game side in `grottoEntrances` (`Rando/MiscBehavior/EntranceShuffle.cpp`).
 5. In a shuffled grotto: void out, die, pause save and reload; never stuck in another grotto.
 6. Check tracker shows the grotto you are in.
 7. Option off and 0.1–0.5 seeds/saves: grottos as before; an old save with temple/boss pairs keeps them.
+
+### Interior shuffle (apworld 0.7.0, 2026-11-17)
+
+`shuffle_interiors` (`RO_SHUFFLE_INTERIORS`, default off) shuffles the knob doors from outside into buildings among
+each other, coupled: through door A into building X, out of X back in front of A. 32 rows are appended to
+`shuffleEntrances`; their hours class is in `interiorEntrances` (`Rando/MiscBehavior/EntranceShuffle.cpp`).
+
+#### Pool and criteria
+
+* A row is a knob door (`En_Door`) from outside into a scene of its own that is a dead end: every way out of that
+  scene to another scene is the way back of one of its rows, and no row's door stands inside another interior. The
+  generator checks this (`check_interiors`) plus the usual "exit of exactly one region, each other's way back".
+* Clock Town: Trading Post, Bomb Shop, Curiosity Shop (front `CURIOSITY_SHOP:0`, Kafei's hideout `:1` from the
+  Laundry Pool), Swordsman's School, Post Office, Lottery, Honey & Darling, Milk Bar, Mayor's Residence, Town Shooting
+  Gallery, Treasure Chest Shop, Stock Pot Inn (ground floor `:0` and upstairs `:1`, one region `RR_INN`, told apart by
+  their ways back `EAST_CLOCK_TOWN:9/10`), Deku Playground. Swamp: Tourist Information, Potion Shop, Swamp Shooting
+  Gallery. Mountain: Smithy. Ranch: barn `RANCH_HOUSE:0`, main house `:1` (one scene, two regions), Cucco Shack,
+  Doggy Racetrack. Great Bay: Marine Lab, Fisherman's Hut, Zora Hall shop and the rooms of Lulu, Evan, Japas and Mikau
+  (`ZORA_HALL_ROOMS:0-3,5`, `En_Door` with `DOOR_DL_ZORA_HALL`, `z_en_door.c`). Ikana: Music Box House, Ghost Hut.
+* Not in the pool: spider houses, Pirates' Fortress, Beneath the Well, Ikana Castle, Secret Shrine, Clock Tower,
+  Moon, Sakon's Hideout (as decided); Dampé's House (its door is always locked, `sDoorSch_DampesHouse`; the logic's
+  way in is a one-way hole, `East.cpp:256`); Astral Observatory (a passage from Clock Town to Termina Field, the
+  Bombers' way in is no door); Goron Shrine and Goron Shop (no knob door, the shop lies inside the shrine).
+
+#### Time of day: hours classes
+
+* The time logic gives every region the same mask (`docs/time-logic.md`): a door's time condition only says that it
+  opens at some time, it never narrows the time inside. Checks inside a building therefore silently rely on the hours
+  of its own door. Examples: the Town Shooting Gallery checks only test the bow (`Central.cpp:460`), its door closes
+  at 22 (`Central.cpp:117`, `sDoorSch_TownShootingGallery`); the Swamp Shooting Gallery the same (`South.cpp:506`,
+  `:302`); the Treasure Chest Shop check says "before night 3, 18:00", the 22:00 closing of nights 1 and 2 is only at
+  the door (`Central.cpp:113`, `:499`); Cucco Shack, Doggy Racetrack and the ranch house close at 20
+  (`MilkRoad.cpp:278-280`). Behind the Curiosity Shop's door (22-5, `Central.cpp:261`) the gallery would be in logic
+  but never open.
+* So doors only mix within one class (`interiorEntrances`): **always open** (17: Trading Post, Bomb Shop, Swordsman's
+  School, Inn upstairs, Deku Playground, Tourist Information, Potion Shop, Smithy, Marine Lab, Fisherman's Hut, the
+  five Zora Hall doors, Music Box House, Ghost Hut), **daytime** (9: Lottery, Honey & Darling, Mayor's Residence, both
+  shooting galleries, Treasure Chest Shop, ranch house, Cucco Shack, Doggy Racetrack) and **own hours** (6, never
+  moved: Curiosity Shop front (nights), Kafei's hideout (letter events and hours), Post Office (events), Milk Bar
+  (nights with Romani's Mask), Inn ground floor (Room Key), barn). A permutation in which every door covers the hours
+  of the building behind it exists only for equal hours, hence classes rather than single pairs.
+* `test_interior_shuffle.py::InteriorHoursClasses` proves both classes against the logic's own door rules: the hours
+  of a door are the time slices at which its rule holds with every item; for every door A and building X of one class,
+  every check, event, connection and exit c inside X and every half-day, if c can hold during X's own door hours it
+  can also hold while A is open (289 + 81 pairs). The Trading Post (locked 21-22) and Swordsman's School (locked
+  night 3, 23-24) are "always open" in the logic, and no check depends on those gaps. Limit: the proof takes every
+  item as owned, so doors whose hours depend on items or events (Milk Bar, Inn ground floor, Post Office, Kafei's
+  hideout) stay in "own hours". The barn would also pass for "daytime"; it stays fixed as planned.
+
+#### Code evidence
+
+* Redirect: `RedirectInterior` in `OnBeforeTransitionSetup` (hook at the start of `TRANS_MODE_SETUP`, `z_play.c`),
+  after the grottos and before temples/bosses (which now skip interior rows). Into door A from any scene but A's own
+  building: the base entrance of X. Out of X (from X's scene, X's way back): A's way back. Compared without the
+  entrance layer bits 0-3 (variants of one entrance, e.g. the Milk Bar's show layers, `z_scene_table.c:359`); a
+  building always loads its base entrance, and a cutscene layer (`nextCutsceneIndex >= 0xFFF0`) chosen for A's
+  building is reset. The exterior scene is not tested: Play_Init converts the scene of a poisoned/winter entrance into
+  the cleared/spring scene (`z_play.c:2261-2283`), the entrance stays.
+* Void out and death inside X respawn at X's entrance from X's own scene, which is never redirected again; an exit
+  that recorded itself as void-out point (`func_808354A4`, `z_player.c`) is moved along. Song of Time and Soaring
+  lead to Clock Town and the owl statues, no table entrance. Pause saves keep `save.entrance` and the pairing is in the
+  save, so a reload stays in X with the way back to A. Ways out are never key-locked.
+* NPCs with schedules (Anju, Kafei, the postman) never cause a scene transition: schedule actors only open doors in
+  their scene (`EnDoor_OpenScheduleActor`), and the logic's events belong to regions (`RR_INN`; Post Office and
+  Kafei's hideout are fixed anyway).
+* Door keys: the client tests the entrance of `setupExitList` behind the door, before any redirect
+  (`EnDoor.cpp` EntranceBehindDoor, `DoorKeys::IsEntranceLocked`); the apworld keeps the key rule on the door's exit.
+  The key of door A opens A, whatever lies behind it. New key `RI_DOOR_KEY_ZORA_HALL_ROOMS` ("Zora Hall Rooms Key")
+  for the five Zora Hall doors. Seeds before 0.7 have no such key in their pool: the client sets
+  `RANDO_INF_DOOR_KEYS_ZORA_HALL` only for apworld 0.7 and newer (`ApplySlotOptions`); without it those doors never
+  lock, and Universal Tracker leaves the key out for such slot data.
+* Area rules (`shuffleAreaRules`, only for a foreign building): Music Box House needs Sharp's curse broken (its own
+  door needs it, `East.cpp:182`; the father's check only tests the song, `East.cpp:292`); Evan's room needs Zora (the
+  band room doors need Zora, `West.cpp:416`; Evan's check does not say so; cautious).
+* Spoiler names: interiors by their region, the Inn's two doors with their way back.
+* In-game check tracker: it finds the region from `save.entrance`, which is X's own entrance, so it shows the building
+  you are in; its reachability does not know shuffled entrances (as for temples, bosses, grottos).
+
+#### Verification
+
+* `pytest test/general worlds/mm_2s2h/test -q`: **650 passed, 0 failed** (143,528 subtests), 305 s.
+* New `test/test_interior_shuffle.py` (50 tests): table (32 rows, classes 17/9/6, the Inn's two doors, Zora key with
+  five doors, rows appended after all older rows); hours classes proof; option off = graph exactly as generated;
+  option on = coupled permutation within each class, OWN_HOURS fixed, the Inn's doors come back through their own way
+  back, every location reachable with all items, beatable, Universal Tracker rebuilds it; area rules with forced
+  pairings; door keys stay at the door with both options on (key of A needed, key of X not, ways out never locked);
+  No Logic; all own options together (also No Logic and own-dungeon items); 0.6 slot data rebuilds unchanged and
+  without a key rule on the Zora Hall doors. `test_entrance_shuffle.py` and `test_door_keys.py` adjusted for the new
+  rows.
+* 100 random seeds with only `shuffle_interiors=true` (temples, bosses, grottos, door keys forced off, everything
+  else randomized): **100/100**, 542 s.
+* 100 random seeds with interiors, temples, bosses, grottos, door keys and NPC souls: **95/100**, 561 s. All five
+  failures (seeds 24, 34, 58, 66, 71) are the intended `OptionError` in `create_items` for a sparse option roll with
+  Plentiful Items: 391 items for 284 locations, 310/307, 479/466, 442/423, 398/381. It is raised before entrances are
+  shuffled; interiors add no items, door keys one more (the Zora Hall Rooms Key).
+* C++ test bench (`tools/entrance_client/run.py ../2s2h`), real `EntranceShuffle.cpp` and `DoorKeys.cpp`:
+  **193,700 interior cases passed, all 376 door/building pairings** (17² + 9² + 6 fixed; 17 cyclic shifts, each with
+  temples, bosses and grottos off and on): into A = X's base entrance for all 16 layer bits and in the cleared swamp
+  and spring village, the void-out point moves along, a cutscene layer is reset; way out of X = A's way back; void
+  out/death in X not redirected; Song of Time and the owl entrances (11 in all) from inside X unchanged; option off
+  ignores saved pairs; cross-class and OWN_HOURS pairs from slot data are refused; the compiled table equals the
+  generated one. Door keys: 3,632,128 cases (every entrance, each key, with and without the Zora flag). Older checks
+  still pass with interiors on as well (9216 option/permutation cases, 73,728 entries, 92,160 warps, 177,408 respawn
+  checks; 571,328 grotto cases). It does not run En_Door, Player or the scene loader.
+* Parity harness rebuilt, all own options off: **1200/1200 identical** (0 mismatching).
+* Client builds locally (MSVC Release). Changed C++ lines pass clang-format (SaveEditor.h keeps pre-existing upstream
+  differences outside the changed lines).
+
+#### In-game checklist — not tested in game
+
+1. Option on: go through every door of both classes once (Clock Town, swamp, mountain, ranch, Great Bay, Ikana); the
+   building is the one in the spoiler, and leaving puts you in front of the door you used.
+2. Stock Pot Inn: in through a foreign door that leads to the upstairs door, out again; the ground floor door stays
+   vanilla. Zora Hall: all five room doors.
+3. Cleared swamp and spring Mountain Village: the Tourist Information, Potion Shop and Smithy doors still redirect,
+   and the way back lands in the right variant.
+4. Inside a foreign building: void out, die, pause save and reload, Song of Time, Song of Soaring; never stuck.
+5. Entering a building at a time its own door would be closed (e.g. the Trading Post at 21:30 through an always-open
+   door, a gallery after 22 through a daytime door that is still open): what the NPCs do, whether the inner door is
+   locked; the logic never requires such a visit.
+6. Closing-time kick-outs (Trading Post 21:00, galleries 22:00, ranch 20:00) inside a foreign building: you land in
+   front of the door you used (if the game uses another entrance, at the building's own door).
+7. Entry cutscenes and first visits (Mayor's Residence, Inn upstairs at night) play as in vanilla for that building.
+8. Anju/Kafei chain, postman and Romani/aliens with the option on.
+9. Door keys on: a locked door names its own key, not the building behind it; the Zora Hall doors need the Zora Hall
+   Rooms Key; a 0.5/0.6 save with door keys keeps the Zora Hall doors open.
+10. Option off and 0.1–0.6 seeds/saves: doors as before.

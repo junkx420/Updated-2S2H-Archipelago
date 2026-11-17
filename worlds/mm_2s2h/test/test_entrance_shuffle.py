@@ -144,7 +144,8 @@ class EntranceShuffleAreaRules(MM2S2HTestBase):
         return world._rule(f) or (lambda state: True)
 
     def test_area_rules(self) -> None:
-        self.assertEqual(set(ENTRANCE_AREA_RULES), set(AREA_ITEMS) | set(BOSS_AREA_ITEMS))
+        temple_rows = {r["into"] for r in ENTRANCE_SHUFFLE if r["option"] != "RO_SHUFFLE_INTERIORS"}
+        self.assertEqual(set(ENTRANCE_AREA_RULES) & temple_rows, set(AREA_ITEMS) | set(BOSS_AREA_ITEMS))
         foreign = 0
         for seed in range(12):
             self.world_setup(seed)
@@ -254,6 +255,7 @@ class EntranceShuffleLegacySlots(MM2S2HTestBase):
                 data["apworld_version"] = version
                 data["options"] = dict(data["options"])
                 data["options"].pop("RO_SHUFFLE_GROTTOS")
+                data["options"].pop("RO_SHUFFLE_INTERIORS")
                 if version != "0.5.0":
                     data["options"].pop("RO_SHUFFLE_BOSS_ENTRANCES")
                 if version not in ("0.3.1", "0.5.0"):

@@ -6,6 +6,7 @@ and Rando/StartingItems.cpp.
 """
 from __future__ import annotations
 
+import re
 from collections import Counter, defaultdict
 from typing import Any, ClassVar
 
@@ -74,6 +75,9 @@ def _door_name(row: dict) -> str:
     """'WOODFALL_TEMPLE:0' -> 'Woodfall Temple'; a grotto by its region, 'RR_ZORA_CAPE_GROTTO' -> 'Zora Cape Grotto'"""
     if row.get("grotto"):
         return region_name(row["inside_region"])
+    if row.get("hours"):  # an interior by its region; the Inn's two doors by their way back as well
+        shared = sum(r["inside_region"] == row["inside_region"] for r in ENTRANCE_SHUFFLE) > 1
+        return region_name(row["inside_region"]) + (f" ({row['out'].replace('_', ' ').title()})" if shared else "")
     return row["into"].split(":")[0].replace("_", " ").title()
 
 
@@ -176,10 +180,15 @@ class MM2S2HWorld(World):
         self.starting = self._starting_items()
         self.ut_entrance_pairs: list[tuple[int, int]] | None = None
         self.entrance_pairs: list[tuple[int, int]] = []
+        # The Zora Hall Rooms key exists since 0.7; the client keeps those doors open for older seeds (DoorKeys.cpp).
+        self.door_keys = list(DOOR_KEYS)
 
         # Universal Tracker: rebuild exactly the generated world from slot data (options, random rolls)
         passthrough = getattr(self.multiworld, "re_gen_passthrough", {}).get(self.game)
         if passthrough:
+            version = tuple(int(x) for x in re.findall(r"\d+", passthrough.get("apworld_version", ""))[:2])
+            if version and version < (0, 7):
+                self.door_keys = [row for row in DOOR_KEYS if row["key"] != "RI_DOOR_KEY_ZORA_HALL_ROOMS"]
             rc_by_id = {v: k for k, v in RC_ID.items()}
             ri_by_id = {v: k for k, v in RI_ID.items()}
             self.ro = dict(OPTION_DEFAULTS) | {k: int(v) for k, v in passthrough["options"].items()}
@@ -291,7 +300,7 @@ class MM2S2HWorld(World):
         # the door's side, so with shuffled entrances the key of the door applies, whatever lies behind it.
         door_key_for: dict[str, str] = {}
         if self.ro["RO_SHUFFLE_DOOR_KEYS"]:
-            door_key_for = {into: ITEMS[row["key"]][0] for row in DOOR_KEYS for into in row["into"]}
+            door_key_for = {into: ITEMS[row["key"]][0] for row in self.door_keys for into in row["into"]}
         regions = {rr: Region(region_name(rr), p, mw) for rr in REGIONS}
         mw.regions.extend(regions.values())
         self.regions_by_rr = regions
@@ -448,7 +457,7 @@ class MM2S2HWorld(World):
         if ro["RO_SHUFFLE_NPC_SOULS"]:  # not in 2S2H's own pools: an addition of this fork
             pool += list(NPC_SOULS)
         if ro["RO_SHUFFLE_DOOR_KEYS"]:  # an addition of this fork as well
-            pool += [row["key"] for row in DOOR_KEYS]
+            pool += [row["key"] for row in self.door_keys]
         if ro["RO_CLOCK_SHUFFLE"]:
             pool += (["RI_TIME_DAY_1", "RI_TIME_NIGHT_1", "RI_TIME_DAY_2", "RI_TIME_NIGHT_2", "RI_TIME_DAY_3", "RI_TIME_NIGHT_3"]
                      if ro["RO_CLOCK_SHUFFLE_PROGRESSIVE"] == 0 else ["RI_TIME_PROGRESSIVE"] * 6)
@@ -524,12 +533,12 @@ class MM2S2HWorld(World):
             return
         doors = [self.exit_entrances[(row["door_region"], row["into"])] for row in rows]
         insides = [self.exit_entrances[(row["inside_region"], row["out"])] for row in rows]
-        row_of_inside = {row["inside_region"]: row for row in rows}
         # Blue warps are one-way in vanilla. Give the coupled helper the inverse side of the boss door temporarily;
         # after both permutations are known every warp is restored or composed with the temple's exterior pairing.
         for row, inside in zip(rows, insides):
             if row["temple_exit"] is not None:
                 self._reconnect(inside, row["door_region"])
+        behind: dict[int, int] = {}  # door row index -> row index of the area behind it (missing: its own)
         if self.ut_entrance_pairs is not None:  # Universal Tracker: the pairing of the generated seed
             by_value = {row["into_value"]: i for i, row in enumerate(rows)}
             behind = {by_value[door]: by_value[inside] for door, inside in self.ut_entrance_pairs}
@@ -538,19 +547,33 @@ class MM2S2HWorld(World):
                 self._reconnect(doors[i], rows[j]["inside_region"])
                 self._reconnect(insides[j], row["door_region"])
         else:
-            groups = sorted({row["option"] for row in rows})
+            # Interiors mix only within one hours class (EntranceShuffle.cpp interiorEntrances); OWN_HOURS stays.
+            moving = [i for i, row in enumerate(rows) if row.get("hours") != "OWN_HOURS"]
+            groups = sorted({(rows[i]["option"], rows[i].get("hours") or "") for i in moving})
             lookup = {}
-            for row, door, inside in zip(rows, doors, insides):
-                g = 2 * groups.index(row["option"]) + 1
+            for i in moving:
+                row, door, inside = rows[i], doors[i], insides[i]
+                g = 2 * groups.index((row["option"], row.get("hours") or "")) + 1
                 door.randomization_type = inside.randomization_type = EntranceType.TWO_WAY
                 door.randomization_group, inside.randomization_group = g, g + 1
                 lookup[g], lookup[g + 1] = [g + 1], [g]
-            for exit_ in doors + insides:
+            exits = [doors[i] for i in moving] + [insides[i] for i in moving]
+            for exit_ in exits:
                 disconnect_entrance_for_randomization(exit_)
-            randomize_entrances(self, True, lookup, exits=doors + insides)
-        rr_of = {region.name: rr for rr, region in self.regions_by_rr.items()}
-        for row, door in zip(rows, doors):
-            inside = row_of_inside[rr_of[door.connected_region.name]]
+            placement = randomize_entrances(self, True, lookup, exits=exits)
+            # By the pairings, not by the region reached: the Inn's two doors lead into one region. Coupled placement
+            # records both directions (door, area's way back) and (area's way back, door); target names are exit names.
+            door_at = {doors[i].name: i for i in moving}
+            inside_at = {insides[i].name: i for i in moving}
+            for source, target in placement.pairings:
+                if source in door_at and target in inside_at:
+                    behind[door_at[source]] = inside_at[target]
+                elif source in inside_at and target in door_at:
+                    behind[door_at[target]] = inside_at[source]
+        for i, (row, door) in enumerate(zip(rows, doors)):
+            inside = rows[behind.get(i, i)]
+            if door.connected_region is not self.regions_by_rr[inside["inside_region"]]:
+                raise RuntimeError(f"{self.player_name}: entrance shuffle lost the pairing of {row['into']}")
             self.entrance_pairs.append((row["into_value"], inside["into_value"]))
             self.multiworld.spoiler.set_entrance(_door_name(row), _door_name(inside), "both", self.player)
             # The source door keeps its key/form/event rule. Only a foreign area adds its guaranteed items.
@@ -564,7 +587,7 @@ class MM2S2HWorld(World):
     def _connect_boss_warps(self) -> None:
         by_value = {row["into_value"]: row for row in ENTRANCE_SHUFFLE}
         door_for = {inside: by_value[door] for door, inside in self.entrance_pairs}
-        temples = {row["out"]: row for row in ENTRANCE_SHUFFLE if row["temple_exit"] is None and not row.get("grotto")}
+        temples = {row["out"]: row for row in ENTRANCE_SHUFFLE if row["option"] == "RO_SHUFFLE_DUNGEON_ENTRANCES"}
         for boss in ENTRANCE_SHUFFLE:
             if boss["temple_exit"] is None:
                 continue

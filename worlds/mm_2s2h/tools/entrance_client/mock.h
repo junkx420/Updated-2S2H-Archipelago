@@ -38,6 +38,8 @@ inline unsigned flags = 0;
 #define HAS_MAGIC true
 #define HAS_ITEM(item) true
 #define CAN_PLAY_SONG(song) true
+inline int randoEvents[RE_MAX + 1]{};
+#define RANDO_EVENTS randoEvents
 #define SET_WEEKEVENTREG(flag) (flags |= (flag))
 enum { WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE = 1, WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON = 2,
        WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE = 4, WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE = 8,

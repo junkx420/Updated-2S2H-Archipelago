@@ -264,6 +264,7 @@ ITEMS = {
     'RI_DOOR_KEY_MUSIC_BOX_HOUSE': ('Music Box House Key', 'RITYPE_MAJOR', 'ITEM_NONE'),
     'RI_DOOR_KEY_GHOST_HUT': ('Ghost Hut Key', 'RITYPE_MAJOR', 'ITEM_NONE'),
     'RI_DOOR_KEY_DAMPES_HOUSE': ("Dampe's House Key", 'RITYPE_MAJOR', 'ITEM_NONE'),
+    'RI_DOOR_KEY_ZORA_HALL_ROOMS': ('Zora Hall Rooms Key', 'RITYPE_MAJOR', 'ITEM_NONE'),
     'RI_STONE_TOWER_BOSS_KEY': ('Stone Tower Boss Key', 'RITYPE_BOSS_KEY', 'ITEM_KEY_BOSS'),
     'RI_STONE_TOWER_COMPASS': ('Stone Tower Compass', 'RITYPE_LESSER', 'ITEM_COMPASS'),
     'RI_STONE_TOWER_MAP': ('Stone Tower Map', 'RITYPE_LESSER', 'ITEM_DUNGEON_MAP'),

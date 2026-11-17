@@ -28,7 +28,7 @@ class DoorKeysTable(MM2S2HTestBase):
     """The generated table: one key per building, every "into" a single exit from outside into another scene."""
 
     def test_table(self) -> None:
-        self.assertEqual(len(DOOR_KEYS), 25)
+        self.assertEqual(len(DOOR_KEYS), 26)  # 25 buildings, since 0.7 also the Zora Hall rooms
         self.assertEqual(len(INTO), sum(len(row["into"]) for row in DOOR_KEYS))
         for row in DOOR_KEYS:
             self.assertEqual(ITEMS[row["key"]][0], row["building"] + " Key")

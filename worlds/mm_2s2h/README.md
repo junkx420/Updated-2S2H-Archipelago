@@ -71,7 +71,8 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   `DOOR_KEYS`, and `__init__.py` adds the key to the rule of those exits (Glitchless only; the rule stays at the
   door). In game the door actor (`En_Door`, hook `VB_OPEN_KNOB_DOOR`) stays shut and names the missing key; only the
   entrance behind the door decides, so ways out are never locked. Like `shuffleAreaRules`, the in-game check tracker
-  does not know the keys. 0.1–0.4 seeds/saves remain supported. **Not tested in game.**
+  does not know the keys. 0.1–0.4 seeds/saves remain supported. Since 0.7.0 a 26th key, the Zora Hall Rooms Key,
+  opens the five Zora Hall doors (see Interiors below). **Not tested in game.**
 - **Grottos** (`shuffle_grottos`, apworld 0.6.0, default off): the 26 grottos of the logic (holes and the two
   scene-exit grottos, Deku Palace bean salesman and Lone Peak Shrine) are shuffled among each other and coupled:
   through hole A into grotto X, and out of X back at A. They are appended rows of `shuffleEntrances`; the game side
@@ -84,6 +85,19 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   are in, but its reachability does not know shuffled entrances (also for temples and boss rooms). The save field
   `entrancePairs` is now `u16[512]` (was `u8[32]`, loaded unchanged). 0.1–0.5 seeds/saves remain supported.
   See `docs/testing.md`. **Not tested in game.**
+- **Interiors** (`shuffle_interiors`, apworld 0.7.0, default off): the knob doors from outside into 32 building doors
+  (Clock Town shops and houses including both Stock Pot Inn doors, swamp, mountain and ranch buildings, Marine Lab,
+  Fisherman's Hut, the five Zora Hall doors, Music Box House, Ghost Hut) are shuffled among each other and coupled:
+  through door A into building X, out of X in front of A. 32 rows appended to `shuffleEntrances`, with an hours class
+  each in `interiorEntrances`. The time logic gives every region the same mask, so checks inside a building rely on
+  their own door's hours (e.g. the shooting galleries only test the bow, their doors close at 22); doors therefore mix
+  only within a class, "always open" (17) or "daytime" (9), and the 6 doors with hours of their own (Curiosity Shop,
+  Kafei's hideout, Post Office, Milk Bar, Inn ground floor, barn) stay. `test_interior_shuffle.py` proves both classes
+  against the logic's door rules. A door keeps its rule, hours and key; a foreign Music Box House adds Sharp's curse,
+  a foreign Evan's room Zora (`shuffleAreaRules`). The client redirects without the entrance layer bits and without
+  testing the exterior scene (cleared swamp, spring village). Door keys gain the Zora Hall Rooms Key (five doors); the
+  client locks those doors only for seeds of 0.7 and newer (`RANDO_INF_DOOR_KEYS_ZORA_HALL`), so 0.5/0.6 saves keep
+  them open. 0.1–0.6 seeds/saves remain supported. See `docs/testing.md`. **Not tested in game.**
 
 ## Updating to a new 2S2H release
 
