@@ -34,7 +34,7 @@ game: Majora's Mask (2 Ship 2 Harkinian)
 requires:
   version: 0.6.9 # Version of Archipelago required for this yaml to work as expected.
   game:
-    Majora's Mask (2 Ship 2 Harkinian): 0.7.1 # Version of the world required for this yaml to work as expected.
+    Majora's Mask (2 Ship 2 Harkinian): 0.8.0 # Version of the world required for this yaml to work as expected.
 
 Majora's Mask (2 Ship 2 Harkinian):
   ################
@@ -357,6 +357,14 @@ Majora's Mask (2 Ship 2 Harkinian):
     # The doors into buildings lead into other buildings, coupled: you come back out at the door you
     # went in. Only buildings with the same opening hours mix (always open, or daytime); buildings with
     # hours of their own stay. A door keeps its opening hours and its key.
+    'false': 50
+    'true': 0
+
+  shuffle_overworld:
+    # Exits between outdoor areas (Termina Field, Clock Town, roads, Swamp, Mountains, Great Bay
+    # Coast, Ikana) lead to other outdoor areas, coupled: you come back the way you came. Water,
+    # one-way and cutscene ways stay. The Clock Town gates always lead out of Clock Town. Riding Epona
+    # through a shuffled exit, Link gets off and Epona waits there.
     'false': 50
     'true': 0
 

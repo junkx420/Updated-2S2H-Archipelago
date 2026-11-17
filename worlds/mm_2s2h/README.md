@@ -98,6 +98,16 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   testing the exterior scene (cleared swamp, spring village). Door keys gain the Zora Hall Rooms Key (five doors); the
   client locks those doors only for seeds of 0.7 and newer (`RANDO_INF_DOOR_KEYS_ZORA_HALL`), so 0.5/0.6 saves keep
   them open. 0.1–0.6 seeds/saves remain supported. See `docs/testing.md`. **Not tested in game.**
+- **Overworld** (`shuffle_overworld`, apworld 0.8.0, default off): 34 transitions between outdoor areas (Clock Town
+  districts and gates, Termina Field and its roads, swamp, Milk Road, mountains, Great Bay Coast–Zora Cape, Ikana) are
+  shuffled among each other and coupled: through exit A you arrive at the place of exit X, and X leads back to A.
+  68 rows (one per exit) appended to `shuffleEntrances`. Rows name places, not scene variants: the client redirects
+  to the base entrance and the game picks spring/cleared scene and layer (`Play_Init`). One-way ways, water arrivals,
+  the Stone Tower inversion, Clock Tower rooftop, owls and songs stay fixed; temples, boss rooms, grottos and
+  interiors never mix with the overworld. The four Clock Town gates always lead out of Clock Town. Riding Epona
+  through a shuffled exit, Link gets off and Epona waits there. Area rules for Woodfall, the Deku Palace treetop, the
+  Goron Racetrack (both sides of its boulder) and Milk Road past the boulder (`shuffleAreaRules`). 0.1–0.7
+  seeds/saves remain supported. See `docs/testing.md`. **Not tested in game.**
 - **Pool trimming** (apworld 0.7.1, no new ids or options, client unchanged): when the item pool is larger than the
   shuffled locations, `create_items` removes junk (as before), then traps, then extra Plentiful Items copies (picked
   at random; every original item stays). Each trimmed trap/copy count is logged as a warning. Only if the pool is

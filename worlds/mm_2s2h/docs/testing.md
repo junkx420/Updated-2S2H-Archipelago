@@ -606,3 +606,128 @@ the counts and the options that help. No ids, options or logic change; the clien
   95/100). The five former failures now trim: seed 24: 391 items for 284 locations, 17 of 17
   traps and 90 of 149 copies; 34: 3 of 134 copies; 58: 13 of 214; 66: 19 of 208; 71: 17 of 144.
 * Parity harness rebuilt, all own options off: **1200/1200 identical** (0 mismatching).
+
+### Overworld shuffle (apworld 0.8.0, 2026-11-17)
+
+`shuffle_overworld` (`RO_SHUFFLE_OVERWORLD`, default off): exits between outdoor areas lead to other outdoor areas,
+coupled (through exit A into the place of exit X, back through X's way out in front of A). Stage 6a; temples, boss
+rooms, grottos and interiors keep their own options and never mix with the overworld (stage 6b).
+
+#### Pool and criteria
+
+68 rows appended to `shuffleEntrances`, one per exit, two per transition (34 transitions). A row is taken when both
+sides are outdoor scenes, the logic gives the exit a way back (no `ONE_WAY_EXIT`) and the arrival is on foot on land.
+
+| Area | Transitions (Regions file: line there / line back) |
+|---|---|
+| Clock Town (7) | South–East lower `Central.cpp:236/110`, upper `231/112`, North–East `181/114`, South–North `233/182`, South–West upper `232/259`, lower `234/258`, South–Laundry Pool `235/154` |
+| Clock Town gates (4) | South `TerminaField.cpp:578`/`Central.cpp:230`, East `579/109`, North `580/180`, West `574/257` |
+| Termina Field (5) | Road to Southern Swamp `TerminaField.cpp:575`/`South.cpp:299`, Road to Ikana `576`/`East.cpp:331`, Milk Road `577`/`MilkRoad.cpp:140`, Path to Mountain Village `TerminaField.cpp:20`/`North.cpp:439`, Great Bay Coast `TerminaField.cpp:12`/`West.cpp:147` |
+| Southern Swamp (5) | Road–Swamp `South.cpp:301/370`, Swamp–Woods of Mystery `633/461`, Swamp–Deku Palace `166/478`, treetop `167/497`, Swamp–Woodfall `496/558` |
+| Milk Road (3) | Romani Ranch `MilkRoad.cpp:141/276`, Gorman Track front `142/68`, back `158/113` |
+| Mountains (6) | Path–Mountain Village `North.cpp:462/315`, Village–Path to Goron Village `413/311`, Village–Path to Snowhead `314/497`, Path–Snowhead `551/527`, Path–Goron Village `414/140`, Path–Goron Racetrack `416/91` |
+| Great Bay (1) | Great Bay Coast–Zora Cape `West.cpp:148/357` |
+| Ikana (3) | Road–Canyon `East.cpp:303/151`, Road–Graveyard `317/255`, Canyon–Stone Tower `473/183` |
+
+Fixed: one-way ways (Clock Tower rooftop `Central.cpp:237`, Ikana river `East.cpp:159`, `IKANA_GRAVEYARD:4`
+`East.cpp:26`, Pirates' Fortress exterior :3 `PiratesFortress.cpp:318/357`, blue warps `GreatBayTemple.cpp:57`,
+`StoneTowerTemple.cpp:435`, owls and songs `RR_MAX`); the Stone Tower inversion `East.cpp:481/545` and the canyon
+cave in one scene `East.cpp:112/187`; arrivals in water (Pirates' Fortress exterior `West.cpp:151`, Pinnacle Rock
+`West.cpp:149/244`, Zora Hall water tunnel `West.cpp:359/413`, Waterfall Rapids `West.cpp:283/360`): a Deku
+arriving there would void out and respawn at the same entrance forever. Stage 6b: Astral Observatory, Zora Hall by
+land, Great Fairy fountains, Ikana Castle, Sakon's hideout. Entrance cutscenes belong to the arrival spawn
+(`z_demo.c:1548-1582`), so redirecting to the real entrance of a place plays what its vanilla way in plays.
+
+#### Code evidence
+
+* **Scene variants.** Play_Init turns `save.entrance` into the variant (`z_play.c:2261-2300`): WINTER → SPRING
+  (Mountain Village, Goron Village, Path to Goron Village), POISONED → CLEARED, and the layer through
+  `nextCutsceneIndex` (Woodfall 0xFFF1, Ikana Canyon 0xFFF2, Great Bay Coast/Zora Cape and the Snowhead area 0xFFF0,
+  first-cycle Termina Field 0xFFF4), only while it is 0xFFEF or 0xFFF0. Rows name places: base entrances and base
+  scenes only (the generator refuses `*_SPRING`, `*_CLEARED`, `SCENE_*2`, `SCENE_F41`). `RedirectOverworld` compares
+  the next entrance as a place (spring/cleared group mapped to winter/poisoned, layer bits dropped) and the current
+  scene through `Play_GetOriginalSceneId` (`z_play.c:1975`), sets the target's base entrance and resets
+  `nextCutsceneIndex` ≥ 0xFFF0 to 0xFFEF, so Play_Init picks the target's variant. Scene exit lists are in the
+  assets, so whether a spring scene's exit holds a SPRING or WINTER value is not known from source; both are handled.
+* **Only real exits.** Redirected when `respawnFlag` is 0 or −2 (an exit that recorded itself as void-out point,
+  `z_player.c:6510`; Play_Init resets it, `z_play.c:2497`), no cutscene runs and the current scene is the row's.
+  Void out (1, `z_play.c:2074`), death and game over (−1/−6, `z_play.c:2084`, `z_game_over.c:97`), grotto return (4,
+  `z_player.c:6497`), warp songs (−3, `z_kankyo.c:3143`) and Sakon's hideout (−7, `z_play.c:2063`) reload a place
+  already reached. An exit that stored itself as void-out point (`z_player.c:6508`) gets the new entrance.
+* **Epona.** Riding through an exit sets `gHorseIsMounted` (`z_player.c:6578`); Horse_SpawnOverworld then mounts
+  Link in any scene, testing only the layer (`z_horse.c:124`). On a redirected exit Link gets off: the flag is cleared
+  and `horseData` is set to the exit's scene and the horse's position, as after dismounting (`z_player.c:17188`). In
+  a horse scene (`z_horse.c:59-69`) she appears next to Link with Epona's Song; the logic asks for the song in each
+  scene (`CAN_RIDE_EPONA`, `Logic.h:205`).
+* **Start.** The file starts as Human without sword in South Clock Town 0 (`OnFileCreate.cpp:30-43`), fixed. The four
+  Clock Town gates (seen from inside the town) are placed first, each to the place of a random exit outside Clock
+  Town; GER's group lookup alone could end with a gate and a Clock Town place left (seen in a trial run). The guards
+  stay at the gate (`z_en_stop_heishi.c:375-395`); the logic's gate rules are `true`.
+* **Area rules** (`shuffleAreaRules`), only where an arrival's region has no way in that lacks the vanilla guarantee
+  (owl destinations count as such a way, `RO_SHUFFLE_OWL_STATUES`): Woodfall 0 `CAN_BE_DEKU` (only way in
+  `South.cpp:496`, grass without rule); Deku Palace 5 (treetop) `CAN_BE_DEKU` (`South.cpp:497`); Goron Racetrack 0 and
+  Path to Goron Village 2 (in front of its boulder) Powder Keg and Goron (`North.cpp:416`, 30 pots and 10 trees
+  without rule); Milk Road 1 (past the boulder, in `RR_MILK_ROAD` with the way to Termina Field) day 3 or boulder
+  destroyed (`MilkRoad.cpp:141`). Graveyard, Ikana Canyon, ranch, Gorman Track, Woods of Mystery and the mountain
+  paths need none (their rules are explicit or the region is reached by owl).
+* **Other options.** No overworld entrance is a row of another option (generator check; a grotto hole's logic way
+  back such as `TERMINA_FIELD:0` is not, the grotto returns to the stored hole). Boss warps to e.g. `WOODFALL:0` come
+  from a boss scene and stay. Grotto holes, building doors and temple doors stay in their area and move with it.
+
+#### Verification
+
+* `pytest test/general worlds/mm_2s2h/test -q`: **699 passed, 0 failed** (147,585 subtests), 194 s.
+* New `test/test_overworld_shuffle.py` (45 tests): table (68 rows, each with its opposite row, appended after row 65,
+  the four gates); every row names a place (no SPRING/CLEARED/inverted entrance, no variant scene; every place with
+  a variant is in the pool by its base name); one-way, water, inversion, rooftop, observatory and Song of Time
+  entrances are not in the pool; the five area rules; option off with all other own options = no overworld pair and
+  every overworld exit as generated; option on = coupled over 12 seeds (inherited check plus: the opposite exit of
+  each arrival leads back to the exit's place), the gates never arrive in Clock Town (10 seeds), every location
+  reachable with all items, beatable, Universal Tracker rebuilds it; area rules with forced pairings (Road to Southern
+  Swamp → Woodfall needs Deku, Woodfall's own exit keeps its Deku rule, Mountain Village → racetrack needs the keg and
+  so does the coupled way to the racetrack's boulder); No Logic; all own options together (also No Logic and
+  own-dungeon items); 0.7 slot data (no `RO_SHUFFLE_OVERWORLD`) rebuilds unchanged and beatable.
+  `test_entrance_shuffle.py` and `test_interior_shuffle.py` narrowed to their own rows.
+* `test_pool_trim.py`: the 38 fills pinned from 0.7.0 are **38/38 unchanged** with the overworld off. The
+  fingerprint leaves out options added later while they are off (`NEW_OPTIONS`): they only add a key to the slot
+  data. `tools/random_seeds.py` does not roll `shuffle_overworld` (that would shift every roll); set it with
+  `shuffle_overworld=true`.
+* 100 random seeds with `shuffle_overworld=true` (everything else randomized): **100/100**, 313 s. A trial run
+  before the gates were placed first failed 1 of 5 in GER ("None of the available entrances are valid targets",
+  a gate and a Clock Town place left); fixed as described above, 10/10 then.
+* 100 random seeds with overworld, temples, bosses, grottos, interiors, door keys and NPC souls: **100/100**, 308 s.
+* C++ test bench (`tools/entrance_client/run.py ../2s2h`), real `EntranceShuffle.cpp` with `Entrance_Create`
+  (`z_scene.c`) and `Play_GetOriginalSceneId` (`z_play.c`) copied verbatim: **2,244,544 overworld transitions, all
+  4624 exit/arrival pairings** (68², coupled), each with the other entrance options off and on, option off and on,
+  the exit's scene and its variant (cleared swamp, spring villages, inverted Stone Tower), the entrance as base, as
+  spring/cleared form and with layer bits, respawn flags 0/−2 (redirected) and 1/−1/−6/4/−3/−7 (not), with and
+  without a running cutscene, mounted and not: 130,248 redirected, 1,984,824 kept. Redirected: base entrance of the
+  target, layer index reset, void-out point moved, Link off Epona with `horseData` at the exit; for all four
+  clear-flag states the Play_Init model (`z_play.c:2264-2283`) loads the target's variant (520,992 loads). After the
+  arrival a void out/death or exit in the target's scene, a grotto return through a pool entrance and the 11 song/owl
+  entrances are never redirected. Older parts pass unchanged (door keys 3,632,128; temples/bosses 9216 cases;
+  grottos 571,328; interiors 193,700). It does not run Player, En_Horse or the scene loader.
+* Parity harness rebuilt, all own options off: **1200/1200 identical** (0 mismatching).
+* Client builds locally (MSVC Release, `2ship.exe`), no warning in `EntranceShuffle.cpp`; changed C++ lines pass
+  clang-format.
+
+#### In-game checklist — not tested in game
+
+1. Option on: walk through every transition of the table once; the arrival is the one in the spoiler, and walking
+   back puts you at the exit you used.
+2. Variants: with Woodfall, Snowhead, Great Bay and Stone Tower cleared, enter the swamp, Mountain Village, Goron
+   Village, Path to Goron Village, Great Bay Coast, Zora Cape and Ikana Canyon through foreign exits: spring/cleared
+   scene and layer as in vanilla; leaving them through each exit redirects too.
+3. Epona: ride through a foreign exit into a horse scene and into one without (e.g. Mountain Village): Link arrives
+   on foot, Epona is not lost (Epona's Song; she waits at the exit on return).
+4. Milk Road 1 before day 3 without the boulder destroyed, and Path to Goron Village 2 with the racetrack boulder:
+   where exactly the spawn is (the logic assumes behind the boulder); never stuck (the exit behind you leads back).
+5. Deku Palace treetop and Woodfall entered as Human: you can leave again.
+6. Void out, die, pause save and reload, Song of Time, Song of Soaring and owls right after a foreign exit: you land
+   at the arrival or the usual place, never in a loop.
+7. First cycle: start in South Clock Town as Human, leave through a gate; the guards behave as in vanilla.
+8. Entrance cutscenes on first arrival (Woodfall, Snowhead, Romani Ranch, first-cycle Termina Field) play as for
+   that place's own way in.
+9. Cremia's escort and other scripted transitions keep their vanilla destination.
+10. Together with temples, bosses, grottos, interiors and door keys: holes, doors and temple doors behave as before.
+11. Option off and 0.1–0.7 seeds/saves: everything as before.

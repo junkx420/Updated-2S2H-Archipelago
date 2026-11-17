@@ -144,7 +144,8 @@ class EntranceShuffleAreaRules(MM2S2HTestBase):
         return world._rule(f) or (lambda state: True)
 
     def test_area_rules(self) -> None:
-        temple_rows = {r["into"] for r in ENTRANCE_SHUFFLE if r["option"] != "RO_SHUFFLE_INTERIORS"}
+        temple_rows = {r["into"] for r in ENTRANCE_SHUFFLE
+                       if r["option"] not in ("RO_SHUFFLE_INTERIORS", "RO_SHUFFLE_OVERWORLD")}
         self.assertEqual(set(ENTRANCE_AREA_RULES) & temple_rows, set(AREA_ITEMS) | set(BOSS_AREA_ITEMS))
         foreign = 0
         for seed in range(12):

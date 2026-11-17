@@ -62,9 +62,10 @@ class InteriorTable(MM2S2HTestBase):
                          ["STOCK_POT_INN:0", "STOCK_POT_INN:1"])
         zora = next(row for row in DOOR_KEYS if row["key"] == "RI_DOOR_KEY_ZORA_HALL_ROOMS")
         self.assertEqual(sorted(zora["into"]), [f"ZORA_HALL_ROOMS:{i}" for i in (0, 1, 2, 3, 5)])
-        # appended after every older row: saved row numbers of 0.3-0.6 pairings stay valid
+        # appended after every older row: saved row numbers of 0.3-0.6 pairings stay valid (0.8 appends after them)
         first = ENTRANCE_SHUFFLE.index(INTERIORS[0])
-        self.assertEqual(ENTRANCE_SHUFFLE[first:], INTERIORS)
+        self.assertEqual(ENTRANCE_SHUFFLE[first:first + len(INTERIORS)], INTERIORS)
+        self.assertEqual(first + len(INTERIORS), 66)
 
 
 class InteriorHoursClasses(MM2S2HTestBase):

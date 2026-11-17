@@ -82,8 +82,22 @@ bjc = (root / "mm/2s2h/BenJsonConversions.hpp").read_text(encoding="utf-8")
 grown = re.search(r"template <typename T, size_t N> inline void GetGrownArray\(.*?\n}\n", bjc.replace("\r\n", "\n"), re.S)
 (build / "grown_array.h").write_text("#pragma once\n#include <nlohmann/json.hpp>\nusing json = nlohmann::json;\n"
                                      + grown.group(0), encoding="utf-8")
+# Game functions the overworld redirect calls, verbatim (z_scene.c, z_play.c).
+scene_c = (root / "mm/src/code/z_scene.c").read_text(encoding="utf-8").replace("\r\n", "\n")
+play_c = (root / "mm/src/code/z_play.c").read_text(encoding="utf-8").replace("\r\n", "\n")
+functions = [re.search(r"u16 Entrance_Create\(s32 scene, s32 spawn, s32 layer\) \{.*?\n}\n", scene_c, re.S).group(0),
+             re.search(r"s16 Play_GetOriginalSceneId\(s16 sceneId\) \{.*?\n}\n", play_c, re.S).group(0)]
+(build / "game_functions.h").write_text("#pragma once\n" + "".join("inline " + f for f in functions), encoding="utf-8")
+# Overworld rows as the apworld was generated: row index, "into", index of the opposite row.
+over = [i for i, row in enumerate(ENTRANCE_SHUFFLE) if row["option"] == "RO_SHUFFLE_OVERWORLD"]
+over_index = {ENTRANCE_SHUFFLE[i]["into"]: i for i in over}
+(build / "overworld_graph.h").write_text(
+    "#pragma once\n#include <array>\n#include <vector>\n"
+    "inline const std::vector<std::array<int, 3>> generatedOverworld = {"
+    + ", ".join(f"{{ {i}, {ENTRANCE_SHUFFLE[i]['into_value']}, {over_index[ENTRANCE_SHUFFLE[i]['out']]} }}" for i in over)
+    + "};\n", encoding="utf-8")
 json_include = root / "build/x64/vcpkg/installed/x64-windows-static/include"
-for name in ("Rando/Rando.h", "Rando/Logic/Logic.h", "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h"):
+for name in ("Rando/Rando.h", "Rando/Logic/Logic.h", "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h", "z64horse.h"):
     header = build / name
     header.parent.mkdir(parents=True, exist_ok=True)
     header.write_text('#include "mock.h"\n', encoding="utf-8")

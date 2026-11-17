@@ -70,6 +70,10 @@ NNL_SCENE_BLACKLIST = {
 }
 NNL_TYPE_BLACKLIST = {"RI_SONG_EPONA": "RCTYPE_COW"}
 LOGIC_GLITCHLESS, LOGIC_NEARLY_NO_LOGIC = 0, 2
+# Overworld shuffle (EntranceShuffle.cpp, RO_SHUFFLE_OVERWORLD): exit groups, apart from the other options' 1, 2, ...
+OVERWORLD = "RO_SHUFFLE_OVERWORLD"
+CLOCK_TOWN_SCENES = {"SCENE_CLOCKTOWER", "SCENE_TOWN", "SCENE_BACKTOWN", "SCENE_ICHIBA", "SCENE_ALLEY"}
+OW_GROUP = 1001
 
 
 def _door_name(row: dict) -> str:
@@ -80,6 +84,12 @@ def _door_name(row: dict) -> str:
         shared = sum(r["inside_region"] == row["inside_region"] for r in ENTRANCE_SHUFFLE) > 1
         return region_name(row["inside_region"]) + (f" ({row['out'].replace('_', ' ').title()})" if shared else "")
     return row["into"].split(":")[0].replace("_", " ").title()
+
+
+def _place_name(entrance: str) -> str:
+    """'MOUNTAIN_VILLAGE_WINTER:6' -> 'Mountain Village Winter 6' (an overworld arrival)"""
+    scene, spawn = entrance.split(":")
+    return f"{scene.replace('_', ' ').title()} {spawn}"
 
 
 def region_name(rr: str) -> str:
@@ -560,9 +570,15 @@ class MM2S2HWorld(World):
         """Entrance shuffle (EntranceShuffle.cpp rows whose option is on): coupled, so a door's way back is the exit
         of the area behind it. An exit keeps its own rule, i.e. what it takes to use the door stays at the door."""
         self.entrance_pairs: list[tuple[int, int]] = []  # [door's "into", "into" of the area behind it] (slot data)
-        rows = [row for row in ENTRANCE_SHUFFLE if self.ro.get(row["option"])]
-        if not rows:
+        rows = [row for row in ENTRANCE_SHUFFLE if self.ro.get(row["option"]) and row["option"] != OVERWORLD]
+        # Overworld rows are single exits, two per transition (EntranceShuffle.cpp): row k leads where row over_to[k]
+        # arrives. The exit of row k is also the way back of its opposite row, so they are not doors with insides.
+        over = [row for row in ENTRANCE_SHUFFLE if self.ro.get(row["option"]) and row["option"] == OVERWORLD]
+        if not rows and not over:
             return
+        over_exits = [self.exit_entrances[(row["door_region"], row["into"])] for row in over]
+        over_index = {row["into"]: k for k, row in enumerate(over)}
+        over_to: dict[int, int] = {}
         doors = [self.exit_entrances[(row["door_region"], row["into"])] for row in rows]
         insides = [self.exit_entrances[(row["inside_region"], row["out"])] for row in rows]
         # Blue warps are one-way in vanilla. Give the coupled helper the inverse side of the boss door temporarily;
@@ -573,11 +589,15 @@ class MM2S2HWorld(World):
         behind: dict[int, int] = {}  # door row index -> row index of the area behind it (missing: its own)
         if self.ut_entrance_pairs is not None:  # Universal Tracker: the pairing of the generated seed
             by_value = {row["into_value"]: i for i, row in enumerate(rows)}
-            behind = {by_value[door]: by_value[inside] for door, inside in self.ut_entrance_pairs}
+            behind = {by_value[door]: by_value[inside] for door, inside in self.ut_entrance_pairs if door in by_value}
             for i, row in enumerate(rows):
                 j = behind.get(i, i)
                 self._reconnect(doors[i], rows[j]["inside_region"])
                 self._reconnect(insides[j], row["door_region"])
+            over_value = {row["into_value"]: k for k, row in enumerate(over)}
+            over_to = {over_value[a]: over_value[b] for a, b in self.ut_entrance_pairs if a in over_value}
+            for k, exit_ in enumerate(over_exits):
+                self._reconnect(exit_, over[over_to.get(k, k)]["inside_region"])
         else:
             # Interiors mix only within one hours class (EntranceShuffle.cpp interiorEntrances); OWN_HOURS stays.
             moving = [i for i, row in enumerate(rows) if row.get("hours") != "OWN_HOURS"]
@@ -590,6 +610,23 @@ class MM2S2HWorld(World):
                 door.randomization_group, inside.randomization_group = g, g + 1
                 lookup[g], lookup[g + 1] = [g + 1], [g]
             exits = [doors[i] for i in moving] + [insides[i] for i in moving]
+            # Overworld: the Clock Town gates always lead out of Clock Town. GER's group lookup cannot promise that (it
+            # may end with a gate and a Clock Town place left), so the gates are placed first, each to the place of a
+            # random exit outside Clock Town, coupled; GER mixes the rest in one group.
+            in_town = [REGIONS[row["door_region"]][1] in CLOCK_TOWN_SCENES for row in over]
+            gates = [k for k, row in enumerate(over) if in_town[k] and REGIONS[row["inside_region"]][1]
+                     not in CLOCK_TOWN_SCENES]
+            for gate, m in zip(gates, self.random.sample([k for k in range(len(over)) if not in_town[k]], len(gates))):
+                over_to[gate], over_to[m] = over_index[over[m]["out"]], over_index[over[gate]["out"]]
+                self._reconnect(over_exits[gate], over[m]["door_region"])
+                self._reconnect(over_exits[m], over[gate]["door_region"])
+            free = [over_exits[k] for k in range(len(over)) if k not in over_to]
+            for exit_ in free:
+                exit_.randomization_type = EntranceType.TWO_WAY
+                exit_.randomization_group = OW_GROUP
+            if free:
+                lookup[OW_GROUP] = [OW_GROUP]
+            exits += free
             for exit_ in exits:
                 disconnect_entrance_for_randomization(exit_)
             placement = randomize_entrances(self, True, lookup, exits=exits)
@@ -602,6 +639,11 @@ class MM2S2HWorld(World):
                     behind[door_at[source]] = inside_at[target]
                 elif source in inside_at and target in door_at:
                     behind[door_at[target]] = inside_at[source]
+            # Target "name of exit m" is the place of exit m, where m's opposite row arrives.
+            over_at = {exit_.name: k for k, exit_ in enumerate(over_exits)}
+            for source, target in placement.pairings:
+                if source in over_at and target in over_at:
+                    over_to[over_at[source]] = over_index[over[over_at[target]]["out"]]
         for i, (row, door) in enumerate(zip(rows, doors)):
             inside = rows[behind.get(i, i)]
             if door.connected_region is not self.regions_by_rr[inside["inside_region"]]:
@@ -614,6 +656,18 @@ class MM2S2HWorld(World):
                 if area is not None:
                     own = door.access_rule
                     door.access_rule = lambda state, own=own, area=area: own(state) and area(state)
+        for k, (row, exit_) in enumerate(zip(over, over_exits)):
+            target = over[over_to.get(k, k)]
+            if exit_.connected_region is not self.regions_by_rr[target["inside_region"]]:
+                raise RuntimeError(f"{self.player_name}: overworld shuffle lost the pairing of {row['into']}")
+            self.entrance_pairs.append((row["into_value"], target["into_value"]))
+            self.multiworld.spoiler.set_entrance(f"{region_name(row['door_region'])} -> {_place_name(row['into'])}",
+                                                 _place_name(target["into"]), "entrance", self.player)
+            if target is not row:
+                area = self._rule(ENTRANCE_AREA_RULES.get(target["into"]))
+                if area is not None:
+                    own = exit_.access_rule
+                    exit_.access_rule = lambda state, own=own, area=area: own(state) and area(state)
         self._connect_boss_warps()
 
     def _connect_boss_warps(self) -> None:

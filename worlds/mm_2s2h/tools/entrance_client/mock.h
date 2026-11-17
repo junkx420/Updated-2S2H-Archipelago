@@ -15,16 +15,32 @@ using s16 = int16_t;
 using s32 = int32_t;
 struct RandoSaveInfo { u16 entrancePairs[512]{}; }; // z64save.h
 struct RespawnData { u16 entrance = 0; s8 data = 0; int position = 0; };
+struct Vec3f { float x = 0, y = 0, z = 0; };
+struct Vec3s { s16 x = 0, y = 0, z = 0; };
+struct HorseData { s16 sceneId = 0; Vec3s pos; s16 yaw = 0; }; // z64save.h
 struct SaveContext {
     struct Save {
         struct Ship { RandoSaveInfo rando; } shipSaveInfo;
         u16 entrance = 0;
+        struct SaveInfo { HorseData horseData; } saveInfo;
     } save;
     u16 nextCutsceneIndex = 0;
     int respawnFlag = 0;
     RespawnData respawn[4];
 };
-struct PlayState { u16 nextEntrance = 0; s16 sceneId = 0; int position = 0; };
+struct Actor { struct { Vec3f pos; } world; struct { Vec3s rot; } shape; };
+struct Player { Actor actor; Actor* rideActor = nullptr; };
+struct CutsceneContext { int state = 0; };
+enum { CS_STATE_IDLE = 0 };
+struct PlayState { u16 nextEntrance = 0; s16 sceneId = 0; int position = 0; CutsceneContext csCtx; Player* player = nullptr; };
+#define GET_PLAYER(play) ((play)->player)
+inline int gHorseIsMounted = 0; // z64horse.h
+inline bool hasEponasSong = false;
+enum { QUEST_SONG_EPONA };
+#define CHECK_QUEST_ITEM(item) hasEponasSong
+#define AFTER(slice) true
+enum { TIME_DAY3_AM_06_00 };
+namespace Rando { namespace Logic {} }
 inline SaveContext gSaveContext;
 inline PlayState playState;
 inline PlayState* gPlayState = &playState;
@@ -65,3 +81,5 @@ inline void Play_SetupRespawnPoint(PlayState* play, int mode, int params) {
 }
 inline bool randoInf[RANDO_INF_MAX]{};
 inline int Flags_GetRandoInf(int flag) { return randoInf[flag]; }
+// Verbatim from the game (run.py copies them): z_scene.c Entrance_Create, z_play.c Play_GetOriginalSceneId.
+#include "game_functions.h"

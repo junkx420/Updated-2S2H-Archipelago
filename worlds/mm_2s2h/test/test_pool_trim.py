@@ -51,12 +51,18 @@ def build(options: dict, seed: int, fill: bool = True) -> MultiWorld:
     return mw
 
 
+# Options added after 0.7.0: off, they are only a new key in the slot data, which the 0.7.0 fingerprints cannot have.
+NEW_OPTIONS = {"RO_SHUFFLE_OVERWORLD"}  # 0.8.0
+
+
 def fingerprint(mw: MultiWorld) -> str:
     """Placement of every location, starting items and slot data (entrance pairs etc.) without the world version."""
     world = mw.worlds[1]
+    slot = {k: v for k, v in world.fill_slot_data().items() if k != "apworld_version"}
+    slot["options"] = {k: v for k, v in slot["options"].items() if not (k in NEW_OPTIONS and v == 0)}
     data = {"placed": sorted((loc.name, loc.item.name) for loc in mw.get_locations(1)),
             "start": sorted(i.name for i in mw.precollected_items[1]),
-            "slot": {k: v for k, v in world.fill_slot_data().items() if k != "apworld_version"}}
+            "slot": slot}
     return hashlib.sha256(json.dumps(data, sort_keys=True, default=str).encode()).hexdigest()[:16]
 
 

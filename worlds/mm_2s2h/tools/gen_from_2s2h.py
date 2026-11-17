@@ -482,6 +482,46 @@ def check_interiors(rows: list[dict], hours_of: dict, out_regions: list) -> None
             raise SystemExit(f"shuffleEntrances: {r['into']} leads into an interior scene but is no interior row")
 
 
+# Scene variants the game picks in Play_Init (z_play.c:2264-2299) or by inversion; an overworld row names the place,
+# so its entrances and scenes must be the base ones (Play_GetOriginalSceneId, z_play.c:1975).
+VARIANT_ENTRANCES = ("MOUNTAIN_VILLAGE_SPRING", "GORON_VILLAGE_SPRING", "PATH_TO_GORON_VILLAGE_SPRING",
+                     "SOUTHERN_SWAMP_CLEARED", "STONE_TOWER_INVERTED")
+VARIANT_SCENES = ("SCENE_20SICHITAI2", "SCENE_10YUKIYAMANOMURA2", "SCENE_11GORONNOSATO2", "SCENE_17SETUGEN2",
+                  "SCENE_F41", "SCENE_INISIE_R")
+
+
+def check_overworld(rows: list[dict], es_rows: list, out_regions: list) -> None:
+    """Overworld rows are single exits, two per transition: row i and the row whose "into" is i's "out" are each other's
+    way back. Every row names a place (no scene variant), leaves its scene for another, and shares no entrance with a
+    row of another option, so the client's redirects never overlap."""
+    over = [r for r in rows if r["option"] == "RO_SHUFFLE_OVERWORLD"]
+    if not over:
+        return
+    by_into = {r["into"]: r for r in over}
+    if len(by_into) != len(over):
+        raise SystemExit("shuffleEntrances: an overworld entrance has two rows")
+    scenes = {into: (ins, outs) for opt, into, _, ins, outs, *_ in es_rows if opt == "RO_SHUFFLE_OVERWORLD"}
+    # A grotto hole's way back is the hole it stored (respawn UNK_3, z_player.c:6496), not its logic "out".
+    others = {e for r in rows if r["option"] != "RO_SHUFFLE_OVERWORLD"
+              for e in (r["into"], r["out"]) if not (e == r["out"] and (r["grotto"] or {}).get("kind") == "HOLE")}
+    scene_of = {rid: scene for rid, _, scene, *_ in out_regions}
+    for r in over:
+        back = by_into.get(r["out"])
+        if back is None or back["out"] != r["into"] or back["door_region"] != r["inside_region"] \
+                or back["inside_region"] != r["door_region"]:
+            raise SystemExit(f"shuffleEntrances: overworld {r['into']} has no opposite row {r['out']}")
+        inside, outside = scenes[r["into"]]
+        if inside == outside or r["into"].split(":")[0] in VARIANT_ENTRANCES or {inside, outside} & set(VARIANT_SCENES):
+            raise SystemExit(f"shuffleEntrances: overworld {r['into']} must name a place in another scene, "
+                             f"not a variant ({outside} -> {inside})")
+        if scene_of[r["inside_region"]] != inside or scene_of[r["door_region"]] != outside:
+            raise SystemExit(f"shuffleEntrances: overworld {r['into']} regions are not in {outside} -> {inside}")
+        if r["into"] in others or r["out"] in others:
+            raise SystemExit(f"shuffleEntrances: overworld {r['into']} shares an entrance with another option's row")
+        if r["boss_warps"] or r["temple_exit"] is not None:
+            raise SystemExit(f"shuffleEntrances: overworld {r['into']} cannot have boss warps")
+
+
 def parse_ri_table(src: str):
     out = {}
     for m in re.finditer(r'^\s*RI\((RI_\w+),\s*"([^"]*)",\s*"([^"]*)",\s*(RITYPE_\w+),\s*(\w+),', src, re.M):
@@ -697,12 +737,16 @@ def main() -> int:
         if opt not in E("RandoOptionId"):
             raise SystemExit(f"shuffleEntrances: unknown option {opt}")
         grotto = opt == "RO_SHUFFLE_GROTTOS"
-        if len(exits_of[into]) != 1 or exits_of[into][0][1] != outside:
+        overworld = opt == "RO_SHUFFLE_OVERWORLD"
+        # Overworld places are also the logic's way back out of grottos (TERMINA_FIELD:0, GREAT_BAY_COAST:0, ...):
+        # an overworld row is the exit in its own scene.
+        doors = [x for x in exits_of[into] if not overworld or x[1] == outside]
+        if len(doors) != 1 or doors[0][1] != outside:
             raise SystemExit(f"shuffleEntrances: {into} must be the exit of exactly one region in {outside}, "
                              f"found {exits_of[into]}")
-        door, _, behind = exits_of[into][0]
+        door, _, behind = doors[0]
         # A grotto's way back is not unique (11 grottos return to TERMINA_FIELD:0): take the one of its own region.
-        outs = [x for x in exits_of[out] if not grotto or x[0] == behind]
+        outs = [x for x in exits_of[out] if (not grotto and not overworld) or x[0] == behind]
         if len(outs) != 1 or outs[0][1] != inside:
             raise SystemExit(f"shuffleEntrances: {out} must be the exit of exactly one region in {inside}, found {outs}")
         inner, _, back = outs[0]
@@ -733,6 +777,7 @@ def main() -> int:
                                  "grotto": grotto_of.get(into), "hours": hours_of.get(into)})
     check_grottos(entrance_shuffle, grotto_of, rc_table, out_regions, rando)
     check_interiors(entrance_shuffle, hours_of, out_regions)
+    check_overworld(entrance_shuffle, es_rows, out_regions)
 
     # Door keys: { RI_DOOR_KEY_X, "Building", { ENTRANCE(into), ... } } (MiscBehavior/DoorKeys.cpp doorKeys). Every
     # "into" must be the exit of exactly one region and lead into another scene; one key per building, in enum order.
