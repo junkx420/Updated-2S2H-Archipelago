@@ -34,8 +34,9 @@ static constexpr int64_t AP_ID_BASE = 0x2D2D0000;
 // The apworld major.minor this client is built for (archipelago.json world_version), and every major.minor it
 // still accepts seeds from. 0.2 only added to 0.1 (NPC souls: new items and one option at the end of the enums),
 // so a 0.1 seed and its save keep working.
-static constexpr char const* AP_WORLD_VERSION = "0.8";
-static constexpr char const* AP_WORLD_VERSIONS_ACCEPTED[] = { "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8" };
+static constexpr char const* AP_WORLD_VERSION = "0.9";
+static constexpr char const* AP_WORLD_VERSIONS_ACCEPTED[] = { "0.1", "0.2", "0.3", "0.4", "0.5",
+                                                              "0.6", "0.7", "0.8", "0.9" };
 
 // Version handshake with the AP server (matches SoH: server protocol 0.6.x).
 static constexpr int AP_PROTOCOL_MAJOR = 0;

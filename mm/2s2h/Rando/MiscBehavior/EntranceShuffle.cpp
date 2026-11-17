@@ -173,6 +173,48 @@ const std::vector<ShuffleEntrance> shuffleEntrances = {
     { RO_SHUFFLE_OVERWORLD, ENTRANCE(ROAD_TO_IKANA, 2),                ENTRANCE(IKANA_GRAVEYARD, 0),              SCENE_IKANAMAE,         SCENE_BOTI,             SCENE_MAX, {} },
     { RO_SHUFFLE_OVERWORLD, ENTRANCE(STONE_TOWER, 0),                  ENTRANCE(IKANA_CANYON, 3),                 SCENE_F40,              SCENE_IKANA,            SCENE_MAX, {} },
     { RO_SHUFFLE_OVERWORLD, ENTRANCE(IKANA_CANYON, 3),                 ENTRANCE(STONE_TOWER, 0),                  SCENE_IKANA,            SCENE_F40,              SCENE_MAX, {} },
+    // apworld 0.9 (stage 6b). Older seeds have no pairs for these rows, so they stay vanilla there (InsideBehind).
+    // Astral Observatory (Central.cpp): the Bombers' passage from East Clock Town and the door to Termina Field.
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ASTRAL_OBSERVATORY, 0),           ENTRANCE(EAST_CLOCK_TOWN, 2),              SCENE_TENMON_DAI,       SCENE_TOWN,             SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(EAST_CLOCK_TOWN, 2),              ENTRANCE(ASTRAL_OBSERVATORY, 0),           SCENE_TOWN,             SCENE_TENMON_DAI,       SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ASTRAL_OBSERVATORY, 1),           ENTRANCE(TERMINA_FIELD, 9),                SCENE_TENMON_DAI,       SCENE_00KEIKOKU,        SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(TERMINA_FIELD, 9),                ENTRANCE(ASTRAL_OBSERVATORY, 1),           SCENE_00KEIKOKU,        SCENE_TENMON_DAI,       SCENE_MAX, {} },
+    // Underwater ways (West.cpp, PiratesFortress.cpp), only among each other: overworldWaterEntrances below.
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 0),    ENTRANCE(GREAT_BAY_COAST, 5),              SCENE_TORIDE,           SCENE_30GYOSON,         SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(GREAT_BAY_COAST, 5),              ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 0),    SCENE_30GYOSON,         SCENE_TORIDE,           SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ZORA_HALL, 0),                    ENTRANCE(ZORA_CAPE, 1),                    SCENE_33ZORACITY,       SCENE_31MISAKI,         SCENE_MAX, {} },
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ZORA_CAPE, 1),                    ENTRANCE(ZORA_HALL, 0),                    SCENE_31MISAKI,         SCENE_33ZORACITY,       SCENE_MAX, {} },
+    // More interiors (Regions/*.cpp): Great Fairy fountains (walk-in, one spawn per fountain like the Zora Hall rooms),
+    // the Goron Shop inside the fixed Goron Shrine, the Goron Graveyard, the Deku King's chamber and the monkey's cell.
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(FAIRY_FOUNTAIN, 0),               ENTRANCE(NORTH_CLOCK_TOWN, 3),             SCENE_YOUSEI_IZUMI,     SCENE_BACKTOWN,         SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(FAIRY_FOUNTAIN, 1),               ENTRANCE(WOODFALL, 2),                     SCENE_YOUSEI_IZUMI,     SCENE_21MITURINMAE,     SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(FAIRY_FOUNTAIN, 2),               ENTRANCE(SNOWHEAD, 2),                     SCENE_YOUSEI_IZUMI,     SCENE_12HAKUGINMAE,     SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(FAIRY_FOUNTAIN, 3),               ENTRANCE(ZORA_CAPE, 5),                    SCENE_YOUSEI_IZUMI,     SCENE_31MISAKI,         SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(FAIRY_FOUNTAIN, 4),               ENTRANCE(IKANA_CANYON, 11),                SCENE_YOUSEI_IZUMI,     SCENE_IKANA,            SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(GORON_SHOP, 0),                   ENTRANCE(GORON_SHRINE, 1),                 SCENE_GORONSHOP,        SCENE_16GORON_HOUSE,    SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(GORON_GRAVERYARD, 0),             ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 3),      SCENE_GORON_HAKA,       SCENE_10YUKIYAMANOMURA, SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(DEKU_KINGS_CHAMBER, 0),           ENTRANCE(DEKU_PALACE, 2),                  SCENE_DEKU_KING,        SCENE_22DEKUCITY,       SCENE_MAX, {} },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(DEKU_KINGS_CHAMBER, 1),           ENTRANCE(DEKU_PALACE, 3),                  SCENE_DEKU_KING,        SCENE_22DEKUCITY,       SCENE_MAX, {} },
+    // Special areas (Regions/*.cpp): small dungeons and shrines behind one door, rows like the temples' (a door and the
+    // area behind it). Beneath the Well's back exit stays joined to Ikana Castle's courtyard, both move with their door.
+    { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(SWAMP_SPIDER_HOUSE, 0),       ENTRANCE(SOUTHERN_SWAMP_POISONED, 8),      SCENE_KINSTA1,          SCENE_20SICHITAI,       SCENE_MAX, {} },
+    { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(OCEANSIDE_SPIDER_HOUSE, 0),   ENTRANCE(GREAT_BAY_COAST, 8),              SCENE_KINDAN2,          SCENE_30GYOSON,         SCENE_MAX, {} },
+    { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(BENEATH_THE_WELL, 0),         ENTRANCE(IKANA_CANYON, 5),                 SCENE_REDEAD,           SCENE_IKANA,            SCENE_MAX, {} },
+    { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(IKANA_CASTLE, 1),             ENTRANCE(IKANA_CANYON, 8),                 SCENE_CASTLE,           SCENE_IKANA,            SCENE_MAX, {} },
+    { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(SECRET_SHRINE, 0),            ENTRANCE(IKANA_CANYON, 12),                SCENE_RANDOM,           SCENE_IKANA,            SCENE_MAX, {} },
+    { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(DEKU_SHRINE, 0),              ENTRANCE(DEKU_PALACE, 4),                  SCENE_DANPEI,           SCENE_22DEKUCITY,       SCENE_MAX, {} },
+};
+
+// Overworld rows whose arrival is under water: both ways of these transitions are taken swimming (Zora in the logic),
+// so they pair only among each other. A land exit (any form) never leads into water, where a Deku or Goron would void
+// out and respawn at the same entrance forever. Human Link can dive too (z_player.c:8931, all forms but Zora), so
+// Pinnacle Rock (West.cpp:149, SWIM only) and Waterfall Rapids (West.cpp:360, Hookshot) stay fixed. The apworld pairs a
+// coast's exit with a dead end's (moat, Zora Hall): Zora Hall's door by land has no region in the logic.
+const std::vector<u16> overworldWaterEntrances = {
+    ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 0), // West.cpp:151, Zora and SWIM
+    ENTRANCE(GREAT_BAY_COAST, 5),           // PiratesFortress.cpp:171, Zora and SWIM
+    ENTRANCE(ZORA_HALL, 0),                 // West.cpp:359, Zora and SWIM
+    ENTRANCE(ZORA_CAPE, 1),                 // West.cpp:413, the tunnel back (rule true: arrived as Zora)
 };
 
 // Hours of every interior row, read from its door's rule in the logic (Regions/*.cpp) and its schedule
@@ -210,6 +252,15 @@ const std::vector<InteriorEntrance> interiorEntrances = {
     { ENTRANCE(ZORA_HALL_ROOMS, 0),         INTERIOR_ALWAYS_OPEN }, // Mikau
     { ENTRANCE(MUSIC_BOX_HOUSE, 0),         INTERIOR_ALWAYS_OPEN }, // once Sharp's curse is broken
     { ENTRANCE(GHOST_HUT, 0),               INTERIOR_ALWAYS_OPEN },
+    { ENTRANCE(FAIRY_FOUNTAIN, 0),          INTERIOR_ALWAYS_OPEN }, // Central.cpp:183, true
+    { ENTRANCE(FAIRY_FOUNTAIN, 1),          INTERIOR_ALWAYS_OPEN }, // South.cpp:559, Deku and Mad Scrubs, no time
+    { ENTRANCE(FAIRY_FOUNTAIN, 2),          INTERIOR_ALWAYS_OPEN }, // North.cpp:580, true
+    { ENTRANCE(FAIRY_FOUNTAIN, 3),          INTERIOR_ALWAYS_OPEN }, // West.cpp:334, explosives, no time
+    { ENTRANCE(FAIRY_FOUNTAIN, 4),          INTERIOR_ALWAYS_OPEN }, // East.cpp:186, true
+    { ENTRANCE(GORON_SHOP, 0),              INTERIOR_ALWAYS_OPEN }, // North.cpp:39, true
+    { ENTRANCE(GORON_GRAVERYARD, 0),        INTERIOR_ALWAYS_OPEN }, // North.cpp:313, Lens of Truth, no time
+    { ENTRANCE(DEKU_KINGS_CHAMBER, 0),      INTERIOR_ALWAYS_OPEN }, // South.cpp:112, true
+    { ENTRANCE(DEKU_KINGS_CHAMBER, 1),      INTERIOR_ALWAYS_OPEN }, // South.cpp:122, true
 };
 
 // The grotto data of each hole: DeveloperTools/BetterMapSelect.c (grottoRespawn.data); for the shared chest and cow
@@ -280,6 +331,20 @@ const std::vector<ShuffleAreaRule> shuffleAreaRules = {
     { RO_SHUFFLE_OVERWORLD, ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 2), [] { return HAS_ITEM(ITEM_POWDER_KEG) && CAN_BE_GORON; } },
     // Out of the ranch: past the boulder (MilkRoad.cpp:141), inside RR_MILK_ROAD with the way to Termina Field.
     { RO_SHUFFLE_OVERWORLD, ENTRANCE(MILK_ROAD, 1),                    [] { return AFTER(TIME_DAY3_AM_06_00) || RANDO_EVENTS[RE_DESTROY_MILK_ROAD_BOULDER]; } },
+    // Central.cpp:34: the passage leads on to the observatory (true); East Clock Town's way in (Central.cpp:111) asks
+    // for a projectile, for the balloon in the passage. Cautious: never looser.
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ASTRAL_OBSERVATORY, 0),           [] { return CAN_USE_PROJECTILE; } },
+    // West.cpp:151: the only way into the moat; its regions (PiratesFortress.cpp) assume a Zora who can swim.
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 0),    [] { return CAN_BE_ZORA && CAN_USE_ABILITY(SWIM); } },
+    // West.cpp:359: Zora Hall's tunnel back (West.cpp:413) is true; its other way in, the ledge (West.cpp:295), needs a
+    // Zora as well (West.cpp:363 and the temple rule above).
+    { RO_SHUFFLE_OVERWORLD, ENTRANCE(ZORA_HALL, 0),                    [] { return CAN_BE_ZORA && CAN_USE_ABILITY(SWIM); } },
+    // South.cpp:112/122: the palace inside is Deku only (South.cpp:171), the princess event (South.cpp:55) does not
+    // say so. Cautious, like Evan's room.
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(DEKU_KINGS_CHAMBER, 0),           [] { return CAN_BE_DEKU; } },
+    { RO_SHUFFLE_INTERIORS, ENTRANCE(DEKU_KINGS_CHAMBER, 1),           [] { return CAN_BE_DEKU; } },
+    // South.cpp:479: its own door; the house's checks were written for a player who got there (torch, Deku or boat).
+    { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(SWAMP_SPIDER_HOUSE, 0),       [] { return CAN_LIGHT_TORCH_NEAR_ANOTHER && (CAN_BE_DEKU || (RANDO_EVENTS[RE_CLEARED_WOODFALL_TEMPLE] && (CAN_USE_ABILITY(SWIM) || CAN_BE_ZORA))); } },
 };
 // clang-format on
 
@@ -304,8 +369,15 @@ static InteriorHours HoursOf(size_t row) {
     return INTERIOR_OWN_HOURS;
 }
 
+// An overworld row arriving under water (overworldWaterEntrances); such rows pair only with each other.
+static bool IsWaterRow(size_t row) {
+    return shuffleEntrances[row].option == RO_SHUFFLE_OVERWORLD &&
+           std::find(overworldWaterEntrances.begin(), overworldWaterEntrances.end(), shuffleEntrances[row].into) !=
+               overworldWaterEntrances.end();
+}
+
 static bool CanPair(size_t door, size_t inside) {
-    if (shuffleEntrances[door].option != shuffleEntrances[inside].option) {
+    if (shuffleEntrances[door].option != shuffleEntrances[inside].option || IsWaterRow(door) != IsWaterRow(inside)) {
         return false;
     }
     return !IsInteriorRow(door) ||
@@ -647,12 +719,65 @@ static bool RedirectOverworld(PlayState* play) {
     return false;
 }
 
+// ---- Special areas ----
+
+static bool IsSpecialAreaRow(size_t row) {
+    return shuffleEntrances[row].option == RO_SHUFFLE_SPECIAL_AREAS;
+}
+
+// Special-area rows only, a door and the area behind it like the temples. Into door A (A's place, from A's outside
+// scene or its cleared variant): load area X. Out of X (its own way out, from X's scene): back in front of A; Play_Init
+// picks that place's variant (cleared swamp, Ikana Canyon's layers), as for the overworld. The same filters: void
+// outs, deaths and songs reload a place already reached, scripted transitions keep their destination.
+static bool RedirectSpecialArea(PlayState* play) {
+    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_SPECIAL_AREAS] == RO_GENERIC_OFF) {
+        return false;
+    }
+    if ((gSaveContext.respawnFlag != 0 && gSaveContext.respawnFlag != -2) || play->csCtx.state != CS_STATE_IDLE) {
+        return false;
+    }
+    u16 next = play->nextEntrance;
+    u16 place = PlaceOf(next);
+    s16 scene = Play_GetOriginalSceneId(play->sceneId);
+    for (size_t row = 0; row < shuffleEntrances.size() && row < MAX_ROWS; row++) {
+        if (!IsSpecialAreaRow(row)) {
+            continue;
+        }
+        const ShuffleEntrance& entry = shuffleEntrances[row];
+        size_t other;
+        u16 target;
+        if (scene == entry.outsideScene && place == entry.into) {
+            other = InsideBehind(row);
+            target = shuffleEntrances[other].into;
+        } else if (scene == entry.insideScene && place == entry.outOf) {
+            other = DoorForInside(row);
+            target = shuffleEntrances[other].outOf;
+        } else {
+            continue;
+        }
+        if (other == row) {
+            return true;
+        }
+        play->nextEntrance = target;
+        if (gSaveContext.nextCutsceneIndex >= 0xFFF0) {
+            gSaveContext.nextCutsceneIndex = 0xFFEF;
+        }
+        // An exit may record itself as the void-out point before the transition (z_player.c:6508).
+        if (gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance == next) {
+            gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = target;
+        }
+        LeaveEponaAtExit(play);
+        return true;
+    }
+    return false;
+}
+
 void OnBeforeTransitionSetup() {
     PlayState* play = gPlayState;
     if (play == nullptr) {
         return;
     }
-    if (RedirectGrotto(play) || RedirectInterior(play) || RedirectOverworld(play)) {
+    if (RedirectGrotto(play) || RedirectInterior(play) || RedirectOverworld(play) || RedirectSpecialArea(play)) {
         return;
     }
     u16 next = play->nextEntrance;
@@ -663,7 +788,7 @@ void OnBeforeTransitionSetup() {
     for (size_t door = 0; door < shuffleEntrances.size() && door < MAX_ROWS; door++) {
         const ShuffleEntrance& doorRow = shuffleEntrances[door];
         if (RANDO_SAVE_OPTIONS[doorRow.option] == RO_GENERIC_OFF || IsGrottoRow(door) || IsInteriorRow(door) ||
-            IsOverworldRow(door)) {
+            IsOverworldRow(door) || IsSpecialAreaRow(door)) {
             continue;
         }
         size_t inside = InsideBehind(door);

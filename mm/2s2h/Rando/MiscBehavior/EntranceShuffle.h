@@ -78,6 +78,10 @@ struct InteriorEntrance {
 
 extern const std::vector<InteriorEntrance> interiorEntrances;
 
+// "into" of the overworld rows (RO_SHUFFLE_OVERWORLD) that arrive under water. Both ways of such a transition are
+// taken swimming, so these rows pair only among each other, the others only among themselves. Read by the generator.
+extern const std::vector<u16> overworldWaterEntrances;
+
 // In-game check tracker: with Shuffle Grottos on, the logic entrance of the grotto the player is in, decided by the
 // real entrance and the grotto data instead of the place outside (the grotto may lie behind another hole).
 bool LogicGrottoEntrance(s32 entrance, s32* logicEntrance);
