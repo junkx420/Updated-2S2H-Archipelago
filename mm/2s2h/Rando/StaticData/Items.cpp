@@ -3,6 +3,7 @@
 #include "2s2h/ShipUtils.h"
 #include "2s2h/Rando/Rando.h"
 #include "2s2h/Rando/ActorBehavior/Souls.h"
+#include "2s2h/Rando/MiscBehavior/DoorKeys.h"
 #include "2s2h_assets.h"
 #ifdef ENABLE_ARCHIPELAGO
 #include "2s2h/Network/Archipelago/ArchipelagoMapping.h"
@@ -267,6 +268,31 @@ std::map<RandoItemId, RandoStaticItem> Items = {
     RI(RI_SOUL_NPC_TOILET_HAND,           "the",  "Soul of the Toilet Hand",     RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_SOUL_NPC_TOTO,                  "the",  "Soul of Toto",                RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_SOUL_NPC_TREASURE_CHEST_SHOP_GAL, "the",  "Soul of the Treasure Chest Shop Gal", RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_TRADING_POST,               "the",  "Trading Post Key",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_BOMB_SHOP,                  "the",  "Bomb Shop Key",               RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_CURIOSITY_SHOP,             "the",  "Curiosity Shop Key",          RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_SWORDSMANS_SCHOOL,          "the",  "Swordsman's School Key",      RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_POST_OFFICE,                "the",  "Post Office Key",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_LOTTERY_SHOP,               "the",  "Lottery Shop Key",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_HONEY_AND_DARLING,          "the",  "Honey & Darling Key",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_MILK_BAR,                   "the",  "Milk Bar Key",                RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_MAYORS_RESIDENCE,           "the",  "Mayor's Residence Key",       RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_TOWN_SHOOTING_GALLERY,      "the",  "Town Shooting Gallery Key",   RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_TREASURE_CHEST_SHOP,        "the",  "Treasure Chest Shop Key",     RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_STOCK_POT_INN,              "the",  "Stock Pot Inn Key",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_DEKU_PLAYGROUND,            "the",  "Deku Playground Key",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_TOURIST_INFORMATION,        "the",  "Tourist Information Key",     RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_POTION_SHOP,                "the",  "Potion Shop Key",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_SWAMP_SHOOTING_GALLERY,     "the",  "Swamp Shooting Gallery Key",  RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_MOUNTAIN_SMITHY,            "the",  "Mountain Smithy Key",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_RANCH_BARN,                 "the",  "Ranch Barn Key",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_CUCCO_SHACK,                "the",  "Cucco Shack Key",             RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_DOGGY_RACETRACK,            "the",  "Doggy Racetrack Key",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_MARINE_LAB,                 "the",  "Marine Lab Key",              RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_FISHERMANS_HUT,             "the",  "Fisherman's Hut Key",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_MUSIC_BOX_HOUSE,            "the",  "Music Box House Key",         RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_GHOST_HUT,                  "the",  "Ghost Hut Key",               RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_DOOR_KEY_DAMPES_HOUSE,               "the",  "Dampe's House Key",           RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_STONE_TOWER_BOSS_KEY,       "the",  "Stone Tower Boss Key",       RITYPE_BOSS_KEY,        ITEM_KEY_BOSS,                   GI_KEY_BOSS,                 GID_KEY_BOSS),
     RI(RI_STONE_TOWER_COMPASS,        "the",  "Stone Tower Compass",        RITYPE_LESSER,          ITEM_COMPASS,                    GI_COMPASS,                  GID_COMPASS),
     RI(RI_STONE_TOWER_MAP,            "the",  "Stone Tower Map",            RITYPE_LESSER,          ITEM_DUNGEON_MAP,                GI_MAP,                      GID_DUNGEON_MAP),
@@ -399,6 +425,9 @@ u8 GetIconForZMessage(RandoItemId randoItemId) {
 const char* GetIconTexturePath(RandoItemId randoItemId) {
     if (IS_NPC_SOUL(randoItemId)) {
         return (const char*)gDungeonMapSkullTex;
+    }
+    if (IS_DOOR_KEY(randoItemId)) {
+        return (const char*)gItemIcons[ITEM_KEY_SMALL];
     }
 
     switch (randoItemId) {

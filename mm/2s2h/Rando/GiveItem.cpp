@@ -1,5 +1,6 @@
 #include "Rando/Rando.h"
 #include "Rando/ActorBehavior/Souls.h"
+#include "Rando/MiscBehavior/DoorKeys.h"
 #include "Rando/MiscBehavior/MiscBehavior.h"
 #include "Rando/MiscBehavior/ClockShuffle.h"
 
@@ -11,6 +12,10 @@ extern "C" {
 void Rando::GiveItem(RandoItemId randoItemId) {
     if (IS_NPC_SOUL(randoItemId)) {
         Flags_SetRandoInf(NPC_SOUL_RI_TO_RANDO_INF(randoItemId));
+        return;
+    }
+    if (IS_DOOR_KEY(randoItemId)) {
+        Flags_SetRandoInf(DOOR_KEY_RI_TO_RANDO_INF(randoItemId));
         return;
     }
 

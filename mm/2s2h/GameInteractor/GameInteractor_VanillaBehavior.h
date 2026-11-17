@@ -1600,6 +1600,15 @@ typedef enum {
 
     // #### `result`
     // ```c
+    // true
+    // ```
+    // #### `args`
+    // - `*EnDoor` (the door Player faces and could open)
+    // - `f32` (Player's z in the door's coordinates: the side Player stands on)
+    VB_OPEN_KNOB_DOOR,
+
+    // #### `result`
+    // ```c
     // (player->transformation == PLAYER_FORM_GORON) && (play->msgCtx.ocarinaMode == OCARINA_MODE_EVENT) &&
     // (play->msgCtx.lastPlayedSong == OCARINA_SONG_GORON_LULLABY)
     // ```

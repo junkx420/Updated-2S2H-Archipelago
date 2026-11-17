@@ -24,6 +24,7 @@ void InitDmStkBehavior();
 void InitDoorWarp1VBehavior();
 void InitEnAkindonutsBehavior();
 void InitEnAlBehavior();
+void InitEnDoorBehavior();
 void InitEnAnBehavior();
 void InitEnAob01Behavior();
 void InitEnAzBehavior();

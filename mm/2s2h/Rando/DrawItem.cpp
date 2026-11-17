@@ -3,6 +3,7 @@
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/Rando/DrawFuncs.h"
 #include "2s2h/Rando/ActorBehavior/Souls.h"
+#include "2s2h/Rando/MiscBehavior/DoorKeys.h"
 #include "2s2h_assets.h"
 #ifdef ENABLE_ARCHIPELAGO
 #include "2s2h/Network/Archipelago/ArchipelagoMapping.h"
@@ -612,6 +613,12 @@ void Rando::DrawItem(RandoItemId randoItemId, RandoCheckId randoCheckId, Actor* 
     if (IS_NPC_SOUL(randoItemId)) {
         Matrix_Scale(0.01f, 0.01f, 0.01f, MTXMODE_APPLY);
         DrawEnLight({ 90, 170, 255 }, { 10.0f, 10.0f, 10.0f });
+        return;
+    }
+
+    // Door keys: the small key model, without a dungeon tint
+    if (IS_DOOR_KEY(randoItemId)) {
+        DrawSmallKey(randoItemId);
         return;
     }
 

@@ -1,5 +1,6 @@
 #include "Rando/Rando.h"
 #include "Rando/ActorBehavior/Souls.h"
+#include "Rando/MiscBehavior/DoorKeys.h"
 #include "Rando/MiscBehavior/ClockShuffle.h"
 
 extern "C" {
@@ -12,6 +13,10 @@ extern "C" {
 void Rando::RemoveItem(RandoItemId randoItemId) {
     if (IS_NPC_SOUL(randoItemId)) {
         Flags_ClearRandoInf(NPC_SOUL_RI_TO_RANDO_INF(randoItemId));
+        return;
+    }
+    if (IS_DOOR_KEY(randoItemId)) {
+        Flags_ClearRandoInf(DOOR_KEY_RI_TO_RANDO_INF(randoItemId));
         return;
     }
 

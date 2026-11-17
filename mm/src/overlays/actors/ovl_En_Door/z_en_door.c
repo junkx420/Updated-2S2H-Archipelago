@@ -732,7 +732,12 @@ void EnDoor_Idle(EnDoor* this, PlayState* play) {
                 player->doorDirection = playerPosRelToDoor.z >= 0.0f ? 1.0f : -1.0f;
                 player->doorActor = &this->knobDoor.dyna.actor;
 
-                if (this->lockTimer != 0) {
+                // 2S2H [Rando] Door keys: a building without its key keeps the door shut, like a locked door
+                if (!GameInteractor_Should(VB_OPEN_KNOB_DOOR, true, this, playerPosRelToDoor.z)) {
+                    player->doorType = PLAYER_DOORTYPE_TALKING;
+                    // 0x1800: "It won't open", replaced by the name of the missing key
+                    this->knobDoor.dyna.actor.textId = 0x1800;
+                } else if (this->lockTimer != 0) {
                     if (DUNGEON_KEY_COUNT(gSaveContext.mapIndex) <= 0) {
                         player->doorType = PLAYER_DOORTYPE_TALKING;
                         // 0x1802: "Missing small key"
