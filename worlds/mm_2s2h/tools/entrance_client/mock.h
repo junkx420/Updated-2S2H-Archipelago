@@ -1,5 +1,5 @@
 #pragma once
-// Only game state/API boundaries are mocked. The test compiles the fork's real EntranceShuffle.cpp.
+// Only game state/API boundaries are mocked. The test compiles the fork's real EntranceShuffle.cpp and DoorKeys.cpp.
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
@@ -55,3 +55,5 @@ inline void Play_SetupRespawnPoint(PlayState* play, int mode, int params) {
     // z_play.c Play_SetRespawnData clears the spawn bits, retaining entrance scene and scene layer.
     gSaveContext.respawn[mode] = { u16(gSaveContext.save.entrance & ~0x1F0), 0, play->position };
 }
+inline bool randoInf[RANDO_INF_MAX]{};
+inline int Flags_GetRandoInf(int flag) { return randoInf[flag]; }

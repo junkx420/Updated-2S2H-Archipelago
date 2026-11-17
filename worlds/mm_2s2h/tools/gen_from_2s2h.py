@@ -627,6 +627,43 @@ def main() -> int:
                                  "door_region": door, "inside_region": inner, "boss_warps": boss_warps,
                                  "temple_exit": temple_exit, "exterior_region": exterior_region})
 
+    # Door keys: { RI_DOOR_KEY_X, "Building", { ENTRANCE(into), ... } } (MiscBehavior/DoorKeys.cpp doorKeys). Every
+    # "into" must be the exit of exactly one region and lead into another scene; one key per building, in enum order.
+    dk_src = strip_comments((rando / "MiscBehavior" / "DoorKeys.cpp").read_text(encoding="utf-8"))
+    dk_body = re.search(r"doorKeys\s*=\s*\{(.*?)\n\};", dk_src, re.S).group(1)
+    dk_rows = re.findall(r'\{\s*(RI_DOOR_KEY_\w+)\s*,\s*"([^"]+)"\s*,\s*\{([^{}]*)\}\s*\}', dk_body)
+    if len(dk_rows) != dk_body.count("RI_DOOR_KEY_") or not dk_rows:
+        raise SystemExit("doorKeys: a row does not match the expected format")
+    dk_enum = [ri for ri in E("RandoItemId") if ri.startswith("RI_DOOR_KEY_")]
+    if [ri for ri, _, _ in dk_rows] != dk_enum:
+        raise SystemExit(f"doorKeys rows and RI_DOOR_KEY_* enum differ (order matters): {[r for r, _, _ in dk_rows]}")
+    door_keys, door_key_of = [], {}
+    for ri, building, intos in dk_rows:
+        flag = f"RANDO_INF_OBTAINED_DOOR_KEY_{ri[len('RI_DOOR_KEY_'):]}"
+        if flag not in E("RandoInf") or E("RandoInf")[flag] - E("RandoInf")["RANDO_INF_OBTAINED_DOOR_KEY_TRADING_POST"] \
+                != E("RandoItemId")[ri] - E("RandoItemId")["RI_DOOR_KEY_TRADING_POST"]:
+            raise SystemExit(f"doorKeys {ri}: {flag} missing or out of order (DOOR_KEY_RI_TO_RANDO_INF)")
+        if ri_table.get(ri, {}).get("name") != f"{building} Key":
+            raise SystemExit(f"doorKeys {ri}: Items.cpp name must be '{building} Key', is {ri_table.get(ri)}")
+        keys = [entrance_key(x) for x in re.findall(ent, intos)]
+        if not keys or len(keys) != intos.count("ENTRANCE"):
+            raise SystemExit(f"doorKeys {ri}: bad entrance list {intos!r}")
+        doors, insides = [], []
+        for key in keys:
+            found = exits_of[key]
+            if len(found) != 1 or key in door_key_of:
+                raise SystemExit(f"doorKeys {ri}: {key} must be the exit of exactly one region and of one building, "
+                                 f"found {found}, already {door_key_of.get(key)}")
+            door, door_scene, inside = found[0]
+            inside_scene = next(scene for rid, _, scene, *_ in out_regions if rid == inside)
+            if inside_scene == door_scene:
+                raise SystemExit(f"doorKeys {ri}: {key} ({door} -> {inside}) does not lead into another scene")
+            door_key_of[key] = ri
+            doors.append(door)
+            insides.append(inside)
+        door_keys.append({"key": ri, "building": building, "into": keys, "into_values": [entrance_value(k) for k in keys],
+                          "door_regions": doors, "inside_regions": insides})
+
     # Area rules: { RO_X, ENTRANCE(into), [] { return condition; } } (EntranceShuffle.cpp shuffleAreaRules), translated
     # like every CONNECTION rule; the apworld adds them to a door with another row's area behind it
     ar_body = re.search(r"shuffleAreaRules\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
@@ -689,6 +726,9 @@ def main() -> int:
         fh.write("# shuffleable doors (EntranceShuffle.cpp), in row order: exits `into` (door_region -> inside_region)\n"
                  "# and `out` (back), `into_value` = game entrance, boss_warps = [(boss region, warp exit)]\n")
         fh.write(f"ENTRANCE_SHUFFLE = {entrance_shuffle!r}\n")
+        fh.write("# buildings locked by Shuffle Door Keys (DoorKeys.cpp), in enum order: exits `into` (door_regions ->\n"
+                 "# inside_regions) need the key; `into_values` = game entrances\n")
+        fh.write(f"DOOR_KEYS = {door_keys!r}\n")
         ts = re.search(r"enum TimeSlice\s*\{(.*?)\}", logic_h, re.S).group(1)
         names = [x.split("=")[0].strip() for x in ts.split(",") if x.strip()]
         fh.write(f"TIME_SLICE = {dict((n, i) for i, n in enumerate(names))!r}\n")

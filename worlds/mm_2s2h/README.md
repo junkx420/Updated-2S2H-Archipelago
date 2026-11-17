@@ -63,6 +63,15 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   scene/actor and therefore follows the shuffled room. The original region files and `Logic.h` are unchanged.
   Both pairings use the existing save/slot-data format and are rebuilt by Universal Tracker; 0.1–0.3 seeds/saves remain
   supported. See `docs/testing.md` for code evidence, validation and the in-game checklist. **Not tested in game.**
+- **Door keys** (`shuffle_door_keys`, apworld 0.5.0, default off): 25 buildings in Termina (Clock Town shops and
+  houses, Stock Pot Inn, swamp and mountain shops, ranch buildings, Marine Lab, Fisherman's Hut, Music Box House,
+  Ghost Hut, Dampé's House) are locked until their key `RI_DOOR_KEY_*` ("<building> Key", item group "Door Keys") is
+  found. One key per building opens all of its ways in. The table `doorKeys` in `Rando/MiscBehavior/DoorKeys.cpp`
+  lists key, building and the "into" entrances; the generator checks each against the region graph and writes
+  `DOOR_KEYS`, and `__init__.py` adds the key to the rule of those exits (Glitchless only; the rule stays at the
+  door). In game the door actor (`En_Door`, hook `VB_OPEN_KNOB_DOOR`) stays shut and names the missing key; only the
+  entrance behind the door decides, so ways out are never locked. Like `shuffleAreaRules`, the in-game check tracker
+  does not know the keys. 0.1–0.4 seeds/saves remain supported. **Not tested in game.**
 
 ## Updating to a new 2S2H release
 

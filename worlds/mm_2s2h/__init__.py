@@ -15,7 +15,7 @@ from Fill import fill_restrictive
 from Options import OptionError
 from worlds.AutoWorld import LogicMixin, WebWorld, World
 
-from .enums_generated import ENTRANCE_SHUFFLE, NPC_SOULS, OPTION_DEFAULTS, RC_ID, RI_ID
+from .enums_generated import DOOR_KEYS, ENTRANCE_SHUFFLE, NPC_SOULS, OPTION_DEFAULTS, RC_ID, RI_ID
 from .items_generated import ITEMS
 from .locations_generated import LOCATIONS
 from .macros_generated import CAN_USE_SWORD
@@ -122,6 +122,7 @@ class MM2S2HWorld(World):
         "Boss Souls": lambda k, v: k.startswith("RI_SOUL_BOSS_"),
         "Enemy Souls": lambda k, v: k.startswith("RI_SOUL_ENEMY_"),
         "NPC Souls": lambda k, v: k.startswith("RI_SOUL_NPC_"),
+        "Door Keys": lambda k, v: k.startswith("RI_DOOR_KEY_"),
         "Clocks": lambda k, v: k.startswith("RI_TIME_"),
         "Masks": lambda k, v: v[1] == "RITYPE_MASK",
         "Songs": lambda k, v: k.startswith("RI_SONG_") or k == "RI_PROGRESSIVE_LULLABY",
@@ -272,6 +273,10 @@ class MM2S2HWorld(World):
             return lambda state: state.has_all(souls, p)
         return lambda state: state.has_all(souls, p) and rule(state)
 
+    def _with_door_key(self, rule, key: str | None):
+        """`rule`, and the building's door key (item name). Like every access rule, only in Glitchless logic."""
+        return self._with_souls(rule, [key] if key else None)
+
     def create_regions(self) -> None:
         mw, p = self.multiworld, self.player
         # NPC souls: checks and events that need an NPC need its soul (Souls.cpp npcSouls)
@@ -280,6 +285,11 @@ class MM2S2HWorld(World):
             for ri, (_, checks, events) in NPC_SOULS.items():
                 for key in checks + events:
                     souls_for[key].append(ITEMS[ri][0])
+        # Door keys: each building's ways in need its key (DoorKeys.cpp doorKeys). The rule stays on the exit, i.e. on
+        # the door's side, so with shuffled entrances the key of the door applies, whatever lies behind it.
+        door_key_for: dict[str, str] = {}
+        if self.ro["RO_SHUFFLE_DOOR_KEYS"]:
+            door_key_for = {into: ITEMS[row["key"]][0] for row in DOOR_KEYS for into in row["into"]}
         regions = {rr: Region(region_name(rr), p, mw) for rr in REGIONS}
         mw.regions.extend(regions.values())
         self.regions_by_rr = regions
@@ -292,7 +302,7 @@ class MM2S2HWorld(World):
             for key, tgt, f in [(None, t, f) for t, f in conns] + exits:
                 seen[tgt] += 1
                 name = f"{src.name} -> {regions[tgt].name}" + (f" #{seen[tgt]}" if seen[tgt] > 1 else "")
-                exit_ = src.connect(regions[tgt], name, self._rule(f))
+                exit_ = src.connect(regions[tgt], name, self._with_door_key(self._rule(f), door_key_for.get(key)))
                 if key is not None:
                     self.exit_entrances[(rr, key)] = exit_
             for i, (re_id, f) in enumerate(events):
@@ -435,6 +445,8 @@ class MM2S2HWorld(World):
             pool += [k for k in RI_ID if k.startswith("RI_SOUL_ENEMY_")]
         if ro["RO_SHUFFLE_NPC_SOULS"]:  # not in 2S2H's own pools: an addition of this fork
             pool += list(NPC_SOULS)
+        if ro["RO_SHUFFLE_DOOR_KEYS"]:  # an addition of this fork as well
+            pool += [row["key"] for row in DOOR_KEYS]
         if ro["RO_CLOCK_SHUFFLE"]:
             pool += (["RI_TIME_DAY_1", "RI_TIME_NIGHT_1", "RI_TIME_DAY_2", "RI_TIME_NIGHT_2", "RI_TIME_DAY_3", "RI_TIME_NIGHT_3"]
                      if ro["RO_CLOCK_SHUFFLE_PROGRESSIVE"] == 0 else ["RI_TIME_PROGRESSIVE"] * 6)

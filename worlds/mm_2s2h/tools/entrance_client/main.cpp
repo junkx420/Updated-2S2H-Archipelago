@@ -1,9 +1,54 @@
 #include "Rando/MiscBehavior/EntranceShuffle.cpp"
+#include "Rando/MiscBehavior/DoorKeys.cpp"
 #include <array>
+#include <set>
+#include "door_keys_graph.h"
 
 using namespace Rando::EntranceShuffle;
 
+// Door keys: whether a door opens depends on nothing but the entrance it leads to (DoorKeys::IsEntranceLocked).
+// Every 16-bit entrance value is tried: option off, then on with no key and with each key alone.
+static void TestDoorKeys() {
+    namespace DK = Rando::DoorKeys;
+    long cases = 0;
+    std::set<unsigned> listed;
+    assert(DK::doorKeys.size() == doorKeyInto.size());
+    for (size_t i = 0; i < DK::doorKeys.size(); ++i) {
+        // The compiled table is the one the apworld was generated from: same keys and entrances, same order.
+        assert(DK::doorKeys[i].key == doorKeyInto[i].first);
+        assert(std::vector<unsigned>(DK::doorKeys[i].into.begin(), DK::doorKeys[i].into.end()) == doorKeyInto[i].second);
+        listed.insert(doorKeyInto[i].second.begin(), doorKeyInto[i].second.end());
+    }
+    std::fill(std::begin(options), std::end(options), 0);
+    std::fill(std::begin(randoInf), std::end(randoInf), false);
+    for (unsigned e = 0; e <= 0xFFFF; ++e, ++cases) {
+        assert(!DK::IsEntranceLocked(u16(e))); // option off: no door is ever locked
+    }
+    options[RO_SHUFFLE_DOOR_KEYS] = 1;
+    for (int have = -1; have < int(DK::doorKeys.size()); ++have) { // -1: no key at all, else only key `have`
+        std::fill(std::begin(randoInf), std::end(randoInf), false);
+        if (have >= 0) {
+            randoInf[DOOR_KEY_RI_TO_RANDO_INF(DK::doorKeys[have].key)] = true;
+        }
+        for (unsigned e = 0; e <= 0xFFFF; ++e, ++cases) {
+            const DK::DoorKey* row = DK::FindByEntrance(u16(e));
+            bool isInto = listed.count(e & 0xFFF0) != 0; // the scene layer (bits 0-3) does not matter
+            assert((row != nullptr) == isInto);
+            bool expected = isInto && (have < 0 || row != &DK::doorKeys[have]);
+            assert(DK::IsEntranceLocked(u16(e)) == expected);
+        }
+        for (unsigned out : doorKeyOutward) {
+            for (unsigned layer = 0; layer < 16; ++layer, ++cases) {
+                assert(!DK::IsEntranceLocked(u16(out | layer))); // a way out is never locked, even without keys
+            }
+        }
+    }
+    std::cout << cases << " door-key cases (" << listed.size() << " ways in, " << doorKeyOutward.size()
+              << " ways out never locked) passed\n";
+}
+
 int main() {
+    TestDoorKeys();
     std::array<int, 4> temples{ 0, 1, 2, 3 };
     const u16 exterior[] = { ENTRANCE(WOODFALL, 1), ENTRANCE(SNOWHEAD, 1), ENTRANCE(ZORA_CAPE, 7),
                              ENTRANCE(STONE_TOWER_INVERTED, 1) };

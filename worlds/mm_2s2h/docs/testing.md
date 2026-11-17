@@ -287,3 +287,77 @@ source keys/events are not imported from the boss's original temple.
    Stone Tower. With shuffled boss souls, verify the existing Twinmold-soul restriction still prevents its use.
 7. Save/reload before connecting, reconnect, Song of Time, boss shortcut pads, then test with both options off;
    also load existing 0.1/0.2/0.3 seeds/saves. In-game check tracker still does not evaluate supplemental area rules.
+
+### Door keys (apworld 0.5.0, 2026-11-17)
+
+Not part of 2S2H. `shuffle_door_keys` (`RO_SHUFFLE_DOOR_KEYS`, default off) locks 25 buildings in Termina until their
+key `RI_DOOR_KEY_*` ("<building> Key") is found; one key opens every way in of its building (Curiosity Shop and
+Stock Pot Inn have two). Table `doorKeys` in `Rando/MiscBehavior/DoorKeys.cpp` (key, building, "into" entrances),
+generated to `DOOR_KEYS`; the generator stops unless every "into" is the exit of exactly one region, leads into
+another scene, and the key's name, enum order and `RANDO_INF_OBTAINED_DOOR_KEY_*` flag match. 123 checks and 17
+logic events lie behind the 27 ways in. Item group "Door Keys"; model and icon are the small key.
+
+Chosen from the logic graph (exits into an interior with checks or events). Not included: temples, boss rooms,
+grottos, spider houses, pirates' fortress, Ikana Castle, the well, the Moon, the Clock Tower interior, Sakon's
+Hideout, Secret Shrine; Astral Observatory (the Clock Town way in is the Bombers' tunnel, no door actor), Romani's
+Ranch House (no checks or events), Great Fairy Fountains, Goron Shrine, Zora Hall, Deku Shrine (no knob door),
+the rooms inside Zora Hall / Deku Palace / Goron Shrine (not entered from outside), outdoor areas.
+
+#### How the client locks a door
+
+* All 27 ways in are knob doors (`En_Door`). 21 of them have a door schedule (`EnDoorScheduleType` in
+  `z_en_door.h`), which proves the door actor; Deku Playground, Tourist Information, Mountain Smithy, Marine Lab,
+  Fisherman's Hut and Ghost Hut are door actors by game knowledge only (no scene data in the repository).
+* New hook `VB_OPEN_KNOB_DOOR` in `EnDoor_Idle` (`mm/src/overlays/actors/ovl_En_Door/z_en_door.c:736`), where the
+  original handles locked doors: without the key the door becomes a talking door, does not open and no transition
+  starts. `OnOpenText` replaces text 0x1800 by "It's locked. You need the <building> Key."
+  (`Rando/ActorBehavior/EnDoor.cpp`).
+* The door does not know its destination; Player walks onto a scene-exit floor behind it. `EntranceBehindDoor`
+  (`EnDoor.cpp`) casts down on the far side (20-160 units) and reads `setupExitList`, i.e. the vanilla entrance
+  before any entrance shuffle redirect.
+* Only that entrance decides: `DoorKeys::IsEntranceLocked` (`DoorKeys.cpp:61`) = option on, entrance (without
+  scene layer bits, `DoorKeys.cpp:53`) is an "into" of `doorKeys`, key flag missing. Scene, side and door kind are
+  not inputs. A door out of a building leads to an outside entrance, which is in no "into" list, so it always opens
+  (also after respawn or a later interior shuffle).
+
+#### Logic
+
+Each "into" exit gets "has key" in addition to its rule (`_with_door_key` in `__init__.py`), only in Glitchless
+logic. The rule stays on the exit at the door's side, so with shuffled entrances the key of the door applies.
+Logic only for the in-game check tracker: like `shuffleAreaRules`, it does not know the keys and may show checks
+inside a locked building as reachable.
+
+#### Verification
+
+* `test/test_door_keys.py`: option off = no keys in the pool and every exit rule as generated (empty and full
+  inventory); option on = all 25 keys in the pool as progression, every way in closed without its key (door region
+  reachable) and open with it, building regions unreachable without the key, no other exit needs a key (all ways
+  out included, at least 27 checked); the same together with both entrance options; No Logic drops the rules;
+  Universal Tracker rebuilds the same options, pairing and reachability without keys / without single keys.
+* `pytest test/general worlds/mm_2s2h/test -q`: **565 passed, 0 failed** (137,008 subtests).
+* 100 random seeds with `shuffle_door_keys=true` and both entrance options false: **100/100**, 496 s; 100 with
+  all three true: **100/100**, 502 s. Other options randomized.
+* First test run: `DoorKeysOff.test_rules_unchanged` failed on `RR_MOON_DEKU_TRIAL THE_MOON:0` (the test compared a
+  duplicate exit key with the wrong rule; test fixed), then `test_no_other_exit_needs_a_key` failed on
+  `RR_IKANA_CANYON_LOWER SAKONS_HIDEOUT:0`: its rule needs meeting Kafei, an event inside the Curiosity Shop, not a
+  key. The test now collects all events, so only a key rule on the exit itself would count.
+* C++ test bench (`tools/entrance_client/run.py ../2s2h`) compiles the real `DoorKeys.cpp`: **1,780,704 cases
+  passed** — every 16-bit entrance value with the option off, then on with no key and with each key alone; locked
+  exactly for the 27 listed ways in whose key is missing, whatever the scene layer; the table equals the generated
+  `DOOR_KEYS`; the 27 ways out taken from the logic graph are never locked, with any layer and without keys.
+  It does not run `EntranceBehindDoor` or the door actor (no collision data without the game).
+* Parity harness rebuilt, all own options off: **1200/1200 identical** (0 mismatching).
+* Client builds locally (MSVC Release, CMake reconfigured for the new files). Changed C++ files pass clang-format
+  (`SaveEditor.h` keeps its 5 pre-existing upstream differences).
+
+#### In-game checklist — not tested in game
+
+1. With the option on and no keys: each of the 27 doors says "It's locked. You need the ... Key." and does not open.
+   Check especially the six doors without a schedule (Deku Playground, Tourist Information, Mountain Smithy,
+   Marine Lab, Fisherman's Hut, Ghost Hut): **check that the door really is locked**.
+2. Give a key (Save Editor, Rando flags `RANDO_INF_OBTAINED_DOOR_KEY_*`, or receive it): the door opens and leads
+   into the right building; Stock Pot Inn (both doors) and Curiosity Shop (both doors) open with one key.
+3. Inside every building: leave through each door, die and void, reload the save inside: the way out is never locked.
+4. Doors with schedules (night closing, Milk Bar membership, Music Box House) behave as before once the key is there.
+5. The key shows the small key model and icon, name "<building> Key"; other worlds' keys show like other items.
+6. Option off and 0.1–0.4 seeds/saves: every door behaves as before.
