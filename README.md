@@ -1,106 +1,94 @@
-# Updated 2S2H Archipelago (unofficial, work in progress)
+# Majora's Mask × Archipelago
 
-> **Unofficial fan update.** This repository is **not** made by, affiliated with, or endorsed by the
-> Harbour Masters, the 2 Ship 2 Harkinian team, xirba13, the MMRecompRando team or the Archipelago project.
-> It is **not officially supported**. Please **do not** send support requests or bug reports about anything in
-> here to the original projects.
+**Play 2 Ship 2 Harkinian in an Archipelago multiworld.** Find your friends' items across Termina while they
+send yours back — with the check pools and options of 2S2H's randomizer, plus experimental new shuffles.
 
-This connects [2 Ship 2 Harkinian](https://github.com/HarbourMasters/2ship2harkinian) (**2S2H 5.0.1**) to
-[Archipelago](https://archipelago.gg) with **every option of 2S2H's own randomizer**, including grass, pots,
-crates, barrels, beehives, snowballs, trees, enemy drops, butterflies, frogs, owl statues, boss and enemy souls,
-time (clock) shuffle and ocarina buttons.
+[![Regular release](https://img.shields.io/badge/regular_release-0.1.5-2ea44f)](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.1.5)
+[![Preview](https://img.shields.io/badge/pre--release-0.4.0-orange)](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.4.0)
+[![Game port](https://img.shields.io/badge/2S2H-5.0.1-blue)](https://github.com/HarbourMasters/2ship2harkinian)
 
-**Status: feature-complete for the planned scope, but barely play-tested.** Generation, the test suites and the
-Windows/Linux/macOS client builds pass, the logic matches 2S2H's own logic in every compared case, and first play
-sessions worked, including a two-slot multiworld (items sent to and received from another world). Things may still be broken, seeds may turn out unbeatable in game, and save files or
-generated games may not carry over between versions of this repository. Use at your own risk.
+[Get started](PLAYING.md) · [Changelog](CHANGELOG.md) · [Report a problem](https://github.com/junkx420/Updated-2S2H-Archipelago/issues)
 
-## Branches
+> **Unofficial fan project.** Not made by, affiliated with, or endorsed by Harbour Masters, the 2 Ship 2 Harkinian
+> team, xirba13, MMRecompRando or Archipelago. Please report problems here, not to the original projects.
 
-| Branch | Contents | State |
+## Choose your download
+
+| | Regular release | Experimental preview |
 |---|---|---|
-| `client` | 2 Ship 2 Harkinian **5.0.1** with the Archipelago client (client layer ported from `xirba13/2ship2harkinian-archipelago`, branch `archipelago`) | Builds on Windows (MSVC), Linux and macOS in GitHub Actions. Reads all options from the slot data. Accepts apworld **0.1** and **0.2** seeds. |
-| `apworld` | Archipelago with the `mm_2s2h` world in `worlds/mm_2s2h` | apworld version **0.2.0**. Logic generated from the 2S2H 5.0.1 sources, plus the NPC souls of the `client` branch. |
-| `main` | This README only | |
+| Release | **[0.1.5](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.1.5)** | **[0.4.0](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.4.0)** |
+| Bundled apworld | 0.1.4 | 0.4.0 |
+| Features | Established 0.1.x feature set and exact-location AP hints | Adds NPC souls, temple entrance shuffle, boss entrance shuffle and newer fixes |
+| Play coverage | Limited; regular release does not mean bug-free | New features **not tested in game** |
+| Best for | The established download line | Testing the new mechanics and reporting issues |
 
-Client and apworld have to come from this repository **together**. The client checks the apworld's major.minor
-version and refuses seeds of versions it does not know (a newer client still plays 0.1 seeds and their saves).
-Neither side is compatible with MMRecompRando (`mm_recomp`) seeds.
+Preview downloads are published automatically after all three platform builds and package checks succeed.
+If downloads are still being prepared, follow [publication progress](https://github.com/junkx420/Updated-2S2H-Archipelago/actions/workflows/publish-preview.yml).
 
-## How it works
+Each release includes **Windows, Linux and macOS clients**, `mm_2s2h.apworld` and an example YAML.
+Download the client and apworld from the **same release**. The preview also includes a manifest with exact commits
+and SHA-256 checksums. Older releases do not contain the newer features listed below.
 
-- **The logic is generated, not hand-written.** `worlds/mm_2s2h/tools/gen_from_2s2h.py` reads 2S2H's
-  `Rando/Types.h`, `StaticData/*.cpp`, `Logic/Logic.h` and `Logic/Regions/*.cpp` and writes the regions,
-  2641 locations, 508 rules, 120 events, the items and the option defaults. A new 2S2H release means: run the
-  generator, review the diff. Only the save-state layer (`primitives.py`, a port of `GiveItem.cpp`), the options
-  and the pool construction (`GeneratePools.cpp`, `StartingItems.cpp`) are written by hand.
-- **IDs are the 2S2H enums.** AP location id = base + `RandoCheckId`, AP item id = base + `RandoItemId`, so the
-  client needs no translation tables. Options travel as native `RO_*` values and land 1:1 in the save.
-- **One reporting path for every check type.** A check is shuffled exactly when it is an AP location; every type
-  (chests, grass, pots, ...) reports through 2S2H's own `CheckQueue`.
-- **Time logic:** 2S2H tracks reachable time per region. For the 5.0.1 region graph that mask is the same for
-  every region, so time operators depend only on the collected clocks. The generator guards this assumption.
-  See `worlds/mm_2s2h/docs/time-logic.md`.
+## What's included
 
-## What is in it
+| Feature | What you can do |
+|---|---|
+| **Multiworld items & hints** | Send and receive items; see their names and owners. Exact-location in-game hints become AP hints. |
+| **Check pools** | Shuffle songs, shops, owl statues, cows, fairies, tokens, enemy drops, grass, pots, crates, barrels, trees and more. |
+| **Item & time options** | Boss/enemy souls, ocarina buttons, swim, extra songs, clocks, Triforce Hunt, traps and plentiful items. |
+| **Dungeon items & logic** | Place keys/fairies anywhere, in their own dungeon or at start; use Glitchless, No Logic or Nearly No Logic. |
+| **Tracker & configuration** | Universal Tracker, item/location groups, starting inventory, access requirements and DeathLink. |
+| **NPC souls · preview** | Find 30 souls to restore NPC rewards, sales and minigames. Optional, off by default. |
+| **Temple entrances · preview** | Shuffle the four normal temple entrances with coupled return paths. Optional, off by default. |
+| **Boss rooms · preview** | Shuffle Odolwa, Goht, Gyorg and Twinmold independently of temple entrances. Optional, off by default. |
 
-- All check pools of the 2S2H randomizer: songs, owl statues, shops, Tingle maps, boss remains, cows, enemy drops,
-  frogs, butterflies, freestanding items, wonder items, Gold Skulltulas (with shuffled count), pots, crates,
-  barrels, snowballs, grass, trees, beehives.
-- All item pool options: boss souls, enemy souls, swim, ocarina buttons, Sun's Song, Song of Double Time,
-  Inverted Song of Time, Saria's Song, Tycoon's Wallet, Skeleton Key, traps, plentiful items, Triforce Hunt.
-- Time shuffle (any order / progressive ascending / descending), dungeon and trial access, Majora and Moon
-  requirements, dungeon item placement (anywhere / own dungeon / start with), stray fairy and token counts,
-  starting health, consumables, rupees, maps and compasses, starting items, hint options, DeathLink.
-- **NPC souls** (apworld 0.2, not part of 2S2H, off by default, **not play-tested yet**): 30 NPCs such as Granny,
-  Anju, the Banker, Tingle, the Postman, the smiths and the cows are not there until their soul is found. Their
-  rewards, minigames and sales need the soul in logic.
-- Items for other worlds appear with an Archipelago model; collecting them reports the location. Hints, shops,
-  NPC offers and the "You found ..." message name them with their owner, e.g. "Alice's Hookshot".
-- The Archipelago model shows what the item is worth: gray for filler, full color for useful items, full color with
-  a small arrow below it for progression items and traps. "Skip Get Item Cutscenes" treats another world's item like
-  an own item of that worth, so filler no longer plays the full get-item animation.
-- The goal needs a weapon in logic: reaching Majora's lair is not enough, a sword (any human sword, Great Fairy's
-  Sword or Fierce Deity) has to be reachable too.
-- DeathLink only shares real deaths, not a revive by a bottled fairy.
-- In-game hints that name an item and its exact location (gossip stones with an exact location, purchased hints,
-  the bank sign, the Spider Houses) also become Archipelago hints. Vague region-only hints stay in game.
-- Universal Tracker support (the world is rebuilt exactly from the slot data).
-- Item and location groups for YAML options and `!hint`: e.g. `Songs`, `Boss Souls`, `Small Keys`, `Stray Fairies`,
-  `Grass`, `Pots`, `Chests`, `Shops`, `Woodfall Temple` (so `exclude_locations: [Grass]` works).
-- Own-dungeon keys and stray fairies are pre-placed in their dungeon before the main fill, like 2S2H does,
-  but logic-aware (every one is reachable with the rest of the pool).
-- All logic modes of 2S2H that place items: Glitchless, No Logic (no access rules at all) and Nearly No Logic
-  (no access rules, plus 2S2H's blacklists: e.g. Deku Mask never in Woodfall Temple, Epona's Song never on a cow).
+In the preview, blue warps account for both entrance shuffles and return outside the temple whose boss door you
+used. Clear effects stay with the boss. The inverted Stone Tower exterior, Woodfall prison door, Majora and the
+Moon stay fixed. Grottos, houses, overworld transitions, spider houses and Pirate's Fortress are not shuffled.
 
-## Not supported (yet)
+## Start a multiworld
 
-- 2S2H's "Vanilla" logic mode (every check keeps its vanilla item) is not offered: it places no items, so it has
-  nothing to exchange with other worlds.
+1. Install [Archipelago 0.6.6+](https://archipelago.gg), download your chosen release, and install `mm_2s2h.apworld`.
+2. Set your name and options in the example YAML; generate and host through Archipelago.
+3. Extract the client and provide your own **Majora's Mask (US)** ROM on first launch.
+4. **ESC → Dev Tools → Archipelago → Connect**, then **create a new save while connected**. Leave native
+   **Enable Rando** off.
 
-## Testing
+[Full setup instructions](PLAYING.md) · [Preview play-test checklist](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/apworld/worlds/mm_2s2h/docs/testing.md)
 
-- **Logic parity:** 2S2H's unmodified region logic is compiled with a mocked save file and compared against the AP
-  world on 1200 random inventories over 8 option sets: identical reachable regions, checks and event counts in all
-  of them.
-- Archipelago's test suite (all worlds) passes. 199 of 200 seeds with random options generate (the remaining one
-  is a pool that is too large, which 2S2H refuses as well).
-- Details: `worlds/mm_2s2h/docs/testing.md` in the `apworld` branch.
+The 0.4 client accepts 0.1–0.4 seeds and loads older saves tolerantly. A 0.1 client cannot play 0.4 seeds.
+MMRecompRando (`mm_recomp`) seeds use a different world and are not compatible.
 
-## Not included
+## What has been checked?
 
-No ROMs, game data, extracted assets, `*.otr` or `*.o2r` files are part of this repository.
-You need your **own legally obtained copy** of Majora's Mask to use 2 Ship 2 Harkinian.
+The current 0.4 source passed **531 tests**, **1200/1200 original-logic parity scenarios** with the entrance
+options off, and **200/200 randomized seeds** across boss-only and combined entrance shuffles. A native harness
+also exercised **2304 option/permutation cases**, **23040 warps** and **44352 respawn checks** with mocked game APIs.
 
-## Credits and sources
+These checks do not run the game. First multiworld sessions on the older feature set worked, but the new NPC
+souls and entrance shuffles still need in-game testing. Linux/macOS runtime behavior is also untested.
+The in-game check tracker does not evaluate extra access rules for foreign temples/boss rooms.
 
-All credit for the original work goes to the respective projects and their contributors. They are listed here
-as sources, not as affiliations:
+[Detailed results, limitations and reproduction checklist](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/apworld/worlds/mm_2s2h/docs/testing.md)
 
-- [HarbourMasters/2ship2harkinian](https://github.com/HarbourMasters/2ship2harkinian) – 2 Ship 2 Harkinian and its randomizer
-- [xirba13/2ship2harkinian-archipelago](https://github.com/xirba13/2ship2harkinian-archipelago) – Archipelago client layer for 2S2H
-- [ArchipelagoMW/Archipelago](https://github.com/ArchipelagoMW/Archipelago) – Archipelago
-- [black-sliver/apclientpp](https://github.com/black-sliver/apclientpp) – Archipelago client library used by the client
+## Source & development
 
-License files and credits of the original projects are kept unchanged in the `client` and `apworld` branches
-and apply there.
+| Branch | Contents |
+|---|---|
+| [`client`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/client) | 2S2H 5.0.1 with the AP client and new mechanics; platform builds run in GitHub Actions. |
+| [`apworld`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/apworld/worlds/mm_2s2h) | Archipelago world 0.4.0, generated logic, options and validation tools. |
+| [`main`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/main) | Project overview, setup, changelog and preview packaging workflow. |
+
+The generator reads the fork's C++ enums, checks, items, regions and feature tables. AP IDs derive from those
+enum values, options travel as `RO_*` names, and saved pairings rebuild the same entrances in Universal Tracker.
+The original 2S2H region/combat logic remains unchanged; parity checks guard the default behavior.
+
+## Credits
+
+- [Harbour Masters / 2 Ship 2 Harkinian](https://github.com/HarbourMasters/2ship2harkinian) — game port and randomizer
+- [xirba13 / 2S2H Archipelago](https://github.com/xirba13/2ship2harkinian-archipelago) — original AP client layer
+- [Archipelago](https://github.com/ArchipelagoMW/Archipelago) — multiworld framework
+- [black-sliver / apclientpp](https://github.com/black-sliver/apclientpp) — client library
+
+Original licenses and credits remain in their source branches. No ROMs or extracted ROM data are distributed;
+you need your own legally obtained game copy.

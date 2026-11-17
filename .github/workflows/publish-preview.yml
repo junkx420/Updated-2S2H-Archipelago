@@ -1,0 +1,76 @@
+name: Publish 0.4.0 preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_run:
+        description: Successful or running generate-builds run for the exact client commit
+        required: true
+        type: string
+      client_sha:
+        description: Full client commit SHA
+        required: true
+        type: string
+      apworld_sha:
+        description: Full apworld commit SHA
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: publish-preview-0.4.0
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 180
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      BUILD_RUN: ${{ inputs.build_run }}
+      CLIENT_SHA: ${{ inputs.client_sha }}
+      APWORLD_SHA: ${{ inputs.apworld_sha }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify source build and wait for all platforms
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CLIENT_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$APWORLD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BUILD_RUN" =~ ^[0-9]+$ ]]
+          test "$(gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN" --jq .head_sha)" = "$CLIENT_SHA"
+          test "$(gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN" --jq .name)" = generate-builds
+          gh run watch "$BUILD_RUN" --exit-status --interval 30
+          test "$(gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN" --jq .conclusion)" = success
+      - name: Download the exact build artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh run download "$BUILD_RUN" --name 2ship-windows --dir artifacts/windows
+          gh run download "$BUILD_RUN" --name 2ship-linux --dir artifacts/linux
+          gh run download "$BUILD_RUN" --name 2ship-mac --dir artifacts/macos
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.apworld_sha }}
+          path: world-source
+          sparse-checkout: worlds/mm_2s2h
+      - name: Package and check release contents
+        run: python3 scripts/package-preview.py
+      - name: Publish the pre-release after every package is ready
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view v0.4.0 >/dev/null 2>&1; then
+            echo 'v0.4.0 already exists; refusing to replace its files.' >&2
+            exit 1
+          fi
+          gh release create v0.4.0 dist/* --target "$CLIENT_SHA" --draft --prerelease \
+            --title 'v0.4.0 — NPC souls, dungeon & boss entrance shuffle (preview)' \
+            --notes-file RELEASE-0.4.0.md
+          gh release edit v0.4.0 --draft=false --prerelease=true --latest=false
+          gh release view v0.4.0 --json url,isPrerelease,assets
