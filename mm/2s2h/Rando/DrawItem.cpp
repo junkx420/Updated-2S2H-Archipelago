@@ -4,6 +4,7 @@
 #include "2s2h/Rando/DrawFuncs.h"
 #include "2s2h/Rando/ActorBehavior/Souls.h"
 #include "2s2h/Rando/MiscBehavior/DoorKeys.h"
+#include "2s2h/Rando/DrawNpcSouls.h"
 #include "2s2h_assets.h"
 #ifdef ENABLE_ARCHIPELAGO
 #include "2s2h/Network/Archipelago/ArchipelagoMapping.h"
@@ -609,16 +610,23 @@ void Rando::DrawItem(RandoItemId randoItemId, RandoCheckId randoCheckId, Actor* 
         func_800B8050(actor, gPlayState, 0);
     }
 
-    // NPC souls: a blue flame (enemy souls show their enemy in a gray one)
+    // NPC souls: the NPC in a blue light (enemy souls show their enemy in a mostly gray one), see DrawNpcSouls.cpp
     if (IS_NPC_SOUL(randoItemId)) {
-        Matrix_Scale(0.01f, 0.01f, 0.01f, MTXMODE_APPLY);
-        DrawEnLight({ 90, 170, 255 }, { 10.0f, 10.0f, 10.0f });
+        Rando::DrawNpcSoul(randoItemId);
         return;
     }
 
-    // Door keys: the small key model, without a dungeon tint
+    // Door keys: Anju's room key, a door key that differs from the dungeon keys
     if (IS_DOOR_KEY(randoItemId)) {
-        DrawSmallKey(randoItemId);
+        GetItem_Draw(gPlayState, GID_ROOM_KEY);
+        return;
+    }
+
+    // Riding Epona: Gorman's horse; the land title deed (its drawId) if the horse cannot be drawn
+    if (randoItemId == RI_ABILITY_RIDE_EPONA) {
+        if (!Rando::DrawEponaRidingAbility()) {
+            GetItem_Draw(gPlayState, Rando::StaticData::Items[randoItemId].drawId);
+        }
         return;
     }
 
