@@ -4,6 +4,11 @@ The biggest update so far: a **full entrance randomizer**, **door keys**, **shuf
 **in-game entrance tracker**, on top of the NPC souls from the 0.4.0 preview. Client and **apworld 0.11.1** are
 bundled together.
 
+> **Fixed apworld (re-uploaded 2026-11-18):** the first `mm_2s2h.apworld` of this release lacked two manifest
+> fields, so Archipelago reported it as version 0.0.0 and the client refused the seed ("needs 0.11.x").
+> If you downloaded it earlier: download `mm_2s2h.apworld` again, reinstall it, and **generate your seed again**.
+> The client packages are unchanged.
+
 > **Why a regular release, and why still experimental?**
 > This is published as a regular release because every automated check passes: 805 tests, 1200 of 1200
 > scenarios matching the original 2S2H logic, 100 of 100 random seeds per new option and with all options combined,

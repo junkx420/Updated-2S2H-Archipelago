@@ -14,10 +14,16 @@ version = os.environ["RELEASE_VERSION"]
 world = ROOT / "world-source/worlds/mm_2s2h"
 assert json.loads((world / "archipelago.json").read_text())["world_version"] == version
 
+# Archipelago reads world_version only from a manifest with its container fields (worlds/Files.py,
+# APWorldContainer); without them it logs "Invalid or missing manifest" and reports world_version 0.0.0.
+manifest_source = json.loads((world / "archipelago.json").read_text())
+manifest_source.update({"version": 7, "compatible_version": 7})
 with zipfile.ZipFile(DIST / "mm_2s2h.apworld", "w", zipfile.ZIP_DEFLATED) as archive:
     for path in sorted(world.rglob("*")):
-        if path.is_file() and "__pycache__" not in path.parts and path.suffix not in {".pyc", ".pyo"}:
+        if (path.is_file() and "__pycache__" not in path.parts and path.suffix not in {".pyc", ".pyo"}
+                and path.relative_to(world) != Path("archipelago.json")):
             archive.write(path, Path("mm_2s2h") / path.relative_to(world))
+    archive.writestr("mm_2s2h/archipelago.json", json.dumps(manifest_source, indent=4) + "\n")
 shutil.copyfile(world / "docs/example.yaml", DIST / "mm_2s2h_example.yaml")
 
 for platform, label, binary in [("windows", "Windows", "2ship.exe"),
