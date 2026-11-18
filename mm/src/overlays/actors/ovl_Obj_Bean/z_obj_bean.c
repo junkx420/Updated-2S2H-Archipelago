@@ -7,6 +7,7 @@
 #include "z_obj_bean.h"
 #include "objects/object_mamenoki/object_mamenoki.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_IGNORE_LEGACY_POINT_LIGHTS)
 
@@ -575,7 +576,7 @@ void func_80937FC8(ObjBean* this, PlayState* play) {
             if (this->dyna.actor.xzDistToPlayer < 150.0f) {
                 CollisionCheck_SetAC(play, &play->colChkCtx, &this->collider.base);
             }
-        } else {
+        } else if (GameInteractor_Should(VB_PLANT_MAGIC_BEAN, true)) {
             Actor_OfferTalkExchangeEquiCylinder(&this->dyna.actor, play, 28.0f, PLAYER_IA_MAGIC_BEANS);
         }
     }

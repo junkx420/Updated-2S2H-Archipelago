@@ -1,5 +1,6 @@
 #include "Rando/Rando.h"
 #include "Rando/ActorBehavior/Souls.h"
+#include "Rando/MiscBehavior/Abilities.h"
 #include "Rando/MiscBehavior/DoorKeys.h"
 #include "Rando/MiscBehavior/ClockShuffle.h"
 #include "2s2h/ShipUtils.h"
@@ -194,6 +195,9 @@ RandoItemId Rando::CurrentTrapItem(RandoCheckId randoCheckId) {
 }
 
 bool Rando::IsItemObtainable(RandoItemId randoItemId, RandoCheckId randoCheckId) {
+    if (const auto* ability = Abilities::FindByItem(randoItemId)) {
+        return !Flags_GetRandoInf(ability->flag);
+    }
     if (IS_NPC_SOUL(randoItemId)) {
         return !Flags_GetRandoInf(NPC_SOUL_RI_TO_RANDO_INF(randoItemId));
     }

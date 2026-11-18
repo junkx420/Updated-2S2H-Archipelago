@@ -599,7 +599,7 @@ void func_808F4108(EnIn* this, PlayState* play, u16 textId) {
 s32 func_808F4150(PlayState* play, EnIn* this, s32 arg2, MessageContext* msgCtx) {
     Actor* thisx = &this->actor;
 
-    if (msgCtx->choiceIndex == 0) {
+    if (msgCtx->choiceIndex == 0 && GameInteractor_Should(VB_RIDE_EPONA, true)) {
         Audio_PlaySfx_MessageDecide();
         if (gSaveContext.save.saveInfo.playerData.rupees >= play->msgCtx.unk1206C) {
             Rupees_ChangeBy(-play->msgCtx.unk1206C);
@@ -625,7 +625,7 @@ s32 func_808F4270(PlayState* play, EnIn* this, s32 arg2, MessageContext* msgCtx,
     s32 pad;
     s32 fee = (play->msgCtx.unk1206C != 0xFFFF) ? play->msgCtx.unk1206C : 10;
 
-    if (msgCtx->choiceIndex == 0) {
+    if (msgCtx->choiceIndex == 0 && GameInteractor_Should(VB_RIDE_EPONA, true)) {
         Audio_PlaySfx_MessageDecide();
         if (gSaveContext.save.saveInfo.playerData.rupees >= fee) {
             Rupees_ChangeBy(-fee);

@@ -32,6 +32,8 @@ namespace StaticData {
 std::map<RandoItemId, RandoStaticItem> Items = {
     RI(RI_UNKNOWN,                    "",     "Unknown",                    RITYPE_JUNK,            ITEM_NONE,                       GI_NONE,                     GID_NONE),
     RI(RI_ABILITY_SWIM,               "the",  "Ability to Swim",            RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_NONE),
+    RI(RI_ABILITY_RIDE_EPONA,         "the",  "Ability to Ride Epona",      RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_DEED_LAND),
+    RI(RI_ABILITY_PLANT_BEANS,        "the",  "Ability to Plant Beans",     RITYPE_MAJOR,           ITEM_NONE,                       GI_NONE,                     GID_MAGIC_BEANS),
     RI(RI_ARROW_FIRE,                 "",     "Fire Arrows",                RITYPE_MAJOR,           ITEM_ARROW_FIRE,                 GI_ARROW_FIRE,               GID_ARROW_FIRE),
     RI(RI_ARROW_ICE,                  "",     "Ice Arrows",                 RITYPE_MAJOR,           ITEM_ARROW_ICE,                  GI_ARROW_ICE,                GID_ARROW_ICE),
     RI(RI_ARROW_LIGHT,                "",     "Light Arrows",               RITYPE_MAJOR,           ITEM_ARROW_LIGHT,                GI_ARROW_LIGHT,              GID_ARROW_LIGHT),
@@ -584,6 +586,10 @@ const char* GetIconTexturePath(RandoItemId randoItemId) {
             return (const char*)gThreeDayClockSunHourTex;
         case RI_ABILITY_SWIM:
             return (const char*)gFlippersTex;
+        case RI_ABILITY_RIDE_EPONA:
+            return (const char*)gItemIcons[ITEM_DEED_LAND];
+        case RI_ABILITY_PLANT_BEANS:
+            return (const char*)gItemIcons[ITEM_MAGIC_BEANS];
         case RI_SONG_DOUBLE_TIME:
         case RI_SONG_INVERTED_TIME:
             return (const char*)gItemIcons[ITEM_SONG_TIME];

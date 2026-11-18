@@ -9470,6 +9470,10 @@ s32 Player_ActionHandler_3(Player* this, PlayState* play) {
                 f32 temp_fv0;
                 f32 temp_fv1;
 
+                if (!GameInteractor_Should(VB_RIDE_EPONA, true)) {
+                    Audio_PlaySfx(NA_SE_SY_ERROR);
+                    return false;
+                }
                 Player_SetupWaitForPutAway(play, this, func_80837BD0);
 
                 this->stateFlags1 |= PLAYER_STATE1_800000;

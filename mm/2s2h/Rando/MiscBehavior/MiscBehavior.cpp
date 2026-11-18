@@ -1,4 +1,5 @@
 #include "MiscBehavior.h"
+#include "Abilities.h"
 #include "EntranceShuffle.h"
 #include "2s2h/Rando/Logic/Logic.h"
 
@@ -14,6 +15,7 @@ void Rando::MiscBehavior::Init() {
 }
 
 void Rando::MiscBehavior::OnFileLoad() {
+    Rando::Abilities::RegisterHooks();
     Rando::MiscBehavior::CheckQueueReset();
     Rando::MiscBehavior::InitKaleidoItemPage();
     Rando::MiscBehavior::InitOfferGetItemBehavior();

@@ -1,5 +1,6 @@
 #include "Rando/Rando.h"
 #include "Rando/ActorBehavior/Souls.h"
+#include "Rando/MiscBehavior/Abilities.h"
 #include "Rando/MiscBehavior/DoorKeys.h"
 #include "Rando/MiscBehavior/ClockShuffle.h"
 
@@ -11,6 +12,10 @@ extern "C" {
 #define CLEAR_OWL_WARP(owlId) (gSaveContext.save.saveInfo.playerData.owlActivationFlags &= ~(1 << owlId))
 
 void Rando::RemoveItem(RandoItemId randoItemId) {
+    if (const auto* ability = Abilities::FindByItem(randoItemId)) {
+        Flags_ClearRandoInf(ability->flag);
+        return;
+    }
     if (IS_NPC_SOUL(randoItemId)) {
         Flags_ClearRandoInf(NPC_SOUL_RI_TO_RANDO_INF(randoItemId));
         return;

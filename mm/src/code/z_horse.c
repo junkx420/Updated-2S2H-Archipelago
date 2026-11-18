@@ -2,6 +2,7 @@
 #include "z64horse.h"
 #include "overlays/actors/ovl_Bg_Umajump/z_bg_umajump.h"
 #include "overlays/actors/ovl_En_Horse/z_en_horse.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 s32 Horse_GetJumpingFencePathIndex(PlayState* play) {
     Actor* actor;
@@ -179,6 +180,10 @@ void Horse_SpawnMinigame(PlayState* play, Player* player) {
 }
 
 void Horse_Spawn(PlayState* play, Player* player) {
+    // Romani's practice can lend Link Epona. Clear the carried mount before entering the next scene.
+    if (gHorseIsMounted && !GameInteractor_Should(VB_RIDE_EPONA, true)) {
+        gHorseIsMounted = false;
+    }
     if (((play->sceneId == SCENE_KOEPONARACE) &&
          (GET_WEEKEVENTREG_HORSE_RACE_STATE == WEEKEVENTREG_HORSE_RACE_STATE_START)) ||
         ((play->sceneId == SCENE_F01) && (((gSaveContext.sceneLayer == 1)) || (gSaveContext.sceneLayer == 5)) &&

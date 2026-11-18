@@ -3008,6 +3008,8 @@ typedef enum {
     RI_DOOR_KEY_DAMPES_HOUSE,
     RI_DOOR_KEY_ZORA_HALL_ROOMS,
     RI_MAX_TRAP, // Just used for ice trap ice cube model
+    RI_ABILITY_RIDE_EPONA,
+    RI_ABILITY_PLANT_BEANS,
     RI_MAX,
 } RandoItemId;
 
@@ -3408,6 +3410,8 @@ typedef enum {
     RO_SHUFFLE_OVERWORLD,
     RO_SHUFFLE_SPECIAL_AREAS,
     RO_MIX_ENTRANCE_POOLS,
+    RO_SHUFFLE_EPONA_RIDING,
+    RO_SHUFFLE_BEAN_PLANTING,
     RO_MAX,
 } RandoOptionId;
 
@@ -3595,6 +3599,8 @@ typedef enum {
     RANDO_INF_OBTAINED_DOOR_KEY_ZORA_HALL_ROOMS, // apworld 0.7
     // Set when the seed's pool has the Zora Hall Rooms key (apworld 0.7 and newer); without it those doors stay open.
     RANDO_INF_DOOR_KEYS_ZORA_HALL,
+    RANDO_INF_OBTAINED_ABILITY_RIDE_EPONA,
+    RANDO_INF_OBTAINED_ABILITY_PLANT_BEANS,
     RANDO_INF_MAX,
 } RandoInf;
 

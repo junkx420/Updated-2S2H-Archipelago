@@ -2556,6 +2556,18 @@ typedef enum {
     // #### `args`
     // - `*f32` (speed)
     VB_ZTARGET_SPEED_CHECK,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    VB_RIDE_EPONA,
+
+    // #### `result`
+    // ```c
+    // true
+    // ```
+    VB_PLANT_MAGIC_BEAN,
 } GIVanillaBehavior;
 
 #endif
