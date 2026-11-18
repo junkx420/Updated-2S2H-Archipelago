@@ -735,7 +735,7 @@ land, Great Fairy fountains, Ikana Castle, Sakon's hideout. Entrance cutscenes b
 ### Stage 6b: remaining transitions (apworld 0.9.0, 2026-11-18)
 
 Every two-way exit of the logic that was in no table: 100 exits, of which 26 join the older pools, 12 form the new
-pool `shuffle_special_areas` and 62 stay fixed (table below). Mixing the pools with each other is stage 6c. 23 rows
+pool `shuffle_special_areas` and 62 stayed fixed before 6c. The table below records the current inventory. 23 rows
 appended to `shuffleEntrances` (rows 134–156), so the saved row numbers of 0.3–0.8 stay valid.
 
 #### Pools and criteria
@@ -839,11 +839,11 @@ appended to `shuffleEntrances` (rows 134–156), so the saved row numbers of 0.3
    Shop/Graveyard and the King's chamber as in vanilla; Shuffle Special Areas off.
 9. All options off: everything as before.
 
-#### Exits that stay fixed (62)
+#### Exits that stay fixed (60)
 
-Every two-way exit of the logic in no table, one row per exit. `FixedExitInventory` in `test_special_areas.py` holds
-the same list (and the 15 one-way exits) and fails as soon as one is added to a table or a region file changes.
-Stage 6c decides from this list what "shuffle everything" covers.
+Every two-way exit of the logic outside the shuffle tables, one row per exit. `FixedExitInventory` in
+`test_special_areas.py` holds the same list and the 15 one-way exits. Stage 6c moved two exits from this list into the
+inverted Stone Tower Temple row, active when dungeons join the mixed pool.
 
 | Exit (region → entrance) | File:line | Reason |
 |---|---|---|
@@ -859,7 +859,6 @@ Stage 6c decides from this list what "shuffle everything" covers.
 | `RR_IKANA_GRAVEYARD_LOWER` → `BENEATH_THE_GRAVERYARD:1` | `East.cpp:258` | Beneath the Graveyard: open one night each (hours of its own, like `INTERIOR_OWN_HOURS`), the hole appears after the Stalchild. |
 | `RR_SAKON_HIDEOUT` → `IKANA_CANYON:6` | `East.cpp:372` | Sakon's Hideout: open only on night 3 from 18:00 with Kafei, mandatory scene, respawn of its own (−7, `z_play.c:2063`). |
 | `RR_STONE_TOWER_INVERTED_LOWER` → `STONE_TOWER:1` | `East.cpp:481` | Stone Tower inversion: turns the scene over (as in 0.8). |
-| `RR_STONE_TOWER_INVERTED_NEAR_TEMPLE` → `STONE_TOWER_TEMPLE_INVERTED:0` | `East.cpp:490` | Inverted Stone Tower Temple: Twinmold's door and the boss warp composition (0.4) depend on it; candidate for 6c with the temples. |
 | `RR_STONE_TOWER_TOP` → `STONE_TOWER_INVERTED:0` | `East.cpp:545` | Stone Tower inversion: turns the scene over (as in 0.8). |
 | `RR_IKANA_CASTLE_BEFORE_THRONE` → `IGOS_DU_IKANAS_LAIR:0` | `IkanaCastle.cpp:12` | Inside Ikana Castle and the well's back exit: inner ways of two special areas, they move with their front doors. |
 | `RR_IKANA_CASTLE_COURTYARD` → `BENEATH_THE_WELL:1` | `IkanaCastle.cpp:58` | Inside Ikana Castle and the well's back exit: inner ways of two special areas, they move with their front doors. |
@@ -902,10 +901,74 @@ Stage 6c decides from this list what "shuffle everything" covers.
 | `RR_PIRATES_FORTRESS_SEWERS_PREGATE` → `PIRATES_FORTRESS_EXTERIOR:2` | `PiratesFortress.cpp:356` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
 | `RR_PIRATES_FORTRESS_TELESCOPE_ROOM` → `PIRATES_FORTRESS_EXTERIOR:6` | `PiratesFortress.cpp:378` | Inside Pirates' Fortress: inner structure; entrances 4 and 7 shared by several regions (`UNTRANSLATED.md`), moat arrivals under water, caught by guards you land at fixed points. Moves as a whole with its underwater way in. |
 | `RR_WOODFALL` → `WOODFALL_TEMPLE:2` | `South.cpp:560` | Deku Princess's room: second door into the temple scene, open only after the temple; belongs to the temple. |
-| `RR_STONE_TOWER_TEMPLE_INVERTED_ENTRANCE` → `STONE_TOWER_INVERTED:1` | `StoneTowerTemple.cpp:241` | Inverted Stone Tower Temple: Twinmold's door and the boss warp composition (0.4) depend on it; candidate for 6c with the temples. |
 | `RR_GREAT_BAY_COAST` → `PINNACLE_ROCK:0` | `West.cpp:149` | Pinnacle Rock: under water, but the logic asks only for SWIM and Human Link dives too (`z_player.c:8931`): a Human could arrive in a Zora-only place. |
 | `RR_PINNACLE_ROCK_ENTRANCE` → `GREAT_BAY_COAST:3` | `West.cpp:244` | Pinnacle Rock: under water, but the logic asks only for SWIM and Human Link dives too (`z_player.c:8931`): a Human could arrive in a Zora-only place. |
 | `RR_WATERFALL_RAPIDS` → `ZORA_CAPE:4` | `West.cpp:283` | Waterfall Rapids: way in by Hookshot (Human), arrival in the river: land and water mixed. |
 | `RR_ZORA_CAPE_BEFORE_GREAT_BAY_TEMPLE` → `ZORA_HALL:1` | `West.cpp:295` | Zora Hall by land: `ZORA_HALL:1` has no region in the logic (`UNTRANSLATED.md`), so no way back. |
 | `RR_ZORA_CAPE` → `WATERFALL_RAPIDS:0` | `West.cpp:360` | Waterfall Rapids: way in by Hookshot (Human), arrival in the river: land and water mixed. |
 | `RR_WOODFALL_TEMPLE_DEKU_PRINCESS_ROOM` → `WOODFALL:3` | `WoodfallTemple.cpp:90` | Deku Princess's room: second door into the temple scene, open only after the temple; belongs to the temple. |
+
+### Stage 6c – mixed entrance pools (apworld 0.10.0)
+
+The C++ tables define the selectable pools, the doors fixed during mixing, and the appended inverted temple row
+(zero-based index 157). The generator checks unique options, masks, source scenes and entrances, reciprocal land
+edges for fixed pairs, endpoint capacity and the connection between the inverted temple and Twinmold's boss door.
+Mixing still uses Archipelago's coupled entrance randomizer. Each endpoint is one outgoing transition from a physical
+place. A temple, interior or special area contributes an outside and an inside end. Land overworld rows contribute
+one end each. The five Clock Town gates receive land partners outside town before the remaining land ends are split
+evenly between the two groups for coupled placement.
+
+`mixed_entrance_pairs` is optional slot data. Each pair gives two endpoint IDs, `2 * row` for the outside or land end
+and `2 * row + 1` for the inside end. The other end's arrival is the spawn on that side of its door or exit.
+Universal Tracker reconnects both directions from the saved pairs. The client validates compatible endpoints,
+unique partners and coverage before using the map, and saves it separately from `entrancePairs`.
+The JSON loader zero-fills a missing `mixedEntrancePairs` array and preserves the old row pairs.
+
+Area rules follow a foreign destination, while its source keeps the original access requirements and door key.
+Bosses and grottos shuffle in their own pools. Grotto returns can depend on the exact position saved when falling
+into the hole. Even shops can have another way in, so a door leading back to a hole would need a verified
+return point for that hole. Water stays within its existing coast-to-dead-end pool. The 24 unrestricted interiors
+are eligible for the common pool, nine daytime interiors mix within their hours class, and the six unique schedules
+stay fixed. Trading Post and Swordsman's School stay fixed when interiors are mixed. When the overworld is mixed,
+the Ranch entrance and its return to Milk Road stay coupled to one another.
+
+The inverted temple is eligible when dungeons are selected in `mix_entrance_pools`. Inversion within the outside
+tower is still vanilla. A foreign entrance into the inverted temple adds the normal tower area requirements plus
+Bow, Light Arrows and magic. Boss warps resolve the boss door and then the temple's return endpoint, including the
+first warp through the Giants' Chamber. Completion flags still follow the boss. An empty pool list or a 0.9 seed
+keeps the inverted temple entrance vanilla.
+
+#### Verification
+
+- `pytest test/general worlds/mm_2s2h/test -q` passed 779 tests and 151,149 subtests. All 11 pool selections were
+  tested in Glitchless and No Logic, including coupling, reachability and Universal Tracker. The 38 + 40 existing
+  Golden fingerprints match with mixing off. The new compatibility fixture contains 157 pairs generated by apworld
+  0.9.0 with every entrance shuffle enabled.
+- `random_seeds.py` passed 100/100 with `mix_entrance_pools=all` and 100/100 with `mix_entrance_pools=random`.
+  Parity passed 1200/1200 scenarios after rebuilding the shim.
+- The C++ harness passed 4,900 mixed transitions, 110 boss warps and 77 rejected maps across the 11 selections.
+  It verified all 157 pairs from the real 0.9 slot data and exercised the real save codec with the 0.9 JSON shape,
+  omitting the mixed array and option. It also round-tripped each of the 11 new mixed saves.
+- The Windows x64 Release client built successfully. MSBuild stalled after `ZERO_CHECK` with 12 project nodes.
+  With one node, MSVC reported `C1902: Program database manager mismatch` and, after switching to `/Z7`,
+  `C2855: command-line option '/Z7' inconsistent with precompiled header`. The build passed with one project
+  node, 12 compiler workers and rebuilt `/Z7` headers. These were local build flags.
+- Initial runs exposed an outdated expectation in three area-rule tests (`AssertionError` for the new
+  `STONE_TOWER_TEMPLE_INVERTED:0` rule) and blocked temp cleanup in seed generation
+  (`PermissionError: [WinError 5] Access is denied`). The test inventory now includes the new rule, and both
+  seed batches passed with `TEMP` and `TMP` set within the workspace.
+
+#### In-game checklist — not tested in game
+
+- Check a shop door into a temple and the temple exit back to the shop door. Check a temple entrance into a shop
+  and the shop exit back to the temple entrance. Verify the original door key and opening hours.
+- Walk through a land exit into a building and go back both ways. Try a cleared swamp entrance, a spring mountain
+  entrance, the Great Bay turtle on its first and later rides, and a redirected exit while mounted on Epona.
+- Take a Clock Town gate and the Bombers' passage. Verify the water routes, Trading Post and Swordsman's School
+  closures, the daytime interiors, and the Ranch boulder on days 1 and 3. Try a grotto in each of its two variants
+  (hole and scene exit) with all eligible pools mixed.
+- Enter normal and inverted Stone Tower Temple, take Twinmold's door with bosses shuffled and vanilla, then take
+  the first and a repeat blue warp. Verify the arrival, clear flag and return after death or void-out. Repeat a
+  mixed-temple warp through the other bosses.
+- Save and reload a mixed seed, then take the same entrances before reconnecting. Load a 0.9 save and connect it
+  to its original slot. Verify that its old pairs and the vanilla inverted entrance still apply.

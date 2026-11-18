@@ -9,6 +9,7 @@
 #include "interiors.h"
 #include "overworld.h"
 #include "special_areas.h"
+#include "mixed.h"
 
 using namespace Rando::EntranceShuffle;
 
@@ -176,4 +177,6 @@ int main() {
     OverworldTest::TestOverworld();
     TestSpecialAreas();
     TestLegacy08();
+    TestMixedEntrances();
+    TestLegacy09();
 }

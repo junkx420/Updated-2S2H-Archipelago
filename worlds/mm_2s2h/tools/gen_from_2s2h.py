@@ -610,6 +610,25 @@ def main() -> int:
     pair_slots = int(re.search(r"\bu16\s+entrancePairs\[(\d+)\]", save_h).group(1))
     if len(es_rows) > pair_slots:
         raise SystemExit(f"shuffleEntrances: {len(es_rows)} rows do not fit entrancePairs[{pair_slots}]")
+    mixed_slots = int(re.search(r"\bu16\s+mixedEntrancePairs\[(\d+)\]", save_h).group(1))
+    if 2 * pair_slots != mixed_slots or mixed_slots > 65535:
+        raise SystemExit("mixedEntrancePairs must hold two u16 endpoints per entrancePairs slot")
+    mix_body = re.search(r"entranceMixPools\[\]\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
+    mix_rows = [(name, option, int(bit)) for name, option, bit in re.findall(
+        r'\{\s*"([a-z_]+)"\s*,\s*(RO_\w+)\s*,\s*(\d+)\s*\}', mix_body)]
+    if (len(mix_rows) != mix_body.count("{") or len({name for name, _, _ in mix_rows}) != len(mix_rows)
+            or len({opt for _, opt, _ in mix_rows}) != len(mix_rows)
+            or sorted(bit for _, _, bit in mix_rows) != [1 << i for i in range(len(mix_rows))]
+            or not mix_rows or len(mix_rows) > 31):
+        raise SystemExit("entranceMixPools needs unique names, options and consecutive bits")
+    if {opt for _, opt, _ in mix_rows} != {"RO_SHUFFLE_DUNGEON_ENTRANCES", "RO_SHUFFLE_INTERIORS",
+                                          "RO_SHUFFLE_OVERWORLD", "RO_SHUFFLE_SPECIAL_AREAS"}:
+        raise SystemExit("entranceMixPools contains an unsupported pool or omits a mixed pool")
+    mix_fixed_body = re.search(r"entranceMixFixed\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
+    mix_fixed = [entrance_key(a) for a in re.findall(ent, mix_fixed_body)]
+    if len(mix_fixed) != mix_fixed_body.count("ENTRANCE") or len(set(mix_fixed)) != len(mix_fixed):
+        raise SystemExit("entranceMixFixed has a malformed or duplicate entry")
+    mix_only = entrance_key(re.search(rf"mixedOnlyEntrance\s*=\s*({ent})\s*;", es_src).group(1))
     # Grottos: { ENTRANCE(into), ENTRANCE(game entrance), data, GROTTO_KIND } (EntranceShuffle.cpp grottoEntrances)
     ge_body = re.search(r"grottoEntrances\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
     ge_rows = re.findall(rf"\{{\s*({ent})\s*,\s*({ent})\s*,\s*(-1|0x[0-9A-Fa-f]+)\s*,\s*(GROTTO_HOLE|GROTTO_SCENE_EXIT)\s*\}}",
@@ -813,6 +832,30 @@ def main() -> int:
     check_interiors(entrance_shuffle, hours_of, out_regions)
     check_overworld(entrance_shuffle, es_rows, out_regions, water)
     check_special_areas(entrance_shuffle, es_rows)
+    by_into = {row["into"]: row for row in entrance_shuffle}
+    if len(by_into) != len(entrance_shuffle):
+        raise SystemExit("shuffleEntrances: duplicate into values would make saved pairs ambiguous")
+    for into in mix_fixed:
+        row = by_into.get(into)
+        if row is None or (row["hours"] != "ALWAYS_OPEN" and
+                           (row["option"] != "RO_SHUFFLE_OVERWORLD" or row["water"] or row["out"] not in mix_fixed)):
+            raise SystemExit(f"entranceMixFixed: {into} must be an always-open interior or both sides of a land path")
+    mixed_temple = by_into.get(mix_only)
+    if (mixed_temple is None or mix_only in mix_fixed or mixed_temple["option"] != "RO_SHUFFLE_DUNGEON_ENTRANCES"
+            or sum(r["temple_exit"] == mixed_temple["out"] for r in entrance_shuffle) != 1):
+        raise SystemExit("mixedOnlyEntrance must be a temple row with a matching boss door")
+    # Every mixed endpoint has exactly one selector (source scene and base entrance). Overworld rows already
+    # represent a single exit; for other pools also validate their reverse selector.
+    selectors = set()
+    for opt, into, out, inside, outside, *_ in es_rows:
+        if opt not in {o for _, o, _ in mix_rows} or into in mix_fixed or into in water:
+            continue
+        if opt == "RO_SHUFFLE_INTERIORS" and hours_of[into] != "ALWAYS_OPEN":
+            continue
+        for selector in [(outside, into)] + ([] if opt == "RO_SHUFFLE_OVERWORLD" else [(inside, out)]):
+            if selector in selectors:
+                raise SystemExit(f"mixed entrance endpoint is ambiguous: {selector}")
+            selectors.add(selector)
 
     # Door keys: { RI_DOOR_KEY_X, "Building", { ENTRANCE(into), ... } } (MiscBehavior/DoorKeys.cpp doorKeys). Every
     # "into" must be the exit of exactly one region and lead into another scene; one key per building, in enum order.
@@ -938,6 +981,9 @@ def main() -> int:
             else:
                 untranslated.append(("Options.cpp", f"default of {oid} unknown: {dv}", ""))
         fh.write(f"OPTION_DEFAULTS = {defaults!r}\n")
+        fh.write(f"ENTRANCE_MIX_POOLS = {dict((name, (opt, bit)) for name, opt, bit in mix_rows)!r}\n")
+        fh.write(f"ENTRANCE_MIX_FIXED = {tuple(mix_fixed)!r}\n")
+        fh.write(f"ENTRANCE_MIX_ONLY = {mix_only!r}\n")
 
     names_seen = {}
     with open(OUT / "items_generated.py", "w", encoding="utf-8") as fh:

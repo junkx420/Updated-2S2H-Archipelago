@@ -10,10 +10,11 @@
 #include "constants.h"
 using u8 = uint8_t;
 using u16 = uint16_t;
+using u32 = uint32_t;
 using s8 = int8_t;
 using s16 = int16_t;
 using s32 = int32_t;
-struct RandoSaveInfo { u16 entrancePairs[512]{}; }; // z64save.h
+#include "rando_save.h" // verbatim from z64save.h
 struct RespawnData { u16 entrance = 0; s8 data = 0; int position = 0; };
 struct Vec3f { float x = 0, y = 0, z = 0; };
 struct Vec3s { s16 x = 0, y = 0, z = 0; };

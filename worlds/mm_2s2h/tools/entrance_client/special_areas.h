@@ -156,7 +156,7 @@ inline void TestLegacy08() {
         return size_t(0);
     };
     long cases = 0;
-    assert(shuffleEntrances.size() == 157 && rows08 == 134);
+    assert(shuffleEntrances.size() == 158 && rows08 == 134);
     for (const LegacySlot& slot : legacy08) {
         gSaveContext = {};
         std::fill(std::begin(options), std::end(options), 0);

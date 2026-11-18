@@ -17,7 +17,8 @@ from Fill import fill_restrictive
 from Options import OptionError
 from worlds.AutoWorld import LogicMixin, WebWorld, World
 
-from .enums_generated import DOOR_KEYS, ENTRANCE_SHUFFLE, NPC_SOULS, OPTION_DEFAULTS, RC_ID, RI_ID
+from .enums_generated import (DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_SHUFFLE,
+                              NPC_SOULS, OPTION_DEFAULTS, RC_ID, RI_ID)
 from .items_generated import ITEMS
 from .locations_generated import LOCATIONS
 from .macros_generated import CAN_USE_SWORD
@@ -75,6 +76,9 @@ OVERWORLD = "RO_SHUFFLE_OVERWORLD"
 DUNGEONS_OPTION, BOSSES_OPTION = "RO_SHUFFLE_DUNGEON_ENTRANCES", "RO_SHUFFLE_BOSS_ENTRANCES"
 CLOCK_TOWN_SCENES = {"SCENE_CLOCKTOWER", "SCENE_TOWN", "SCENE_BACKTOWN", "SCENE_ICHIBA", "SCENE_ALLEY"}
 OW_GROUP = 1001
+MIX_DOOR_GROUP, MIX_INSIDE_GROUP = 1002, 1003
+MIX_OPTION = "RO_MIX_ENTRANCE_POOLS"
+ENTRANCE_ROW_INDEX = {row["into"]: i for i, row in enumerate(ENTRANCE_SHUFFLE)}
 
 
 def _door_name(row: dict) -> str:
@@ -192,6 +196,8 @@ class MM2S2HWorld(World):
         self.starting = self._starting_items()
         self.ut_entrance_pairs: list[tuple[int, int]] | None = None
         self.entrance_pairs: list[tuple[int, int]] = []
+        self.ut_mixed_entrance_pairs: list[tuple[int, int]] = []
+        self.mixed_entrance_pairs: list[tuple[int, int]] = []
         # The Zora Hall Rooms key exists since 0.7; the client keeps those doors open for older seeds (DoorKeys.cpp).
         self.door_keys = list(DOOR_KEYS)
 
@@ -208,6 +214,19 @@ class MM2S2HWorld(World):
             self.vanilla_skulltulas = {rc_by_id[int(i)] for i in passthrough["vanilla_skulltulas"]}
             self.starting = [ri_by_id[int(i)] for i in passthrough["starting_items"]]
             self.ut_entrance_pairs = [tuple(pair) for pair in passthrough.get("entrance_pairs", [])]
+            if version >= (0, 10):
+                self.ut_mixed_entrance_pairs = [tuple(pair) for pair in passthrough.get("mixed_entrance_pairs", [])]
+            else:
+                self.ro[MIX_OPTION] = 0
+        else:
+            selected = self.options.mix_entrance_pools.value
+            if len(selected) == 1:
+                raise OptionError(f"{self.player_name}: mix_entrance_pools needs at least two pools")
+            for pool in selected:
+                option, bit = ENTRANCE_MIX_POOLS[pool]
+                if not self.ro[option]:
+                    raise OptionError(f"{self.player_name}: enable {option.removeprefix('RO_').lower()} to mix {pool}")
+                self.ro[MIX_OPTION] |= bit
 
     # Universal Tracker
     ut_can_gen_without_yaml = True
@@ -567,15 +586,87 @@ class MM2S2HWorld(World):
         return change
 
     # ------------------------------------------------------------------------------------------
+    def _mix_selected(self, option: str) -> bool:
+        return any(opt == option and self.ro[MIX_OPTION] & bit and self.ro[opt]
+                   for opt, bit in ENTRANCE_MIX_POOLS.values())
+
+    def _mixed_endpoints(self) -> dict[int, Entrance]:
+        endpoints = {}
+        for i, row in enumerate(ENTRANCE_SHUFFLE):
+            if not self._mix_selected(row["option"]) or row["into"] in ENTRANCE_MIX_FIXED or row["water"]:
+                continue
+            if row["hours"] not in (None, "ALWAYS_OPEN"):
+                continue
+            endpoints[2 * i] = self.exit_entrances[row["door_region"], row["into"]]
+            if row["option"] != OVERWORLD:
+                endpoints[2 * i + 1] = self.exit_entrances[row["inside_region"], row["out"]]
+        return endpoints
+
+    @staticmethod
+    def _town_gate(row: dict) -> bool:
+        return (row["option"] == OVERWORLD and REGIONS[row["door_region"]][1] in CLOCK_TOWN_SCENES
+                and REGIONS[row["inside_region"]][1] not in CLOCK_TOWN_SCENES)
+
+    def _mixed_groups(self, endpoints: dict[int, Entrance], pairs: list[tuple[int, int]]) -> dict[int, int]:
+        land = [end for end in endpoints if ENTRANCE_SHUFFLE[end // 2]["option"] == OVERWORLD]
+        gates = [end for end in land if self._town_gate(ENTRANCE_SHUFFLE[end // 2])]
+        outside = [end for end in land if REGIONS[ENTRANCE_SHUFFLE[end // 2]["door_region"]][1] not in CLOCK_TOWN_SCENES]
+        reserved = set(gates)
+        for gate, partner in zip(gates, self.random.sample(outside, len(gates))):
+            reserved.add(partner)
+            pairs.append((gate, partner))
+            self._reconnect(endpoints[gate], ENTRANCE_SHUFFLE[partner // 2]["door_region"])
+            self._reconnect(endpoints[partner], ENTRANCE_SHUFFLE[gate // 2]["door_region"])
+        # A land end can fill either role. Split the remaining land ends evenly so coupled GER always
+        # has equal numbers of door and inside ends, including when the last pair is placed.
+        free = [end for end in land if end not in reserved]
+        self.random.shuffle(free)
+        inside_land = set(free[:len(free) // 2])
+        return {end: MIX_INSIDE_GROUP if end % 2 or end in inside_land else MIX_DOOR_GROUP
+                for end in endpoints if end not in reserved}
+
+    def _apply_mixed_pairs(self, endpoints: dict[int, Entrance], pairs: list[tuple[int, int]]) -> None:
+        used = set()
+        for first, second in pairs:
+            if first == second or first not in endpoints or second not in endpoints or first in used or second in used:
+                raise OptionError(f"{self.player_name}: invalid mixed entrance endpoints {first}, {second}")
+            a, b = ENTRANCE_SHUFFLE[first // 2], ENTRANCE_SHUFFLE[second // 2]
+            if ((self._town_gate(a) and (b["option"] != OVERWORLD or REGIONS[b["door_region"]][1] in CLOCK_TOWN_SCENES))
+                    or (self._town_gate(b) and (a["option"] != OVERWORLD or REGIONS[a["door_region"]][1] in CLOCK_TOWN_SCENES))
+                    or (a["option"] != OVERWORLD != b["option"] and first % 2 == second % 2)):
+                raise OptionError(f"{self.player_name}: incompatible mixed entrance endpoints {first}, {second}")
+            used.update((first, second))
+        if pairs and used != endpoints.keys():
+            raise OptionError(f"{self.player_name}: incomplete mixed entrance pairing")
+        self.mixed_entrance_pairs = sorted(tuple(sorted(pair)) for pair in pairs)
+        for first, second in self.mixed_entrance_pairs:
+            for source, target in ((first, second), (second, first)):
+                row, destination = ENTRANCE_SHUFFLE[source // 2], ENTRANCE_SHUFFLE[target // 2]
+                source_exit = endpoints[source]
+                rr = destination["inside_region"] if target % 2 else destination["door_region"]
+                self._reconnect(source_exit, rr)
+                arrival = destination["into"] if target % 2 else destination["out"]
+                if arrival != (row["out"] if source % 2 else row["into"]):
+                    area = self._rule(ENTRANCE_AREA_RULES.get(arrival))
+                    if area is not None:
+                        own = source_exit.access_rule
+                        source_exit.access_rule = lambda state, own=own, area=area: own(state) and area(state)
+                self.multiworld.spoiler.set_entrance(source_exit.name, endpoints[target].name, "entrance", self.player)
+
     def connect_entrances(self) -> None:
         """Entrance shuffle (EntranceShuffle.cpp rows whose option is on): coupled, so a door's way back is the exit
         of the area behind it. An exit keeps its own rule, i.e. what it takes to use the door stays at the door."""
         self.entrance_pairs: list[tuple[int, int]] = []  # [door's "into", "into" of the area behind it] (slot data)
-        rows = [row for row in ENTRANCE_SHUFFLE if self.ro.get(row["option"]) and row["option"] != OVERWORLD]
+        mixed = self._mixed_endpoints() if self.ro[MIX_OPTION] else {}
+        mixed_pairs: list[tuple[int, int]] = []
+        rows = [row for i, row in enumerate(ENTRANCE_SHUFFLE) if self.ro.get(row["option"]) and row["option"] != OVERWORLD
+                and row["into"] != ENTRANCE_MIX_ONLY and 2 * i not in mixed
+                and not (self._mix_selected(row["option"]) and row["into"] in ENTRANCE_MIX_FIXED)]
         # Overworld rows are single exits, two per transition (EntranceShuffle.cpp): row k leads where row over_to[k]
         # arrives. The exit of row k is also the way back of its opposite row, so they are not doors with insides.
-        over = [row for row in ENTRANCE_SHUFFLE if self.ro.get(row["option"]) and row["option"] == OVERWORLD]
-        if not rows and not over:
+        all_over = [row for row in ENTRANCE_SHUFFLE if self.ro.get(row["option"]) and row["option"] == OVERWORLD]
+        over = [row for row in all_over if row["water"] or not self._mix_selected(OVERWORLD)]
+        if not rows and not over and not mixed:
             return
         over_exits = [self.exit_entrances[(row["door_region"], row["into"])] for row in over]
         over_index = {row["into"]: k for k, row in enumerate(over)}
@@ -589,6 +680,7 @@ class MM2S2HWorld(World):
                 self._reconnect(inside, row["door_region"])
         behind: dict[int, int] = {}  # door row index -> row index of the area behind it (missing: its own)
         if self.ut_entrance_pairs is not None:  # Universal Tracker: the pairing of the generated seed
+            mixed_pairs = self.ut_mixed_entrance_pairs
             by_value = {row["into_value"]: i for i, row in enumerate(rows)}
             behind = {by_value[door]: by_value[inside] for door, inside in self.ut_entrance_pairs if door in by_value}
             for i, row in enumerate(rows):
@@ -604,7 +696,7 @@ class MM2S2HWorld(World):
             # through it, while _connect_boss_warps later sends the warp to the door used (seen: Zora Cape and Laundry
             # Pool left as an island). During GER the warps lead back into their own boss room, so they open nothing.
             # Without the overworld every warp target is reachable on its vanilla way: nothing changes there.
-            if over and any(row["option"] in (DUNGEONS_OPTION, BOSSES_OPTION) for row in rows):
+            if mixed or (over and any(row["option"] in (DUNGEONS_OPTION, BOSSES_OPTION) for row in rows)):
                 for boss in ENTRANCE_SHUFFLE:
                     for boss_rr, warp in boss["boss_warps"] if boss["temple_exit"] is not None else ():
                         exit_ = self.exit_entrances[(boss_rr, warp)]
@@ -621,14 +713,22 @@ class MM2S2HWorld(World):
                 door.randomization_group, inside.randomization_group = g, g + 1
                 lookup[g], lookup[g + 1] = [g + 1], [g]
             exits = [doors[i] for i in moving] + [insides[i] for i in moving]
+            mixed_at = {}
+            if mixed:
+                for end, group in self._mixed_groups(mixed, mixed_pairs).items():
+                    exit_ = mixed[end]
+                    exit_.randomization_type = EntranceType.TWO_WAY
+                    exit_.randomization_group = group
+                    mixed_at[exit_.name] = end
+                    exits.append(exit_)
+                lookup[MIX_DOOR_GROUP], lookup[MIX_INSIDE_GROUP] = [MIX_INSIDE_GROUP], [MIX_DOOR_GROUP]
             # Overworld: the Clock Town gates always lead out of Clock Town. GER's group lookup cannot promise that (it
             # may end with a gate and a Clock Town place left), so the gates are placed first, each to the place of a
             # random exit outside Clock Town, coupled; GER mixes the rest in one group.
             # Since 0.9 the Bombers' passage from East Clock Town counts as a gate too. Water rows (arrival under water,
             # EntranceShuffle.cpp overworldWaterEntrances) are never a gate's partner and pair only among each other.
             in_town = [REGIONS[row["door_region"]][1] in CLOCK_TOWN_SCENES for row in over]
-            gates = [k for k, row in enumerate(over) if in_town[k] and REGIONS[row["inside_region"]][1]
-                     not in CLOCK_TOWN_SCENES]
+            gates = [k for k, row in enumerate(over) if self._town_gate(row)]
             outside = [k for k in range(len(over)) if not in_town[k] and not over[k]["water"]]
             for gate, m in zip(gates, self.random.sample(outside, len(gates))):
                 over_to[gate], over_to[m] = over_index[over[m]["out"]], over_index[over[gate]["out"]]
@@ -660,10 +760,12 @@ class MM2S2HWorld(World):
             for source, target in placement.pairings:
                 if source in over_at and target in over_at:
                     over_to[over_at[source]] = over_index[over[over_at[target]]["out"]]
+                if source in mixed_at and target in mixed_at and mixed_at[source] < mixed_at[target]:
+                    mixed_pairs.append((mixed_at[source], mixed_at[target]))
             # The water exits, at random and coupled: an exit on a coast (a scene with land rows: Great Bay Coast, Zora
             # Cape) always pairs with one out of a dead end (the moat, Zora Hall). Two dead ends paired with each other
             # would only reach each other: Zora Hall's door by land has no region in the logic (UNTRANSLATED.md).
-            land_scenes = {REGIONS[row["door_region"]][1] for row in over if not row["water"]}
+            land_scenes = {REGIONS[row["door_region"]][1] for row in all_over if not row["water"]}
             coast = [k for k in range(len(over)) if over[k]["water"] and REGIONS[over[k]["door_region"]][1] in land_scenes]
             inner = [over_index[over[k]["out"]] for k in coast]
             if sorted(coast + inner) != [k for k in range(len(over)) if over[k]["water"]]:
@@ -707,12 +809,14 @@ class MM2S2HWorld(World):
                 if area is not None:
                     own = exit_.access_rule
                     exit_.access_rule = lambda state, own=own, area=area: own(state) and area(state)
+        self._apply_mixed_pairs(mixed, mixed_pairs)
         self._connect_boss_warps()
 
     def _connect_boss_warps(self) -> None:
         by_value = {row["into_value"]: row for row in ENTRANCE_SHUFFLE}
         door_for = {inside: by_value[door] for door, inside in self.entrance_pairs}
         temples = {row["out"]: row for row in ENTRANCE_SHUFFLE if row["option"] == "RO_SHUFFLE_DUNGEON_ENTRANCES"}
+        mixed_partner = {a: b for pair in self.mixed_entrance_pairs for a, b in (pair, pair[::-1])}
         for boss in ENTRANCE_SHUFFLE:
             if boss["temple_exit"] is None:
                 continue
@@ -724,6 +828,11 @@ class MM2S2HWorld(World):
                 temple_door = door_for.get(temple["into_value"], temple)
                 exterior = temple_door["door_region"]
                 moved |= temple_door is not temple
+                endpoint = 2 * ENTRANCE_ROW_INDEX[temple["into"]] + 1
+                if endpoint in mixed_partner:
+                    partner = mixed_partner[endpoint]
+                    exterior = ENTRANCE_SHUFFLE[partner // 2]["door_region"]
+                    moved |= partner != endpoint - 1
             for boss_rr, warp in boss["boss_warps"]:
                 # Fixed points must retain the original prison/spring/cape/canyon destinations, even with boss ER on.
                 vanilla = next(target for key, target, _ in REGIONS[boss_rr][4] if key == warp)
@@ -749,6 +858,8 @@ class MM2S2HWorld(World):
             "starting_items": [RI_ID[ri] for ri in self.starting],
             "vanilla_skulltulas": sorted(RC_ID[rc] for rc in self.vanilla_skulltulas),
             "entrance_pairs": [list(pair) for pair in self.entrance_pairs],
+            **({"mixed_entrance_pairs": [list(pair) for pair in self.mixed_entrance_pairs]}
+               if self.mixed_entrance_pairs else {}),
             "death_link": bool(self.options.death_link.value),
             "seed": self.random.getrandbits(32),
         }

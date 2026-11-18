@@ -6,7 +6,7 @@ from test.general import gen_steps, setup_multiworld
 from worlds.AutoWorld import call_all
 
 from .. import MM2S2HWorld, region_name
-from ..enums_generated import ENTRANCE_SHUFFLE
+from ..enums_generated import ENTRANCE_MIX_ONLY, ENTRANCE_SHUFFLE
 from ..items_generated import ITEMS
 from ..regions_generated import ENTRANCE_AREA_RULES, REGIONS
 from . import MM2S2HTestBase
@@ -49,7 +49,7 @@ class EntranceShuffleOn(MM2S2HTestBase):
     def check_pairing(self) -> list[int]:
         world = cast(MM2S2HWorld, self.world)
         pairs = world.fill_slot_data()["entrance_pairs"]
-        enabled = [row for row in ENTRANCE_SHUFFLE if world.ro[row["option"]]]
+        enabled = [row for row in ENTRANCE_SHUFFLE if world.ro[row["option"]] and row["into"] != ENTRANCE_MIX_ONLY]
         values = sorted(row["into_value"] for row in enabled)
         self.assertEqual(sorted(door for door, _ in pairs), values)
         self.assertEqual(sorted(inside for _, inside in pairs), values)
@@ -81,7 +81,8 @@ class EntranceShuffleOn(MM2S2HTestBase):
             self.world_setup(seed)
             seen.add(tuple(self.check_pairing()))
         self.assertGreater(len(seen), 1, "every seed produced the same pairing")
-        values = tuple(sorted(row["into_value"] for row in ENTRANCE_SHUFFLE if self.world.ro[row["option"]]))
+        values = tuple(sorted(row["into_value"] for row in ENTRANCE_SHUFFLE
+                              if self.world.ro[row["option"]] and row["into"] != ENTRANCE_MIX_ONLY))
         self.assertTrue(any(order != values for order in seen), "never shuffled")
 
     def test_ut_rebuilds_pairing(self) -> None:
@@ -107,7 +108,9 @@ class EntranceShuffleOwnDungeonItems(OwnDungeonDefaultChecks):
 
 # what the area rule of each temple needs, one item per temple that the test takes away (shuffleAreaRules)
 AREA_ITEMS = {"WOODFALL_TEMPLE:0": ["RI_MASK_DEKU"], "GREAT_BAY_TEMPLE:0": ["RI_MASK_ZORA", "RI_HOOKSHOT"],
-              "STONE_TOWER_TEMPLE:0": ["RI_HOOKSHOT", "RI_MASK_ZORA", "RI_MASK_GORON", "RI_SONG_ELEGY"]}
+              "STONE_TOWER_TEMPLE:0": ["RI_HOOKSHOT", "RI_MASK_ZORA", "RI_MASK_GORON", "RI_SONG_ELEGY"],
+              ENTRANCE_MIX_ONLY: ["RI_HOOKSHOT", "RI_MASK_ZORA", "RI_MASK_GORON", "RI_SONG_ELEGY", "RI_BOW",
+                                  "RI_ARROW_LIGHT", "RI_SINGLE_MAGIC"]}
 BOSS_AREA_ITEMS = {"ODOLWAS_LAIR:0": ["RI_MASK_DEKU", "RI_BOW"], "GOHTS_LAIR:0": ["RI_MASK_GORON"],
                    "GYORGS_LAIR:0": ["RI_MASK_ZORA"],
                    "TWINMOLDS_LAIR:0": ["RI_BOW", "RI_ARROW_LIGHT", "RI_SINGLE_MAGIC"]}

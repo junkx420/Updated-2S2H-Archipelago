@@ -4,6 +4,7 @@ Usage from archipelago: python worlds/mm_2s2h/tools/entrance_client/run.py ../2s
 Requires MSVC on Windows, or c++ on other systems. Only game state/API boundaries are mocked.
 """
 from pathlib import Path
+from itertools import combinations
 import json
 import shutil
 import re
@@ -24,6 +25,7 @@ lines = []
 for name in ("RandoOptionId", "EntranceSceneId", "RandoItemId", "RandoInf", "RandoEvent"):
     lines.append("enum " + name + " {" + ",".join(f"{k}={v}" for k, v in enums[name].items()) + "};")
 lines.append("constexpr int RO_GENERIC_OFF = 0;")
+lines.append(f"constexpr int RC_MAX = {enums['RandoCheckId']['RC_MAX']};")
 scene_table = (root / "mm/include/tables/scene_table.h").read_text(encoding="utf-8")
 scenes = re.findall(r"DEFINE_SCENE\(\w+,\s*(SCENE_\w+)|DEFINE_SCENE_UNSET\((SCENE_\w+)", scene_table)
 lines.append("enum SceneId {" + ",".join(a or b for a, b in scenes) + ",SCENE_MAX};")
@@ -78,11 +80,16 @@ warps = sorted({entrance_value(k) for k, _, _ in REGIONS["RR_MAX"][4]} | {entran
     "inline const std::vector<std::array<int, 3>> generatedInteriors = {"
     + ", ".join("{ " + ", ".join(map(str, r)) + " }" for r in interior_rows) + "};\n"
     f"inline const std::vector<unsigned> songAndOwlEntrances = {{ {', '.join(map(str, warps))} }};\n", encoding="utf-8")
-# The save loader's real tolerant array reader (BenJsonConversions.hpp), verbatim.
+# The real randomizer save structs and JSON codec, verbatim.
+save_h = (root / "mm/include/z64save.h").read_text(encoding="utf-8")
+(build / "rando_save.h").write_text("#pragma once\n" + "\n".join(
+    re.search(rf"typedef struct {name} \{{.*?\n\}} {name};", save_h, re.S).group(0)
+    for name in ("RandoSaveCheck", "RandoSaveInfo")), encoding="utf-8")
 bjc = (root / "mm/2s2h/BenJsonConversions.hpp").read_text(encoding="utf-8")
-grown = re.search(r"template <typename T, size_t N> inline void GetGrownArray\(.*?\n}\n", bjc.replace("\r\n", "\n"), re.S)
+codec = re.search(r"inline void to_json\(json& j, const RandoSaveCheck&.*?inline void from_json"
+                  r"\(const json& j, RandoSaveInfo& rando\) \{.*?\n}\n", bjc, re.S)
 (build / "grown_array.h").write_text("#pragma once\n#include <nlohmann/json.hpp>\nusing json = nlohmann::json;\n"
-                                     + grown.group(0), encoding="utf-8")
+                                     + codec.group(0), encoding="utf-8")
 # Game functions the overworld redirect calls, verbatim (z_scene.c, z_play.c).
 scene_c = (root / "mm/src/code/z_scene.c").read_text(encoding="utf-8").replace("\r\n", "\n")
 play_c = (root / "mm/src/code/z_play.c").read_text(encoding="utf-8").replace("\r\n", "\n")
@@ -113,6 +120,18 @@ for name in ("all_own", "overworld"):
     "struct LegacySlot { std::vector<int> options; std::vector<std::pair<int32_t, int32_t>> pairs; };\n"
     "inline const size_t rows08 = 134; // shuffleEntrances rows of apworld 0.8\n"
     "inline const std::vector<LegacySlot> legacy08 = {" + ", ".join(legacy) + "};\n", encoding="utf-8")
+
+from worlds.mm_2s2h.enums_generated import ENTRANCE_MIX_POOLS  # noqa: E402
+from worlds.mm_2s2h.test.test_pool_trim import build as build_world  # noqa: E402
+from worlds.mm_2s2h.test.test_special_areas import ALL_OWN, DATA  # noqa: E402
+
+legacy09 = (DATA / "slot_data_0_9_0_all_pools.json").read_text(encoding="utf-8")
+mixed_slots = [build_world(ALL_OWN | {"mix_entrance_pools": pools}, 610, fill=False).worlds[1].fill_slot_data()
+               for count in range(2, 5) for pools in combinations(ENTRANCE_MIX_POOLS, count)]
+(build / "mixed_slots.h").write_text(
+    '#pragma once\ninline const char* legacy09Slot = R"slot(' + legacy09 + ')slot";\n'
+    'inline const char* mixedSlots[] = {\n' +
+    "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in mixed_slots) + '\n};\n', encoding="utf-8")
 json_include = root / "build/x64/vcpkg/installed/x64-windows-static/include"
 for name in ("Rando/Rando.h", "Rando/Logic/Logic.h", "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h", "z64horse.h"):
     header = build / name

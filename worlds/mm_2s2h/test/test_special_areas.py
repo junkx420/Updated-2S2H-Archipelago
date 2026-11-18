@@ -52,8 +52,8 @@ class SpecialAreaTable(MM2S2HTestBase):
         self.assertEqual([row["into"] for row in SPECIAL],
                          ["SWAMP_SPIDER_HOUSE:0", "OCEANSIDE_SPIDER_HOUSE:0", "BENEATH_THE_WELL:0", "IKANA_CASTLE:1",
                           "SECRET_SHRINE:0", "DEKU_SHRINE:0"])
-        self.assertEqual(ENTRANCE_SHUFFLE[-6:], SPECIAL)
-        self.assertEqual(len(ENTRANCE_SHUFFLE), ROWS_08 + 23)
+        self.assertEqual(ENTRANCE_SHUFFLE[151:157], SPECIAL)
+        self.assertEqual(len(ENTRANCE_SHUFFLE), ROWS_08 + 23 + 1)
         # only the Swamp Spider House needs its door's guarantee (South.cpp:479); the others say it themselves
         self.assertEqual({into for into in ENTRANCE_AREA_RULES if into in BY_INTO}, {"SWAMP_SPIDER_HOUSE:0"})
         for row in SPECIAL:
@@ -183,7 +183,6 @@ FIXED_TWO_WAY = [
     ("RR_IKANA_GRAVEYARD_LOWER", "BENEATH_THE_GRAVERYARD:1"),  # East.cpp:258
     ("RR_SAKON_HIDEOUT", "IKANA_CANYON:6"),  # East.cpp:372
     ("RR_STONE_TOWER_INVERTED_LOWER", "STONE_TOWER:1"),  # East.cpp:481
-    ("RR_STONE_TOWER_INVERTED_NEAR_TEMPLE", "STONE_TOWER_TEMPLE_INVERTED:0"),  # East.cpp:490
     ("RR_STONE_TOWER_TOP", "STONE_TOWER_INVERTED:0"),  # East.cpp:545
     ("RR_IKANA_CASTLE_BEFORE_THRONE", "IGOS_DU_IKANAS_LAIR:0"),  # IkanaCastle.cpp:12
     ("RR_IKANA_CASTLE_COURTYARD", "BENEATH_THE_WELL:1"),  # IkanaCastle.cpp:58
@@ -226,7 +225,6 @@ FIXED_TWO_WAY = [
     ("RR_PIRATES_FORTRESS_SEWERS_PREGATE", "PIRATES_FORTRESS_EXTERIOR:2"),  # PiratesFortress.cpp:356
     ("RR_PIRATES_FORTRESS_TELESCOPE_ROOM", "PIRATES_FORTRESS_EXTERIOR:6"),  # PiratesFortress.cpp:378
     ("RR_WOODFALL", "WOODFALL_TEMPLE:2"),  # South.cpp:560
-    ("RR_STONE_TOWER_TEMPLE_INVERTED_ENTRANCE", "STONE_TOWER_INVERTED:1"),  # StoneTowerTemple.cpp:241
     ("RR_GREAT_BAY_COAST", "PINNACLE_ROCK:0"),  # West.cpp:149
     ("RR_PINNACLE_ROCK_ENTRANCE", "GREAT_BAY_COAST:3"),  # West.cpp:244
     ("RR_WATERFALL_RAPIDS", "ZORA_CAPE:4"),  # West.cpp:283
@@ -263,5 +261,5 @@ class FixedExitInventory(MM2S2HTestBase):
         outs = {(row["inside_region"], row["out"]) for row in ENTRANCE_SHUFFLE}
         left = Counter((rr, key) for rr, region in REGIONS.items() if rr != "RR_MAX"
                        for key, _, _ in region[4] if key not in intos and (rr, key) not in outs)
-        self.assertEqual(len(FIXED_TWO_WAY), 62)
+        self.assertEqual(len(FIXED_TWO_WAY), 60)
         self.assertEqual(left, Counter(FIXED_TWO_WAY + ONE_WAY))

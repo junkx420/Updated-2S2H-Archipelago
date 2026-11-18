@@ -4,8 +4,8 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 
 ## Downloads
 
-The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages this world's
-current features with a matching new client: NPC souls, temple entrances and boss entrances, all off by default.
+The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages NPC souls,
+temple entrances and boss entrances with a matching client. The current source is **apworld 0.10.0**.
 The new mechanics are **not tested in game**. Platform builds and preview publication run on GitHub Actions.
 See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago#choose-your-download),
 [changelog](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/main/CHANGELOG.md) and
@@ -41,7 +41,8 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   `entrance_rando`, and the pairing travels as `entrance_pairs` in the slot data into the save
   (`RandoSaveInfo::entrancePairs`). The client redirects at one place, the new `BeforeTransitionSetup` hook at the
   start of `TRANS_MODE_SETUP` in `z_play.c`. A further group of doors is new rows plus a new `RO_*` option. The
-  inverted Stone Tower exterior and the Woodfall prison door are not shuffled. Boss rooms have their own option below.
+  inverted Stone Tower exterior joins when dungeons are selected for mixing in 0.10. The Woodfall prison door
+  stays fixed. Boss rooms have their own option below.
   Since 0.3.1 a door with another temple behind it also needs that temple's **area rule** (`shuffleAreaRules` in the
   same file, generated to `ENTRANCE_AREA_RULES`): what the vanilla way to that temple's own door requires, because
   the 2S2H temple logic may rely on it silently. Woodfall: Deku Mask; Great Bay: Zora Mask and Hookshot; Stone Tower:
@@ -54,8 +55,8 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   temple's exterior exit. The generator validates the one-way boss entrance/warp and the exterior against the original
   region graph. Boss keys and door rules remain at the source door; boss fights, hearts, warp checks and existing
   clear events remain in their boss regions. Blue warps compose the inverse boss and temple pairings to return outside
-  the temple containing the door used. The inverted temple's exterior remains fixed. If neither the boss nor its
-  containing temple moved, the original warp and cutscene remain intact. Otherwise the completion cutscene is skipped,
+  the temple containing the door used, including the inverted temple when it is mixed in 0.10. If neither the boss
+  nor its containing temple moved, the original warp and cutscene remain intact. Otherwise the cutscene is skipped,
   its clear flags are set by boss scene, and both death/void return records are renewed at the exterior spawn, including
   the first warp through the Giants' Chamber skip (which still processes the giant and Oath check).
   Foreign boss rooms add conservative `shuffleAreaRules`: Odolwa Deku Mask + Bow; Goht Goron Mask; Gyorg Zora Mask;
@@ -100,11 +101,11 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   them open. 0.1–0.6 seeds/saves remain supported. See `docs/testing.md`. **Not tested in game.**
 - **Overworld** (`shuffle_overworld`, apworld 0.8.0, default off): 34 transitions between outdoor areas (Clock Town
   districts and gates, Termina Field and its roads, swamp, Milk Road, mountains, Great Bay Coast–Zora Cape, Ikana) are
-  shuffled among each other and coupled: through exit A you arrive at the place of exit X, and X leads back to A.
+  shuffled and coupled. Through exit A you arrive at the place of exit X, and X leads back to A.
   68 rows (one per exit) appended to `shuffleEntrances`. Rows name places, not scene variants: the client redirects
   to the base entrance and the game picks spring/cleared scene and layer (`Play_Init`). One-way ways, water arrivals,
-  the Stone Tower inversion, Clock Tower rooftop, owls and songs stay fixed; temples, boss rooms, grottos and
-  interiors never mix with the overworld. The four Clock Town gates always lead out of Clock Town. Riding Epona
+  the Stone Tower inversion, Clock Tower rooftop, owls and songs stay fixed. The four Clock Town gates always
+  lead out of Clock Town. Riding Epona
   through a shuffled exit, Link gets off and Epona waits there. Area rules for Woodfall, the Deku Palace treetop, the
   Goron Racetrack (both sides of its boulder) and Milk Road past the boulder (`shuffleAreaRules`). 0.1–0.7
   seeds/saves remain supported. See `docs/testing.md`. **Not tested in game.**
@@ -126,8 +127,22 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
     also with the overworld or interior option on (`test_special_areas.py`, real 0.8 slot data in `test/data`).
   - Correction of the 0.8 code: with the overworld and temples or bosses shuffled, blue warps lead back into their own
     boss room while GER runs, so GER never counts a place as reached through a warp that is redirected afterwards.
-  - The 62 two-way exits that stay fixed, with reason, are listed in `docs/testing.md`; `FixedExitInventory` fails as
-    soon as one moves. **Not tested in game.**
+  - Stage 6b left 62 two-way exits fixed. The current inventory after stage 6c is in
+    [testing.md](docs/testing.md#exits-that-stay-fixed-60). **Not tested in game.**
+- **apworld 0.10.0 adds mixed entrance pools.** `mix_entrance_pools` takes any two or more of `dungeons`, `interiors`,
+  `overworld` and `special_areas` whose shuffle switches are on. The empty list keeps the 0.9 pairings and generation
+  behavior. Inverted Stone Tower Temple joins when `dungeons` is selected. Its exit and Twinmold's blue warp use the
+  coupled return point, including when the temple is reached through a shop or a land exit.
+  - The [copyable YAML block](docs/example.yaml) enables every entrance shuffle and mixes all eligible pools.
+    Boss rooms and grottos each keep their own pool. Water pairs only with water. Of the interiors, 24 join the
+    mixed pool, nine daytime entrances shuffle within their hours class and six with their own hours stay fixed.
+    Trading Post and Swordsman's School also stay fixed when interiors are mixed.
+  - Clock Town's gates (including the Bombers' passage) stay coupled to land exits outside town. Milk Road and
+    Romani Ranch stay connected when the overworld is mixed. The other 60 fixed exits and their reasons are in the
+    [inventory in testing.md](docs/testing.md#exits-that-stay-fixed-60).
+  - Universal Tracker rebuilds the coupled endpoints from optional `mixed_entrance_pairs` slot data. The client
+    saves the endpoints separately from the existing row-indexed pairs, and loads 0.9 slot data and saves with
+    their original pairs. **Not tested in game.**
 - **Pool trimming** (apworld 0.7.1, no new ids or options, client unchanged): when the item pool is larger than the
   shuffled locations, `create_items` removes junk (as before), then traps, then extra Plentiful Items copies (picked
   at random; every original item stays). Each trimmed trap/copy count is logged as a warning. Only if the pool is

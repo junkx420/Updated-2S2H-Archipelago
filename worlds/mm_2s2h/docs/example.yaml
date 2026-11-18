@@ -34,7 +34,7 @@ game: Majora's Mask (2 Ship 2 Harkinian)
 requires:
   version: 0.6.9 # Version of Archipelago required for this yaml to work as expected.
   game:
-    Majora's Mask (2 Ship 2 Harkinian): 0.9.0 # Version of the world required for this yaml to work as expected.
+    Majora's Mask (2 Ship 2 Harkinian): 0.10.0 # Version of the world required for this yaml to work as expected.
 
 Majora's Mask (2 Ship 2 Harkinian):
   ################
@@ -331,7 +331,8 @@ Majora's Mask (2 Ship 2 Harkinian):
     'true': 0
 
   shuffle_dungeon_entrances:
-    # The doors of Woodfall, Snowhead, Great Bay and Stone Tower Temple lead into a random one of these four temples; its exit and its boss's warp lead back out of the same door. The inverted Stone Tower Temple stays where it is.
+    # Shuffle the four temple entrances, coupled. The inverted Stone Tower Temple joins when
+    # dungeons are selected in mix_entrance_pools.
     'false': 50
     'true': 0
 
@@ -372,10 +373,27 @@ Majora's Mask (2 Ship 2 Harkinian):
 
   shuffle_special_areas:
     # The entrances of the Swamp and Oceanside Spider Houses, Beneath the Well, Ikana Castle, the
-    # Secret Shrine and the Deku Shrine lead into a random one of these areas, coupled: you come back
-    # out where you went in. They mix only among each other.
+    # Secret Shrine and the Deku Shrine are shuffled, coupled: you come back out where you went in.
     'false': 50
     'true': 0
+
+  mix_entrance_pools: []
+    # Choose at least two pools from dungeons, interiors, overworld, and special_areas.
+    # Enable each selected pool's shuffle option. An empty list keeps the pools separate.
+
+  # To mix everything eligible, replace the matching keys above with the settings below.
+  # shuffle_dungeon_entrances: true
+  # shuffle_boss_entrances: true
+  # shuffle_grottos: true
+  # shuffle_interiors: true
+  # shuffle_overworld: true
+  # shuffle_special_areas: true
+  # mix_entrance_pools: [dungeons, interiors, overworld, special_areas]
+  #
+  # Boss rooms and grottos each keep their own pool. Underwater paths mix only with underwater paths.
+  # Daytime interiors mix within their hours class. Interiors with unique hours, Trading Post and
+  # Swordsman's School stay fixed. Milk Road stays connected to Romani Ranch, and Clock Town gates
+  # still lead out of town via land exits. See "Exits that stay fixed (60)" in testing.md.
 
   shuffle_traps:
     # Adds traps to the pool.

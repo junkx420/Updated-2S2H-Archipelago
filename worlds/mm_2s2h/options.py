@@ -6,7 +6,9 @@ test/test_options.py checks that every default here equals OPTION_DEFAULTS from 
 """
 from dataclasses import dataclass
 
-from Options import Choice, DeathLink, ItemDict, PerGameCommonOptions, Range, StartInventoryPool, Toggle
+from Options import Choice, DeathLink, ItemDict, OptionSet, PerGameCommonOptions, Range, StartInventoryPool, Toggle
+
+from .enums_generated import ENTRANCE_MIX_POOLS
 
 
 class RO:
@@ -159,7 +161,17 @@ ShuffleInteriors = _shuffle("ShuffleInteriors", "RO_SHUFFLE_INTERIORS", "Shuffle
 ShuffleOverworld = _shuffle("ShuffleOverworld", "RO_SHUFFLE_OVERWORLD", "Shuffle Overworld",
                             "Exits between outdoor areas (Termina Field, Clock Town, roads, Swamp, Mountains, Great Bay Coast, Ikana, Astral Observatory) lead to other outdoor areas, coupled: you come back the way you came. The underwater ways into Pirates' Fortress and Zora Hall mix only with each other. Other water, one-way and cutscene ways stay. The Clock Town gates always lead out of Clock Town. Riding Epona through a shuffled exit, Link gets off and Epona waits there.")
 ShuffleSpecialAreas = _shuffle("ShuffleSpecialAreas", "RO_SHUFFLE_SPECIAL_AREAS", "Shuffle Special Areas",
-                               "The entrances of the Swamp and Oceanside Spider Houses, Beneath the Well, Ikana Castle, the Secret Shrine and the Deku Shrine lead into a random one of these areas, coupled: you come back out where you went in. They mix only among each other.")
+                               "Shuffle the coupled entrances of the Swamp and Oceanside Spider Houses, Beneath the Well, Ikana Castle, the Secret Shrine and the Deku Shrine.")
+
+
+class MixEntrancePools(OptionSet):
+    """Combine two or more enabled entrance pools. An empty list keeps each pool separate.
+    Only unrestricted interiors and land entrances participate. Boss rooms, grottos, underwater paths
+    and daytime interiors keep their own pools. The inverted Stone Tower Temple joins when dungeons are selected."""
+    display_name = "Mix Entrance Pools"
+    valid_keys = frozenset(ENTRANCE_MIX_POOLS)
+
+
 ShuffleTraps = _shuffle("ShuffleTraps", "RO_SHUFFLE_TRAPS", "Traps", "Adds traps to the pool.")
 PlentifulItems = _shuffle("PlentifulItems", "RO_PLENTIFUL_ITEMS", "Plentiful Items", "Adds a second copy of every major item.")
 TriforceHunt = _shuffle("TriforceHunt", "RO_SHUFFLE_TRIFORCE_PIECES", "Triforce Hunt", "Collect Triforce pieces to win.")
@@ -328,6 +340,7 @@ class MM2S2HOptions(PerGameCommonOptions):
     shuffle_interiors: ShuffleInteriors
     shuffle_overworld: ShuffleOverworld
     shuffle_special_areas: ShuffleSpecialAreas
+    mix_entrance_pools: MixEntrancePools
     shuffle_traps: ShuffleTraps
     trap_amount: TrapAmount
     plentiful_items: PlentifulItems

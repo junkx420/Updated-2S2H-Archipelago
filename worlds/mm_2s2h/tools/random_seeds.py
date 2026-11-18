@@ -2,11 +2,14 @@
 
 Usage (archipelago root, venv):  python worlds/mm_2s2h/tools/random_seeds.py <n> <work-dir> [option=value ...]
 Extra option=value arguments override the rolled value in every seed (e.g. small_keys=own_dungeon).
+Use mix_entrance_pools=all for all entrance shuffles, or mix_entrance_pools=random to vary the selected pools.
 Each seed: random option set -> yaml -> Generate.py (full output incl. playthrough). Prints one line per seed
 and a summary; failing yamls and logs are kept in <work-dir>/failed/.
 """
+import json
 import pathlib
 import random
+import runpy
 import shutil
 import subprocess
 import sys
@@ -46,10 +49,21 @@ def main():
     (work / "failed").mkdir(parents=True)
     rng = random.Random(2026)
     forced = dict(a.split("=", 1) for a in sys.argv[3:])
+    mix = forced.pop("mix_entrance_pools", None)
+    pools = runpy.run_path(str(pathlib.Path(__file__).resolve().parents[1] / "enums_generated.py"))["ENTRANCE_MIX_POOLS"] if mix else {}
+    mix_rng = random.Random(610)
     ok = fail = 0
     t0 = time.time()
     for i in range(n):
         opts = roll(rng) | forced
+        if mix:
+            selected = (mix_rng.sample(list(pools), mix_rng.randint(2, len(pools))) if mix == "random" else
+                        list(pools) if mix == "all" else json.loads(mix))
+            opts["mix_entrance_pools"] = json.dumps(selected)
+            for name in selected:
+                opts[pools[name][0].removeprefix("RO_").lower()] = True
+            if mix == "all":
+                opts.update(shuffle_boss_entrances=True, shuffle_grottos=True)
         pdir = work / f"p{i}"
         pdir.mkdir()
         body = "\n".join(f"  {k}: {str(v).lower() if isinstance(v, bool) else v}" for k, v in opts.items())
