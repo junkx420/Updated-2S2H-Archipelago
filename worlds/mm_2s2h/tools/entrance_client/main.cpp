@@ -58,7 +58,8 @@ static void TestDoorKeys() {
               << " ways out never locked) passed\n";
 }
 
-int main() {
+int main(int argc, char** argv) {
+    assert(argc == 2);
     TestDoorKeys();
     std::array<int, 4> temples{ 0, 1, 2, 3 };
     const u16 exterior[] = { ENTRANCE(WOODFALL, 1), ENTRANCE(SNOWHEAD, 1), ENTRANCE(ZORA_CAPE, 7),
@@ -178,5 +179,5 @@ int main() {
     TestSpecialAreas();
     TestLegacy08();
     TestMixedEntrances();
-    TestLegacy09();
+    TestLegacy09(argv[1]);
 }

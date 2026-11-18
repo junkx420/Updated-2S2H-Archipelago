@@ -18,6 +18,13 @@ here = Path(__file__).resolve().parent
 root = Path(sys.argv[1]).resolve()
 build = here / "build"
 build.mkdir(exist_ok=True)
+legacy09_commit = "87077c1bd19b46a6e82cfdea489867a3fad99ae3"
+
+
+def legacy09_source(path: str) -> str:
+    return subprocess.check_output(["git", "-C", str(root), "show", f"{legacy09_commit}:{path}"], encoding="utf-8")
+
+
 enums = {}
 for path in (root / "mm/include/z64scene.h", root / "mm/2s2h/Rando/Types.h"):
     enums.update(parse_enums(strip_comments(path.read_text(encoding="utf-8"))))
@@ -81,15 +88,43 @@ warps = sorted({entrance_value(k) for k, _, _ in REGIONS["RR_MAX"][4]} | {entran
     + ", ".join("{ " + ", ".join(map(str, r)) + " }" for r in interior_rows) + "};\n"
     f"inline const std::vector<unsigned> songAndOwlEntrances = {{ {', '.join(map(str, warps))} }};\n", encoding="utf-8")
 # The real randomizer save structs and JSON codec, verbatim.
-save_h = (root / "mm/include/z64save.h").read_text(encoding="utf-8")
-(build / "rando_save.h").write_text("#pragma once\n" + "\n".join(
-    re.search(rf"typedef struct {name} \{{.*?\n\}} {name};", save_h, re.S).group(0)
-    for name in ("RandoSaveCheck", "RandoSaveInfo")), encoding="utf-8")
-bjc = (root / "mm/2s2h/BenJsonConversions.hpp").read_text(encoding="utf-8")
-codec = re.search(r"inline void to_json\(json& j, const RandoSaveCheck&.*?inline void from_json"
-                  r"\(const json& j, RandoSaveInfo& rando\) \{.*?\n}\n", bjc, re.S)
+def save_structs(source: str) -> str:
+    return "\n".join(re.search(rf"typedef struct {name} \{{.*?\n\}} {name};", source, re.S).group(0)
+                     for name in ("RandoSaveCheck", "RandoSaveInfo"))
+
+
+def save_codec(source: str) -> str:
+    return re.search(r"inline void to_json\(json& j, const RandoSaveCheck&.*?inline void from_json"
+                     r"\(const json& j, RandoSaveInfo& rando\) \{.*?\n}\n", source, re.S).group(0)
+
+
+(build / "rando_save.h").write_text("#pragma once\n" + save_structs(
+    (root / "mm/include/z64save.h").read_text(encoding="utf-8")), encoding="utf-8")
 (build / "grown_array.h").write_text("#pragma once\n#include <nlohmann/json.hpp>\nusing json = nlohmann::json;\n"
-                                     + codec.group(0), encoding="utf-8")
+                                     + save_codec((root / "mm/2s2h/BenJsonConversions.hpp").read_text(encoding="utf-8")),
+                                     encoding="utf-8")
+
+# Encode a save with the historical types, IDs, row order and codec alongside the current reader.
+old_enums = parse_enums(strip_comments(legacy09_source("mm/2s2h/Rando/Types.h")))
+old_scenes = parse_enums(strip_comments(legacy09_source("mm/include/z64scene.h")))["EntranceSceneId"]
+old_rows_source = legacy09_source("mm/2s2h/Rando/MiscBehavior/EntranceShuffle.cpp")
+old_table = re.search(r"shuffleEntrances\s*=\s*\{(.*?)\n\};", strip_comments(old_rows_source), re.S).group(1)
+old_rows = [(old_scenes[f"ENTR_SCENE_{scene}"] << 9) | (int(spawn) << 4)
+            for scene, spawn in re.findall(r"\{\s*RO_\w+,\s*ENTRANCE\(\s*(\w+),\s*(\d+)\s*\)", old_table)]
+assert len(old_rows) == len(set(old_rows)) == 157
+old_options = old_enums["RandoOptionId"]
+old_limits = {name: old_enums[enum][name] for enum, name in (
+    ("RandoInf", "RANDO_INF_MAX"), ("RandoEvent", "RE_MAX"), ("RandoCheckId", "RC_MAX"), ("RandoOptionId", "RO_MAX"))}
+(build / "legacy09_codec.h").write_text(
+    "#pragma once\n#include <unordered_map>\nnamespace legacy09 {\n"
+    f'inline constexpr char revision[] = "{legacy09_commit}";\n'
+    + "".join(f"constexpr int {key} = {value};\n" for key, value in old_limits.items())
+    + "enum RandoItemId {" + ", ".join(f"{key} = {value}" for key, value in old_enums["RandoItemId"].items()) + "};\n"
+    + "inline const std::unordered_map<std::string, size_t> optionIds = {"
+    + ", ".join(f'{{"{key}", {value}}}' for key, value in old_options.items() if key != "RO_MAX") + "};\n"
+    + "inline constexpr u16 entrances[] = {" + ", ".join(map(str, old_rows)) + "};\n"
+    + save_structs(legacy09_source("mm/include/z64save.h")) + "\n"
+    + save_codec(legacy09_source("mm/2s2h/BenJsonConversions.hpp")) + "}\n", encoding="utf-8")
 # Game functions the overworld redirect calls, verbatim (z_scene.c, z_play.c).
 scene_c = (root / "mm/src/code/z_scene.c").read_text(encoding="utf-8").replace("\r\n", "\n")
 play_c = (root / "mm/src/code/z_play.c").read_text(encoding="utf-8").replace("\r\n", "\n")
@@ -148,4 +183,4 @@ if sys.platform == "win32":
 else:
     subprocess.run([shutil.which("c++") or "c++", "-std=c++20", "-O1", f"-I{build}", f"-I{here}", f"-I{json_include}",
                     f"-I{root / 'mm/2s2h'}", str(here / "main.cpp"), "-o", str(exe)], check=True)
-subprocess.run([str(exe)], check=True)
+subprocess.run([str(exe), str(build / "rando_save_0_9_0.json")], check=True)

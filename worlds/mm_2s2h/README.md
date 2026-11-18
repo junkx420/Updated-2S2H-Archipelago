@@ -142,7 +142,8 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
     [inventory in testing.md](docs/testing.md#exits-that-stay-fixed-60).
   - Universal Tracker rebuilds the coupled endpoints from optional `mixed_entrance_pairs` slot data. The client
     saves the endpoints separately from the existing row-indexed pairs, and loads 0.9 slot data and saves with
-    their original pairs. **Not tested in game.**
+    their original pairs. The C++ test writes a save with the original 0.9 codec and loads it with 0.10.
+    [Test details](docs/testing.md#stage-6c--mixed-entrance-pools-apworld-0100). **Not tested in game.**
 - **Pool trimming** (apworld 0.7.1, no new ids or options, client unchanged): when the item pool is larger than the
   shuffled locations, `create_items` removes junk (as before), then traps, then extra Plentiful Items copies (picked
   at random; every original item stays). Each trimmed trap/copy count is logged as a warning. Only if the pool is

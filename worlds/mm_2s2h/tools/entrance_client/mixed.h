@@ -2,6 +2,8 @@
 #define ENABLE_ARCHIPELAGO
 #include "Network/Archipelago/ArchipelagoSlotData.cpp"
 #undef ENABLE_ARCHIPELAGO
+#include <fstream>
+#include "legacy09_codec.h"
 #include "mixed_slots.h"
 
 inline void LoadSlot(const ApSlot::SlotData& slot) {
@@ -125,7 +127,7 @@ inline void TestMixedEntrances() {
               << " warps and " << rejected << " rejected pair maps passed\n";
 }
 
-inline void TestLegacy09() {
+inline void TestLegacy09(const char* savePath) {
     using namespace Rando::EntranceShuffle;
     ApSlot::SlotData slot;
     assert(slot.Parse(json::parse(legacy09Slot)).empty());
@@ -140,21 +142,39 @@ inline void TestLegacy09() {
         assert(saved.entrancePairs[rows.at(source)] == rows.at(target) + 1);
         assert(InsideBehind(rows.at(source)) == rows.at(target));
     }
-    RandoSaveInfo old = saved;
-    std::copy(std::begin(options), std::end(options), old.randoSaveOptions);
-    json file = old;
-    file.erase("mixedEntrancePairs");
-    file["randoSaveOptions"].erase(RO_MIX_ENTRANCE_POOLS);
+    legacy09::RandoSaveInfo old = {};
+    old.finalSeed = slot.randomSeed;
+    for (const auto& [name, value] : slot.options) {
+        old.randoSaveOptions[legacy09::optionIds.at(name)] = value;
+    }
+    std::map<u16, size_t> oldRows;
+    for (size_t row = 0; row < std::size(legacy09::entrances); ++row) {
+        oldRows[legacy09::entrances[row]] = row;
+    }
+    for (auto [source, target] : slot.entrancePairs) {
+        old.entrancePairs[oldRows.at(source)] = u16(oldRows.at(target) + 1);
+    }
+    json encoded;
+    legacy09::to_json(encoded, old);
+    {
+        std::ofstream out(savePath, std::ios::binary);
+        out << encoded;
+        out.close();
+        assert(out.good());
+    }
+    std::ifstream in(savePath, std::ios::binary);
+    const json file = json::parse(in);
+    assert(file == encoded);
+    assert(!file.contains("mixedEntrancePairs") && file.at("randoSaveOptions").size() == legacy09::RO_MAX);
+
     RandoSaveInfo restored = {};
+    restored.randoSaveOptions[RO_MIX_ENTRANCE_POOLS] = 42;
     std::fill(std::begin(restored.mixedEntrancePairs), std::end(restored.mixedEntrancePairs), 42);
     from_json(file, restored);
     assert(std::equal(std::begin(old.entrancePairs), std::end(old.entrancePairs), restored.entrancePairs));
+    assert(restored.randoSaveOptions[RO_MIX_ENTRANCE_POOLS] == RO_GENERIC_OFF);
     assert(std::all_of(std::begin(restored.mixedEntrancePairs), std::end(restored.mixedEntrancePairs),
                        [](u16 value) { return value == 0; }));
-    json roundTrip = restored;
-    roundTrip.erase("mixedEntrancePairs");
-    roundTrip["randoSaveOptions"].erase(RO_MIX_ENTRANCE_POOLS);
-    assert(roundTrip == file);
     gSaveContext.save.shipSaveInfo.rando = restored;
     std::copy(std::begin(restored.randoSaveOptions), std::end(restored.randoSaveOptions), options);
     for (auto [source, target] : slot.entrancePairs) {
@@ -164,5 +184,7 @@ inline void TestLegacy09() {
     playState = { inverted.into, inverted.outsideScene, 0 };
     OnBeforeTransitionSetup();
     assert(playState.nextEntrance == inverted.into);
-    std::cout << slot.entrancePairs.size() << " real 0.9 slot pairs and a 0.9 save round trip passed\n";
+    std::cout << "0.9 save written with " << legacy09::revision << " and loaded with 0.10: "
+              << slot.entrancePairs.size() << " pairs preserved, mixing off, "
+              << std::size(restored.mixedEntrancePairs) << " zero mixed endpoints\n";
 }

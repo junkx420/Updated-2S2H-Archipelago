@@ -947,8 +947,12 @@ keeps the inverted temple entrance vanilla.
 - `random_seeds.py` passed 100/100 with `mix_entrance_pools=all` and 100/100 with `mix_entrance_pools=random`.
   Parity passed 1200/1200 scenarios after rebuilding the shim.
 - The C++ harness passed 4,900 mixed transitions, 110 boss warps and 77 rejected maps across the 11 selections.
-  It verified all 157 pairs from the real 0.9 slot data and exercised the real save codec with the 0.9 JSON shape,
-  omitting the mixed array and option. It also round-tripped each of the 11 new mixed saves.
+  It also round-tripped each of the 11 new mixed saves.
+- The 0.9 save test uses client commit `87077c1bd19b46a6e82cfdea489867a3fad99ae3`. The harness reads the
+  `RandoSaveInfo` layout, row order, option IDs and unmodified JSON codec from that commit. It populates the
+  historical struct from the existing 0.9.0 slot data, writes `build/rando_save_0_9_0.json`, then opens the file
+  with the 0.10 codec. All 157 pairs survive and resolve to the original partners. The loader clears the
+  prefilled mix option and all 1,024 entries of the mixed pair array.
 - The Windows x64 Release client built successfully. MSBuild stalled after `ZERO_CHECK` with 12 project nodes.
   With one node, MSVC reported `C1902: Program database manager mismatch` and, after switching to `/Z7`,
   `C2855: command-line option '/Z7' inconsistent with precompiled header`. The build passed with one project
