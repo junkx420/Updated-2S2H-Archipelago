@@ -5,7 +5,7 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 ## Downloads
 
 The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages NPC souls,
-temple entrances and boss entrances with a matching client. The current source is **apworld 0.11.1**.
+temple entrances and boss entrances with a matching client. The current source is **apworld 0.12.0**.
 The new mechanics are **not tested in game**. Platform builds and preview publication run on GitHub Actions.
 See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago#choose-your-download),
 [changelog](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/main/CHANGELOG.md) and
@@ -33,6 +33,13 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   id moves. The table `npcSouls` in `Rando/ActorBehavior/Souls.cpp` names, per soul, the actors it brings to life and
   the checks and logic events that need it. The generator writes it to `NPC_SOULS` and `__init__.py` adds the soul to
   those rules. To add or change a soul, edit that table and regenerate.
+  Since apworld 0.12 the option is a choice: `off` (0), `classic` (1, the 30 souls, also `true`) and `all` (2, 65
+  souls). Rows have two optional fields: `level` (2 = only with `all`) and `sceneId` (the soul owns its actors only
+  in that scene; EnSob1 runs as `ACTOR_EN_OSSAN` in three shops). Three small tables next to it: `npcSoulExceptions`
+  (actor plus params mask, never hidden: the Goron Shrine gatekeeper), `npcSoulCompanions` (a child follows its
+  parent's soul: Romani's balloon) and `npcSoulDynaActors` (DynaPoly collision is switched off while hidden: OBJ_UM).
+  The new souls are a second block of `RI_SOUL_NPC_*` and `RANDO_INF_OBTAINED_SOUL_OF_NPC_*` (`Souls.h`). Souls
+  without checks or events are `useful` and the first to move to the start inventory when the pool is too full.
 - **Dungeon entrance shuffle** (`shuffle_dungeon_entrances`, apworld 0.3): the doors of the four temples lead into a
   random one of them, coupled (the temple's exit and its boss's blue warp lead back out of the door used). The table
   `shuffleEntrances` in `Rando/MiscBehavior/EntranceShuffle.cpp` has one row per door (option, way in, way out,

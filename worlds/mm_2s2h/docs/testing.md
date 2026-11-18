@@ -1120,3 +1120,68 @@ the patch 0.11.1; the client accepts it as `0.11` unchanged (`Archipelago.h`).
   save from client 0.11.0: it starts with nothing discovered.
 - A save with all entrance options off shows only the note. A plain 2S2H rando save without Archipelago is not
   affected.
+
+### Stage 8 – souls for all NPCs (apworld 0.12.0)
+
+`shuffle_npc_souls` is a choice now: `off` (0), `classic` (1, the 30 souls of 0.2 to 0.11, also `true` in old yamls)
+and `all` (2, 35 more souls, 65 in all). Plan, inventory and the code evidence for every decision:
+`docs/plan-stufe8-npc-seelen.md` in the project folder (not in git). In short:
+
+- **Table:** `npcSouls` (`Rando/ActorBehavior/Souls.cpp`) got two fields with defaults, `level` and `sceneId`; the 30
+  old rows are unchanged character for character. The 35 new rows are appended with level 2. New ids are a second
+  block at the end of `RandoItemId` and `RandoInf`; `IS_NPC_SOUL`/`NPC_SOUL_RI_TO_RANDO_INF` (`Souls.h`) know both
+  blocks. No existing id moved (checked against the generated enums of the previous commit: only `RI_MAX` and
+  `RANDO_INF_MAX` changed).
+- **Shops:** EnSob1's profile id is `ACTOR_EN_OSSAN` (`z_en_sob1.c:70`), so the Bomb, Goron and Zora shopkeepers and
+  the Trading Post are all `ACTOR_EN_OSSAN` at run time. Their four souls are told apart by `sceneId`.
+- **Exceptions:** `npcSoulExceptions` keeps the Goron Shrine gatekeeper (`ENGO_GATEKEEPER`) visible: he opens the
+  shrine (`North.cpp:141`). Sakon (opens his hideout, `z_en_suttari.c:1191` → `z_bg_iknv_obj.c:190`) and Pamela
+  (opens the Music Box House, `z_en_pamera.c:193/309` → `z_en_door.c:249`) have no soul. So do the story NPCs,
+  Pierre (hookshot target in exits), the Great Fairies, Epona and the shared alien actor.
+- **Collision:** OBJ_UM (Cremia's cart) is the only DynaPoly actor among the 65 souls (`z_obj_um.c:648/760/763`).
+  While hidden its collision is off (`DynaPoly_DisableCollision`), and on again with the soul.
+- **Shadow:** `Actor_Draw` (`z_actor.c`) now draws the shadow only if `ShouldActorDraw` allowed the draw. Before, a
+  hidden NPC still cast its shadow, with value 1 too. Other users of the hook: boss souls (Gyorg, Majora, Odolwa,
+  Twinmold, and Goht, whose ice is drawn by the hook itself) now lose their shadow while hidden too, and so do the
+  developer tools "prevent actor draw" (DeveloperTools.cpp, ActorViewer.cpp). Enemy souls only set grayscale and never
+  `*should = false`, so nothing changes there.
+- **Logic:** checks and events in a row need the soul, as before. Multi-source events (spring water, fish, bugs, hot
+  spring water, Zora eggs) need no NPC at any source, so no region column was needed. Souls without checks or events
+  (8) are `useful`. The pool trim moves them to the start inventory (warning in the log) once junk, traps and the
+  Plentiful copies are gone, and only then raises OptionError; progression souls never move.
+- **Pool limit (measured):** with the default checks (284 locations) `all` gives 278 items without junk. Up to 8
+  items over the locations still generate (the useful souls go to the start inventory, e.g. boss souls + ocarina
+  buttons: 288 items, 4 souls moved). With door keys on as well it is 304, which is an OptionError.
+
+#### Verification
+
+- `pytest test/general worlds/mm_2s2h/test -q` passed 832 tests and 153,924 subtests, 0 failed (805 before).
+- New tests: `test_npc_souls.py` (value 1 has exactly the 30 old souls, all progression, and a check only a new soul
+  would gate needs none; `classic` equals `true`; value 2 has all 65, 8 of them useful and not advancement, every
+  listed check and event is out of logic without its soul and in logic with it (141 checks), beatable; No Logic with
+  value 1 and 2; value 2 with every own option), `test_universal_tracker.py` (rebuild from slot data with value 2),
+  `test_pool_trim.py` (4 useful souls to the start inventory with a warning, none of the progression souls;
+  OptionError with door keys). The golden fingerprints (values 0 and 1 inside the rolls) matched 78/78.
+- `random_seeds.py 100` with `shuffle_npc_souls=all`: **100/100**. With `all` plus every own option (interiors,
+  dungeon and boss entrances, grottos, overworld, special areas, door keys, both abilities, swim,
+  `mix_entrance_pools=random`): **100/100**.
+- Parity harness rebuilt: 1200/1200 scenarios, 0 mismatching. The generator translated all rules; its output changed
+  only by the new souls (`NPC_SOULS` with a fourth field, the level).
+- Windows x64 Release client built locally. clang-format is clean for `Souls.cpp`, `Souls.h`, `Archipelago.h` and
+  `Types.h`; `z_actor.c` has the same 11 upstream findings as before.
+
+#### In-game checklist — not tested in game
+
+- Value 2: an NPC appears, and casts a shadow, only once its soul is found; before, it is not targetable and nothing
+  can be heard from it. Check at least: the carpenters in South Clock Town, the Gorons in Goron Village, and the
+  Goron Elder's son in the Goron Shrine, whose crying must stop as well.
+- Goron Shrine on day 2 and 3 as a Goron without the Gorons' soul: the gatekeeper must still be there and open it.
+- No invisible walls: Cremia's cart (OBJ_UM) on the ranch and on Milk Road without the soul of Romani and Cremia;
+  walk through where it stands. Once the soul arrives in the same scene, the cart is solid again.
+- Shops: Bomb Shop, Goron Shop, Zora Shop and Trading Post each disappear with their own soul only.
+- Exceptions stay: Sakon at his hideout on night 3, Pamela at the Music Box House.
+- Blockers without their soul are gone and the way is free: Clock Town gate soldiers, Deku Palace guards, pirates in
+  the fortress (also the beehive scene in Aviel's room), the talking Gibdos in the well, Biggoron's storm on the way
+  to Snowhead, the Bombers' hideout guard.
+- Value 1: exactly the old 30 NPCs are hidden, nothing else; hidden NPCs no longer cast a shadow.
+- Boss souls: a boss without its soul casts no shadow.

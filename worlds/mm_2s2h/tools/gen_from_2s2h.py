@@ -666,14 +666,18 @@ def main() -> int:
     ri_table = parse_ri_table(strip_comments((rando / "StaticData" / "Items.cpp").read_text(encoding="utf-8")))
     souls_src = strip_comments((rando / "ActorBehavior" / "Souls.cpp").read_text(encoding="utf-8"))
     souls = dict(re.findall(r"\{\s*(ACTOR_\w+)\s*,\s*(RI_SOUL_\w+)\s*\}", souls_src))
-    # NPC souls: { RI_SOUL_NPC_X, { actors }, { checks }, { events } } (Souls.cpp npcSouls)
+    # NPC souls: { RI_SOUL_NPC_X, { actors }, { checks }, { events } [, level [, scene]] } (Souls.cpp npcSouls).
+    # level 1 (the default): shuffle_npc_souls 1 and 2; level 2: shuffle_npc_souls 2 only. The scene only matters in
+    # the client (which actors belong to the soul), not for the rules.
     names_in = lambda s: [x.strip() for x in s.split(",") if x.strip()]  # noqa: E731
-    npc_souls = {ri: (names_in(actors), names_in(checks), names_in(events)) for ri, actors, checks, events in re.findall(
-        r"\{\s*(RI_SOUL_NPC_\w+)\s*,\s*\{([^{}]*)\}\s*,\s*\{([^{}]*)\}\s*,\s*\{([^{}]*)\}\s*,?\s*\}", souls_src)}
+    npc_souls = {ri: (names_in(actors), names_in(checks), names_in(events), int(level or 1))
+                 for ri, actors, checks, events, level in re.findall(
+        r"\{\s*(RI_SOUL_NPC_\w+)\s*,\s*\{([^{}]*)\}\s*,\s*\{([^{}]*)\}\s*,\s*\{([^{}]*)\}"
+        r"\s*(?:,\s*(\d+)\s*(?:,\s*SCENE_\w+\s*)?)?,?\s*\}", souls_src)}
     npc_enum = [ri for ri in E("RandoItemId") if ri.startswith("RI_SOUL_NPC_")]
     if sorted(npc_souls) != sorted(npc_enum):
         raise SystemExit(f"npcSouls table and RI_SOUL_NPC_* enum differ: {set(npc_souls) ^ set(npc_enum)}")
-    for ri, (_, checks, events) in npc_souls.items():
+    for ri, (_, checks, events, _) in npc_souls.items():
         unknown = [c for c in checks if c not in E("RandoCheckId")] + [e for e in events if e not in E("RandoEvent")]
         if unknown or f"RANDO_INF_OBTAINED_SOUL_OF_NPC_{ri[len('RI_SOUL_NPC_'):]}" not in E("RandoInf"):
             raise SystemExit(f"npcSouls {ri}: unknown checks/events {unknown} or missing RANDO_INF")

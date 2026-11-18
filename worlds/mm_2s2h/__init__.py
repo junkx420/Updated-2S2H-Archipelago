@@ -37,6 +37,8 @@ SKIP_BALANCING = {"RI_HEART_PIECE", "RI_HEART_CONTAINER", "RI_DEKU_NUT", "RI_DEK
                   "RI_DEKU_STICK", "RI_DEKU_STICKS_5", "RI_MAGIC_BEAN", "RI_GS_TOKEN_SWAMP", "RI_GS_TOKEN_OCEAN",
                   "RI_WOODFALL_STRAY_FAIRY", "RI_SNOWHEAD_STRAY_FAIRY", "RI_GREAT_BAY_STRAY_FAIRY",
                   "RI_STONE_TOWER_STRAY_FAIRY", "RI_TRIFORCE_PIECE"}
+# NPC souls without checks or events (apworld 0.12): they only hide NPCs, so they are useful, not progression
+USEFUL_NPC_SOULS = {ri for ri, (_, checks, events, _) in NPC_SOULS.items() if not checks and not events}
 # RCTYPE -> option that puts it into the check pool (GeneratePools.cpp)
 TYPE_OPTION = {
     "RCTYPE_OWL": "RO_SHUFFLE_OWL_STATUES", "RCTYPE_POT": "RO_SHUFFLE_POT_DROPS", "RCTYPE_CRATE": "RO_SHUFFLE_CRATE_DROPS",
@@ -319,8 +321,8 @@ class MM2S2HWorld(World):
         mw, p = self.multiworld, self.player
         # NPC souls: checks and events that need an NPC need its soul (Souls.cpp npcSouls)
         souls_for: dict[str, list[str]] = defaultdict(list)
-        if self.ro["RO_SHUFFLE_NPC_SOULS"]:
-            for ri, (_, checks, events) in NPC_SOULS.items():
+        for ri, (_, checks, events, level) in NPC_SOULS.items():
+            if level <= self.ro["RO_SHUFFLE_NPC_SOULS"]:  # 1: the 30 souls of 0.2, 2: all (0.12)
                 for key in checks + events:
                     souls_for[key].append(ITEMS[ri][0])
         # Door keys: each building's ways in need its key (DoorKeys.cpp doorKeys). The rule stays on the exit, i.e. on
@@ -459,7 +461,9 @@ class MM2S2HWorld(World):
     # ------------------------------------------------------------------------------------------
     def create_item(self, name: str) -> MM2S2HItem:
         ri = RI_BY_NAME[name]
-        if ri in LOGIC_ITEMS:
+        if ri in USEFUL_NPC_SOULS:  # hides NPCs no check or event needs
+            cls = IC.useful
+        elif ri in LOGIC_ITEMS:
             cls = IC.progression_skip_balancing if ri in SKIP_BALANCING else IC.progression
         elif ri == "RI_TRAP":
             cls = IC.trap
@@ -481,8 +485,8 @@ class MM2S2HWorld(World):
                      and not (k == "RI_SOUL_BOSS_MAJORA" and ro["RO_SHUFFLE_TRIFORCE_PIECES"])]
         if ro["RO_SHUFFLE_ENEMY_SOULS"]:
             pool += [k for k in RI_ID if k.startswith("RI_SOUL_ENEMY_")]
-        if ro["RO_SHUFFLE_NPC_SOULS"]:  # not in 2S2H's own pools: an addition of this fork
-            pool += list(NPC_SOULS)
+        # not in 2S2H's own pools: an addition of this fork
+        pool += [ri for ri, (_, _, _, level) in NPC_SOULS.items() if level <= ro["RO_SHUFFLE_NPC_SOULS"]]
         if ro["RO_SHUFFLE_DOOR_KEYS"]:  # an addition of this fork as well
             pool += [row["key"] for row in self.door_keys]
         if ro["RO_CLOCK_SHUFFLE"]:
@@ -542,8 +546,9 @@ class MM2S2HWorld(World):
 
     def _trim_pool(self, pool: list[str], copies: list[str], traps: list[str], n_locs: int) -> list[str]:
         """Pool still too large without junk. pool ends with the copies, then the traps (both without junk). Trim
-        traps first, then extra Plentiful copies (chosen at random); every original item stays. Only reached where
-        0.7.0 raised OptionError, so seeds that generated before stay identical."""
+        traps first, then extra Plentiful copies (chosen at random), then (0.12) move the NPC souls without checks or
+        events to the start inventory; every other original item stays. Only reached where 0.7.0 raised OptionError,
+        so seeds that generated before stay identical."""
         n_items = len(pool)
         base = pool[:n_items - len(copies) - len(traps)]
         excess = n_items - n_locs
@@ -551,10 +556,21 @@ class MM2S2HWorld(World):
         excess -= cut_traps
         cut_copies = min(excess, len(copies))
         excess -= cut_copies
+        # then the NPC souls that no check or event needs go to the start inventory (never a progression soul)
+        useful_souls = [ri for ri in base if ri in USEFUL_NPC_SOULS][:excess]
+        excess -= len(useful_souls)
+        if useful_souls and excess <= 0:
+            for ri in useful_souls:
+                base.remove(ri)
+                self.multiworld.push_precollected(self.create_item(ITEMS[ri][0]))
+            logging.warning(f"{self.player_name} (Majora's Mask 2S2H): {n_items} items for {n_locs} locations; "
+                            f"{len(useful_souls)} NPC souls without checks are in the start inventory: "
+                            + ", ".join(ITEMS[ri][0] for ri in useful_souls))
         if excess > 0:
             raise OptionError(
-                f"{self.player_name}: {len(base)} items for {n_locs} locations, even without junk, traps and the extra "
-                "copies of Plentiful Items. Enable more check types (e.g. shuffle_pots, shuffle_grass, shuffle_crates, "
+                f"{self.player_name}: {len(base) - len(useful_souls)} items for {n_locs} locations, even without junk, "
+                "traps and the extra copies of Plentiful Items, and with the NPC souls without checks in the start "
+                "inventory. Enable more check types (e.g. shuffle_pots, shuffle_grass, shuffle_crates, "
                 "shuffle_freestanding) or fewer item-adding options (NPC, enemy or boss souls, clock_shuffle, "
                 "shuffle_ocarina_buttons, triforce_hunt with many pieces, low starting_health).")
         kept = (sorted(self.random.sample(range(len(copies)), len(copies) - cut_copies)) if cut_copies

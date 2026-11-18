@@ -35,3 +35,8 @@ class UTRegenTest(MM2S2HTestBase):
             state = CollectionState(w.multiworld)
             return {loc.name for loc in w.multiworld.get_locations(w.player) if loc.address and loc.can_reach(state)}
         self.assertEqual(reachable(original), reachable(rebuilt))
+
+
+class UTRegenNpcSoulsAll(UTRegenTest):
+    """The same with all NPC souls (apworld 0.12)."""
+    options = {"shuffle_npc_souls": "all", "shuffle_shops": True, "shuffle_frogs": True}

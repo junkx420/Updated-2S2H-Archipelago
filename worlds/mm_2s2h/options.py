@@ -133,9 +133,25 @@ ShuffleHives = _shuffle("ShuffleHives", "RO_SHUFFLE_HIVE_DROPS", "Beehive Drops"
 # ---- item pool ------------------------------------------------------------------------------
 ShuffleBossSouls = _shuffle("ShuffleBossSouls", "RO_SHUFFLE_BOSS_SOULS", "Boss Souls", "Bosses cannot be defeated without their soul.")
 ShuffleEnemySouls = _shuffle("ShuffleEnemySouls", "RO_SHUFFLE_ENEMY_SOULS", "Enemy Souls", "Enemies cannot be defeated without their soul.")
-ShuffleNpcSouls = _shuffle("ShuffleNpcSouls", "RO_SHUFFLE_NPC_SOULS", "NPC Souls",
-                           "30 townsfolk and other NPCs (Granny, Anju, the Banker, Tingle, the cows, ...) are not there "
-                           "until their soul is found: no rewards, no minigames, no sales from them.")
+
+
+class ShuffleNpcSouls(RO, Choice):
+    """NPCs are not there until their soul is found: no rewards, no minigames, no sales from them.
+    Classic: 30 townsfolk and other NPCs (Granny, Anju, the Banker, Tingle, the cows, ...), as up to 0.11.
+    All: every NPC of the world, 65 souls in groups (adds the shops, Kafei, the Gorons, the Zoras, the Bombers,
+    Romani and Cremia, the carpenters, the guards, ...). NPCs the story or a way needs stay (Happy Mask Salesman,
+    Skull Kid, Tatl, the Giants, the Moon Children, Pierre, the Goron Shrine gatekeeper, Sakon, Pamela, the Great
+    Fairies). Guards and other blockers without their soul are simply gone."""
+    display_name = "NPC Souls"
+    ro = "RO_SHUFFLE_NPC_SOULS"
+    option_off = 0
+    option_classic = 1
+    option_all = 2
+    alias_false = 0
+    alias_true = 1
+    default = 0
+
+
 ShuffleSwim = _shuffle("ShuffleSwim", "RO_SHUFFLE_SWIM", "Shuffle Swim", "The ability to swim is an item.")
 ShuffleEponaRiding = _shuffle("ShuffleEponaRiding", "RO_SHUFFLE_EPONA_RIDING", "Shuffle Epona Riding",
                              "Find the Ability to Ride Epona to mount her or enter the Gorman race. You can still "

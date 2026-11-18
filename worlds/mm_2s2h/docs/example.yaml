@@ -34,7 +34,7 @@ game: Majora's Mask (2 Ship 2 Harkinian)
 requires:
   version: 0.6.9 # Version of Archipelago required for this yaml to work as expected.
   game:
-    Majora's Mask (2 Ship 2 Harkinian): 0.11.1 # Version of the world required for this yaml to work as expected.
+    Majora's Mask (2 Ship 2 Harkinian): 0.12.0 # Version of the world required for this yaml to work as expected.
 
 Majora's Mask (2 Ship 2 Harkinian):
   ################
@@ -286,9 +286,11 @@ Majora's Mask (2 Ship 2 Harkinian):
     'true': 0
 
   shuffle_npc_souls:
-    # 30 townsfolk and other NPCs (Granny, Anju, the Banker, Tingle, the cows, ...) are not there until their soul is found: no rewards, no minigames, no sales from them.
-    'false': 50
-    'true': 0
+    # NPCs are not there until their soul is found: no rewards, no minigames, no sales from them.
+    # classic: 30 townsfolk and other NPCs (as up to 0.11). all: every NPC, 65 souls in groups.
+    'off': 50
+    classic: 0
+    all: 0
 
   shuffle_swim:
     # The ability to swim is an item.

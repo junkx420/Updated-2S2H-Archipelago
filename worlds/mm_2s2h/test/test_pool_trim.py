@@ -16,6 +16,7 @@ from worlds import AutoWorld
 from worlds.AutoWorld import call_all
 
 from ..tools.random_seeds import roll
+from ..enums_generated import NPC_SOULS
 from ..items_generated import ITEMS
 
 
@@ -220,3 +221,28 @@ class TestTrim(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# Default checks with all 65 NPC souls: 278 items without junk for 284 locations. With boss souls and ocarina buttons
+# 288: 4 too many, so 4 of the 8 NPC souls without checks go to the start inventory. Door keys instead: 304, too many.
+TIGHT_ALL = {"shuffle_npc_souls": "all", "shuffle_boss_souls": True, "shuffle_ocarina_buttons": True}
+
+
+class TestNpcSoulsStartInventory(unittest.TestCase):
+    """0.12: when even traps and Plentiful copies are gone, the NPC souls without checks go to the start inventory
+    (with a warning), never a progression soul; only then OptionError."""
+
+    def test_useful_souls_to_start_inventory(self) -> None:
+        useful = {ITEMS[ri][0] for ri, (_, c, e, _) in NPC_SOULS.items() if not c and not e}
+        with self.assertLogs(level="WARNING") as logs:
+            mw = build(TIGHT_ALL, 1, fill=False)
+        start = {i.name for i in mw.precollected_items[1]}
+        self.assertEqual(len(start & useful), 4)
+        self.assertFalse(start & ({ITEMS[ri][0] for ri in NPC_SOULS} - useful), "a progression soul was moved")
+        self.assertTrue(any("NPC souls without checks are in the start inventory" in line for line in logs.output))
+        pool = [i.name for i in mw.itempool if i.player == 1]
+        self.assertEqual(len(pool), len(mw.worlds[1].shuffled))
+
+    def test_option_error_after_souls(self) -> None:
+        with self.assertRaises(OptionError):
+            build({"shuffle_npc_souls": "all", "shuffle_door_keys": True}, 1, fill=False)
