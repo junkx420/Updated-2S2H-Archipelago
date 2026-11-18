@@ -22,7 +22,7 @@ from __future__ import annotations
 import pathlib
 import re
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 HERE = pathlib.Path(__file__).resolve().parent
 OUT = HERE.parent
@@ -527,6 +527,50 @@ def check_overworld(rows: list[dict], es_rows: list, out_regions: list, water: l
             raise SystemExit(f"overworldWaterEntrances: {r['into']} and its way back {r['out']} must both be listed or neither")
 
 
+def ap_region_name(rr: str) -> str:
+    """Name of the Archipelago region of RR_X (__init__.py region_name)"""
+    return "Menu" if rr == "RR_MAX" else " ".join(w.capitalize() for w in rr[3:].split("_"))
+
+
+def check_entrance_names(es_src: str, ent: str, rows: list[dict], out_regions: list) -> dict:
+    """entranceNames: { ENTRANCE(into), "name", "door side's exit", "inside side's exit" }, one per shuffleEntrances row
+    in row order. The names are the spoiler log's of apworld 0.11.0 and must stay so word for word: a door pool's row
+    by its grotto or interior region (the Inn's doors with their way back) or else its scene, an overworld row by its
+    place; the exits are the Archipelago entrances create_regions names "Region -> Region [#n]"."""
+    body = re.search(r"entranceNames\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
+    found = re.findall(rf'\{{\s*({ent})\s*,\s*"([^"\\]*)"\s*,\s*"([^"\\]*)"\s*,\s*"([^"\\]*)"\s*\}}', body)
+    if len(found) != body.count("ENTRANCE(") or [entrance_key(a) for a, *_ in found] != [r["into"] for r in rows]:
+        raise SystemExit("entranceNames: needs one row per shuffleEntrances row, in the same order")
+    exit_names = {}
+    for rid, _, _, _, conns, exits, _, _ in out_regions:
+        seen = Counter()
+        for key, tgt in [(None, t) for t, _ in conns] + [(e, t) for e, t, _ in exits]:
+            seen[tgt] += 1
+            if key is not None:
+                exit_names[(rid, key)] = (f"{ap_region_name(rid)} -> {ap_region_name(tgt)}"
+                                          + (f" #{seen[tgt]}" if seen[tgt] > 1 else ""))
+    names = {}
+    for row, (_, name, door_exit, inside_exit) in zip(rows, found):
+        overworld = row["option"] == "RO_SHUFFLE_OVERWORLD"
+        if overworld:
+            scene, spawn = row["into"].split(":")
+            expected = f"{scene.replace('_', ' ').title()} {spawn}"
+        elif row["grotto"]:
+            expected = ap_region_name(row["inside_region"])
+        elif row["hours"]:
+            shared = sum(r["inside_region"] == row["inside_region"] for r in rows) > 1
+            expected = ap_region_name(row["inside_region"]) + (
+                f" ({row['out'].replace('_', ' ').title()})" if shared else "")
+        else:
+            expected = row["into"].split(":")[0].replace("_", " ").title()
+        exits = (exit_names[(row["door_region"], row["into"])],
+                 "" if overworld else exit_names[(row["inside_region"], row["out"])])
+        if name != expected or (door_exit, inside_exit) != exits:
+            raise SystemExit(f"entranceNames: {row['into']} must be named {expected!r}, {exits[0]!r}, {exits[1]!r}")
+        names[row["into"]] = (name, door_exit, inside_exit)
+    return names
+
+
 def check_special_areas(rows: list[dict], es_rows: list) -> None:
     """Special-area rows are a door and the area behind it, like the temples, but the client compares them as places
     (Play_GetOriginalSceneId, base entrances) because their outside may be a cleared variant: no variant names, no boss
@@ -889,6 +933,7 @@ def main() -> int:
     by_into = {row["into"]: row for row in entrance_shuffle}
     if len(by_into) != len(entrance_shuffle):
         raise SystemExit("shuffleEntrances: duplicate into values would make saved pairs ambiguous")
+    entrance_names = check_entrance_names(es_src, ent, entrance_shuffle, out_regions)
     for into in mix_fixed:
         row = by_into.get(into)
         if row is None or (row["hours"] != "ALWAYS_OPEN" and
@@ -1012,6 +1057,9 @@ def main() -> int:
         fh.write("# shuffleable doors (EntranceShuffle.cpp), in row order: exits `into` (door_region -> inside_region)\n"
                  "# and `out` (back), `into_value` = game entrance, boss_warps = [(boss region, warp exit)]\n")
         fh.write(f"ENTRANCE_SHUFFLE = {entrance_shuffle!r}\n")
+        fh.write("# spoiler-log names of the rows (EntranceShuffle.cpp entranceNames): into -> (name, door side's exit,\n"
+                 "# inside side's exit); name is the door pools' name or an overworld row's place\n")
+        fh.write(f"ENTRANCE_NAMES = {entrance_names!r}\n")
         fh.write("# buildings locked by Shuffle Door Keys (DoorKeys.cpp), in enum order: exits `into` (door_regions ->\n"
                  "# inside_regions) need the key; `into_values` = game entrances\n")
         fh.write(f"DOOR_KEYS = {door_keys!r}\n")

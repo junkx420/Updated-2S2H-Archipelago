@@ -1037,3 +1037,86 @@ keeps the inverted temple entrance vanilla.
   bean refill and the Beneath the Well trade while planting is locked.
 - Save and reload with the abilities collected, reset the three-day cycle and load an existing 0.10 save offline.
   Verify its original mixed entrances, riding and planting. Check the item pickup models and text in a 0.11 seed.
+
+### Stage 7 – entrance tracker (apworld 0.11.1)
+
+Client only, no new ids or options. The apworld changes only where the spoiler names come from, so the version is
+the patch 0.11.1; the client accepts it as `0.11` unchanged (`Archipelago.h`).
+
+- **Window:** `Rando/EntranceTracker/EntranceTracker.cpp` (ImGui, registered in `BenGui.cpp` as
+  `gWindows.EntranceTracker`, menu entry "Entrance Tracker" next to the Check Tracker in `Rando/Menu.cpp`). Settings
+  are CVars: `gRando.EntranceTracker.ShowAll`, `.GroupByPool`, `.HighlightCurrentScene` (default on) and
+  `.OnlyCurrentScene`. Without a rando save it says "No Rando Save Loaded", without shuffled entrances "No shuffled
+  entrances in this save". Plain 2S2H rando cannot turn the entrance options on (`Rando/Menu.cpp` has none of them).
+- **Lines:** `EntranceShuffle::TrackedEntrances()` lists one line per spoiler-log line. A door pool's coupled pair
+  is one line "A <-> X" (temples, boss rooms, grottos, interiors, special areas). The overworld has one line per
+  exit, and a mixed pool one per endpoint. Only rows whose option is on and that some other row may replace
+  (`CanPair`) appear, so `INTERIOR_OWN_HOURS`, `entranceMixFixed` and the inverted temple outside the mixed pool
+  stay hidden. A row that drew itself is shown, since that is part of the seed.
+- **Discovery:** the new save field `u8 entrancesDiscovered[128]` (`z64save.h`) has one bit per endpoint, numbered
+  `2 * row` (door side) and `2 * row + 1` (inside side) as in `mixedEntrancePairs`. Row numbers stay valid. The
+  redirect that decides a transition marks both endpoints of its pairing (`Discover` in `EntranceShuffle.cpp`):
+  `RedirectMixed`, the grotto hole and the grotto's way out, `RedirectInterior`, `RedirectOverworld` (the exit and
+  the opposite exit of its target), `RedirectSpecialArea`, and the temple/boss loop of `OnBeforeTransitionSetup`,
+  also for a row that drew itself. Marks need `respawnFlag` 0, -2 (exit stored as void-out point) or 4 (grotto
+  way back). The blue-warp loop marks nothing. Loading a save never reaches the hook: `z_play.c:626`
+  (`Play_UpdateTransition`) is its only caller. Rows of a mixed pool are only marked by `RedirectMixed`.
+- **Save:** `BenJsonConversions.hpp` loads the field with `GetGrownArray`; saves without it load with no
+  discoveries. `shipSaveInfo` survives the three-day reset, so discoveries do as well.
+- **Names:** the new table `entranceNames` (`EntranceShuffle.cpp`, one row per `shuffleEntrances` row in order) holds
+  the spoiler names: `name` (door pools' `_door_name`, an overworld row's place), plus the Archipelago exit names of
+  both sides for mixed pools. The generator (`check_entrance_names`) aborts if a name differs from the formulas of
+  0.11.0 or an exit name differs from the region graph, and writes `ENTRANCE_NAMES`. `_door_name` and `_place_name` in
+  `__init__.py` read it. The exits keep the names `create_regions` gives them.
+- **List logic:** `Rando/EntranceTracker/EntranceTrackerList.cpp` (no ImGui) builds the rows. With *Show All* off an
+  undiscovered target is `???`. Search runs over the visible text only. The tooltip names the target's area only
+  once visible. Grouping (scene of the starting side, or pool) and sorting (group, then "from") use only the
+  starting side. The highlight is the current scene's doors, plus the line into the current area once it is
+  visible, in grottos only the current grotto's.
+
+#### Verification
+
+- `test_spoiler_names.py`: `data/spoiler_entrances_0_11_0.json` holds the spoiler entrances that unchanged 0.11.0
+  (apworld commit `a5e36c14`) wrote for 10 seeds: four with all six pools, three with all four mixed pools and three
+  with two or three mixed pools (157 to 191 entries each). After the change all 10 match word for word. Another test
+  compares every table name with the old formulas. With one name changed on purpose the generator aborts with
+  `entranceNames: WOODFALL_TEMPLE:0 must be named 'Woodfall Temple', ...`.
+- `pytest test/general worlds/mm_2s2h/test -q` passed 805 tests (11 of them new) and 151,151 subtests.
+  Stage 4a reported 151,158 subtests; the cause of the difference was not investigated.
+- Parity harness rebuilt: 1200/1200 scenarios. The generator output changed only by `ENTRANCE_NAMES`.
+- C++ harness (`tools/entrance_client`, new `tracker.h`), with the real slot data of 0.9 (all pools unmixed), all 11
+  mixed fixtures and the 0.9 options with every door unshuffled. 2187 lines across 13 saves. Going through a line
+  arrives where the tracker says, and marks exactly its two endpoints. The way back marks the same two, in 4322
+  traversals covering mixed pools, grottos (hole and way back) and rows that drew themselves. 13,122 respawns
+  (flags 1, -1, -3, -6, 2, 5) and 130 blue warps (repeat warps and the first warp through the Giants' Chamber) mark
+  nothing. With all options off there are no lines and nothing is marked.
+- List logic: 25,080 views of two saves with the same options and discoveries but different targets (the 0.9 pairing
+  against all unshuffled, and each mixed fixture against one with swapped partners). With *Show All* off the
+  undiscovered rows are identical for every search (including each target's name), both groupings, a range of
+  current scenes and grottos, and no, a third or two thirds of the lines discovered. Discovered rows keep their place
+  in the order. With *Show All* on the views differ.
+- Old save: a save encoded with the save structs and codec of client `eafa920b7` has no `entrancesDiscovered`. It
+  loads with every discovery cleared and its pairs unchanged, and its 183 lines stay undiscovered. The new field
+  round-trips.
+- Windows x64 Release client built locally (client commit `6545724d5`). clang-format 19.1.5 is clean for the touched files. The CI runs
+  clang-format 14, so `override {};` in the new header was written as `override {}`, where both versions agree.
+  The first build failed with `LNK2001` on `EntranceTrackerWindow::Draw`: CMake globs new files only on
+  reconfigure. After `cmake build/x64`, libultraship failed with `C2855: command-line option '/Zi' inconsistent
+  with precompiled header`. Deleting the stale `cmake_pch.pch` fixed it.
+
+#### In-game checklist — not tested in game
+
+- Open the Entrance Tracker from the Rando menu in a seed with several pools (also with mixed pools). Unshuffled
+  rows must not appear, and every target must show `???` at first.
+- Go through a temple door, a grotto hole, an interior door, an overworld exit and a special-area door. The line and
+  its way back show the target, and the arrival matches the tracker. Do the same from the inside first (e.g. leave a
+  building you reached by warp).
+- Beat a boss with shuffled boss rooms and take the blue warp. Void out, die and load a save in front of a shuffled
+  door. None of these may reveal anything.
+- Try the search with a target's name while it is hidden: it must find only lines that start there. Hover the
+  tooltips. Switch grouping between area and pool and toggle *Show All*, *Highlight Current Scene* and
+  *Only Current Scene*. The highlight follows the scene; in grottos only the current one is lit.
+- Restart the game: the window settings are kept. Save, reload and reset the cycle: discoveries are kept. Load a
+  save from client 0.11.0: it starts with nothing discovered.
+- A save with all entrance options off shows only the note. A plain 2S2H rando save without Archipelago is not
+  affected.

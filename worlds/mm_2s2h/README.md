@@ -5,7 +5,7 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 ## Downloads
 
 The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages NPC souls,
-temple entrances and boss entrances with a matching client. The current source is **apworld 0.11.0**.
+temple entrances and boss entrances with a matching client. The current source is **apworld 0.11.1**.
 The new mechanics are **not tested in game**. Platform builds and preview publication run on GitHub Actions.
 See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago#choose-your-download),
 [changelog](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/main/CHANGELOG.md) and
@@ -152,6 +152,17 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   No Logic and Nearly No Logic keep the in-game locks and generate without the access rules. The 0.11 client and
   Universal Tracker support existing 0.10 seeds with both abilities off. See [testing.md](docs/testing.md#stage-4a--abilities-apworld-0110).
   **Not tested in game.**
+- **Entrance tracker in the client** (apworld 0.11.1, no new ids or options). The ImGui window *Entrance Tracker*
+  (Rando menu, next to the Check Tracker) lists the shuffled entrances of the loaded save as "from -> to", built only
+  from the save and the tables in `EntranceShuffle.cpp`, so it works offline. Unshuffled rows are left out. A line is
+  discovered when Link goes through either side of its coupled pairing. The redirect that decides the transition
+  marks both endpoints in the new save field `entrancesDiscovered`, one bit per endpoint. Blue warps, void outs,
+  deaths, songs and loading a save mark nothing. Undiscovered targets show as `???` unless *Show All (Spoilers)* is on.
+  Search, tooltips, grouping (by area or by pool) and sorting use only the side the line starts from. The names are
+  the spoiler log's: the new table `entranceNames` holds them, the generator checks them against the formulas of
+  0.11.0 and writes `ENTRANCE_NAMES`, and `_door_name`/`_place_name` read that. A test compares the spoiler entrances
+  of 10 seeds with those of 0.11.0 word for word. Older saves load without discoveries.
+  See [testing.md](docs/testing.md#stage-7--entrance-tracker-apworld-0111). **Not tested in game.**
 - **Pool trimming** (apworld 0.7.1, no new ids or options, client unchanged): when the item pool is larger than the
   shuffled locations, `create_items` removes junk (as before), then traps, then extra Plentiful Items copies (picked
   at random; every original item stays). Each trimmed trap/copy count is logged as a warning. Only if the pool is

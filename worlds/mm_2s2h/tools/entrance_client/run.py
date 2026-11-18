@@ -20,6 +20,7 @@ build = here / "build"
 build.mkdir(exist_ok=True)
 legacy09_commit = "87077c1bd19b46a6e82cfdea489867a3fad99ae3"
 legacy10_commit = "aa6d5b494"
+legacy11_commit = "eafa920b7"  # client 0.11.0, the last save codec without entrancesDiscovered
 
 
 def historical_source(revision: str, path: str) -> str:
@@ -136,6 +137,15 @@ for enum, sentinel in (("RandoItemId", "RI_MAX"), ("RandoOptionId", "RO_MAX"), (
     + f'inline constexpr int RANDO_INF_MAX = {old10["RandoInf"]["RANDO_INF_MAX"]};\n'
     + save_structs(historical_source(legacy10_commit, "mm/include/z64save.h")) + "\n"
     + save_codec(historical_source(legacy10_commit, "mm/2s2h/BenJsonConversions.hpp")) + "}\n", encoding="utf-8")
+old11 = parse_enums(strip_comments(historical_source(legacy11_commit, "mm/2s2h/Rando/Types.h")))
+for enum, sentinel in (("RandoItemId", "RI_MAX"), ("RandoOptionId", "RO_MAX"), ("RandoInf", "RANDO_INF_MAX")):
+    assert all(enums[enum][key] == value for key, value in old11[enum].items() if key != sentinel), enum
+(build / "legacy11_codec.h").write_text(
+    '#pragma once\nnamespace legacy11 {\n'
+    + f'inline constexpr int RO_MAX = {old11["RandoOptionId"]["RO_MAX"]};\n'
+    + f'inline constexpr int RANDO_INF_MAX = {old11["RandoInf"]["RANDO_INF_MAX"]};\n'
+    + save_structs(historical_source(legacy11_commit, "mm/include/z64save.h")) + "\n"
+    + save_codec(historical_source(legacy11_commit, "mm/2s2h/BenJsonConversions.hpp")) + "}\n", encoding="utf-8")
 # Game functions the overworld redirect calls, verbatim (z_scene.c, z_play.c).
 scene_c = (root / "mm/src/code/z_scene.c").read_text(encoding="utf-8").replace("\r\n", "\n")
 play_c = (root / "mm/src/code/z_play.c").read_text(encoding="utf-8").replace("\r\n", "\n")

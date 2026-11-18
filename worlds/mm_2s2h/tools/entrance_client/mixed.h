@@ -40,7 +40,7 @@ inline void TestMixedEntrances() {
     for (const char* fixture : mixedSlots) {
         ApSlot::SlotData slot;
         assert(slot.Parse(json::parse(fixture)).empty());
-        assert(slot.apworldVersion == "0.11.0");
+        assert(slot.apworldVersion == "0.11.1");
         LoadSlot(slot);
         auto& save = gSaveContext.save.shipSaveInfo.rando;
         std::copy(std::begin(options), std::end(options), save.randoSaveOptions);

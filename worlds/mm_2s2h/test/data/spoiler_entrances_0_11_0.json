@@ -1,0 +1,8682 @@
+{
+"all_pools/1": [
+[
+"Astral Observatory -> Termina Field 9",
+"Termina Field 4",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory 1",
+"Southern Swamp Poisoned 7",
+"entrance"
+],
+[
+"Astral Observatory Passage -> East Clock Town 2",
+"Termina Field 1",
+"entrance"
+],
+[
+"Beneath The Well",
+"Swamp Spider House",
+"both"
+],
+[
+"Bomb Shop",
+"Woodfall Great Fairy Fountain",
+"both"
+],
+[
+"Clock Town East -> Astral Observatory 0",
+"Gorman Track 3",
+"entrance"
+],
+[
+"Clock Town East -> North Clock Town 1",
+"South Clock Town 6",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 2",
+"Termina Field 0",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 7",
+"Ikana Graveyard 0",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field 7",
+"Road To Ikana 0",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain",
+"Bomb Shop",
+"both"
+],
+[
+"Clock Town Laundry -> South Clock Town 6",
+"Southern Swamp Poisoned 2",
+"entrance"
+],
+[
+"Clock Town North -> East Clock Town 5",
+"Stone Tower 0",
+"entrance"
+],
+[
+"Clock Town North -> South Clock Town 4",
+"Goron Racetrack 0",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field 8",
+"Southern Swamp Poisoned 3",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 1",
+"Milk Road 1",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 3",
+"Woods Of Mystery 0",
+"entrance"
+],
+[
+"Clock Town South -> Laundry Pool 0",
+"East Clock Town 5",
+"entrance"
+],
+[
+"Clock Town South -> North Clock Town 2",
+"Path To Goron Village Winter 2",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field 6",
+"Ikana Canyon 3",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 1",
+"Woodfall 0",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 2",
+"Romani Ranch 0",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 3",
+"Southern Swamp Poisoned 0",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 5",
+"Path To Mountain Village 0",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field 0",
+"Deku Palace 0",
+"entrance"
+],
+[
+"Cucco Shack",
+"Ranch House",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber",
+"Music Box House",
+"both"
+],
+[
+"Deku Kings Chamber Holding Cell",
+"Deku Kings Chamber",
+"both"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 3",
+"West Clock Town 0",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 4",
+"Path To Goron Village Winter 1",
+"entrance"
+],
+[
+"Deku Shrine",
+"Beneath The Well",
+"both"
+],
+[
+"Doggy Racetrack",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Fishermans Hut",
+"Zora Hall Mikaus Room",
+"both"
+],
+[
+"Ghost Hut",
+"Goron Graveyard",
+"both"
+],
+[
+"Gohts Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road 2",
+"East Clock Town 2",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road 3",
+"Road To Ikana 2",
+"entrance"
+],
+[
+"Goron Graveyard",
+"Ikana Great Fairy Fountain",
+"both"
+],
+[
+"Goron Racetrack -> Path To Goron Village Winter 2",
+"North Clock Town 2",
+"entrance"
+],
+[
+"Goron Shop",
+"Great Bay Great Fairy Fountain",
+"both"
+],
+[
+"Goron Village -> Path To Goron Village Winter 1",
+"Road To Southern Swamp 1",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field 2",
+"Milk Road 2",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape 0",
+"Termina Field 2",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Great Bay Great Fairy Fountain",
+"Zora Hall Shop",
+"both"
+],
+[
+"Great Bay Temple",
+"Great Bay Temple",
+"both"
+],
+[
+"Gyorgs Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Honey And Darling",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana 1",
+"Milk Road 0",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower 0",
+"South Clock Town 1",
+"entrance"
+],
+[
+"Ikana Castle",
+"Ikana Castle",
+"both"
+],
+[
+"Ikana Graveyard Grotto",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana 2",
+"East Clock Town 1",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain",
+"Town Deku Playground",
+"both"
+],
+[
+"Inn (East Clock Town:10)",
+"Tourist Information",
+"both"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Lone Peak Shrine",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Lottery Shop",
+"Cucco Shack",
+"both"
+],
+[
+"Magic Hags Potion Shop",
+"Deku Kings Chamber Holding Cell",
+"both"
+],
+[
+"Marine Research Lab",
+"Clock Town Great Fairy Fountain",
+"both"
+],
+[
+"Mayor Residence",
+"Treasure Shop",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track 0",
+"Path To Snowhead 0",
+"entrance"
+],
+[
+"Milk Road -> Romani Ranch 0",
+"South Clock Town 7",
+"entrance"
+],
+[
+"Milk Road -> Termina Field 5",
+"Ikana Canyon 0",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track 3",
+"Great Bay Coast 0",
+"entrance"
+],
+[
+"Mountain Smithy",
+"Goron Shop",
+"both"
+],
+[
+"Mountain Village -> Path To Goron Village Winter 0",
+"Termina Field 8",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village 1",
+"Termina Field 6",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead 0",
+"Road To Ikana 1",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Music Box House",
+"Zora Hall Lulus Room",
+"both"
+],
+[
+"Oceanside Spider House",
+"Oceanside Spider House",
+"both"
+],
+[
+"Odolwas Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack 0",
+"South Clock Town 4",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village Winter 0",
+"Deku Palace 5",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village Winter 2",
+"Road To Southern Swamp 0",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field 3",
+"West Clock Town 1",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village Winter 6",
+"Path To Snowhead 1",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village Winter 4",
+"Milk Road 3",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead 0",
+"Path To Mountain Village 1",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Lottery Shop",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon 0",
+"Mountain Village Winter 4",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard 0",
+"Gorman Track 0",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field 4",
+"East Clock Town 0",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp Poisoned 0",
+"Goron Village Winter 0",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field 1",
+"Path To Goron Village Winter 0",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Romani Ranch -> Milk Road 1",
+"South Clock Town 3",
+"entrance"
+],
+[
+"Secret Shrine",
+"Deku Shrine",
+"both"
+],
+[
+"Snowhead Great Fairy Fountain",
+"Swordsman School",
+"both"
+],
+[
+"Snowhead Near Path -> Path To Snowhead 1",
+"Termina Field 3",
+"entrance"
+],
+[
+"Snowhead Temple",
+"Woodfall Temple",
+"both"
+],
+[
+"Southern Swamp Grotto",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery 0",
+"Termina Field 9",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp 1",
+"West Clock Town 2",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace 0",
+"North Clock Town 0",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace 5",
+"Termina Field 7",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall 0",
+"Laundry Pool 0",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon 3",
+"North Clock Town 1",
+"entrance"
+],
+[
+"Stone Tower Temple",
+"Stone Tower Temple",
+"both"
+],
+[
+"Swamp Shooting Gallery",
+"Mayor Residence",
+"both"
+],
+[
+"Swamp Spider House",
+"Secret Shrine",
+"both"
+],
+[
+"Swordsman School",
+"Magic Hags Potion Shop",
+"both"
+],
+[
+"Termina Field -> East Clock Town 0",
+"Southern Swamp Poisoned 4",
+"entrance"
+],
+[
+"Termina Field -> Milk Road 0",
+"Zora Cape 0",
+"entrance"
+],
+[
+"Termina Field -> North Clock Town 0",
+"Mountain Village Winter 2",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana 0",
+"Astral Observatory 1",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp 0",
+"Astral Observatory 0",
+"entrance"
+],
+[
+"Termina Field -> South Clock Town 1",
+"Mountain Village Winter 6",
+"entrance"
+],
+[
+"Termina Field -> West Clock Town 0",
+"East Clock Town 3",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast 0",
+"Great Bay Coast 1",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village 0",
+"Snowhead 0",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Tourist Information",
+"Mountain Smithy",
+"both"
+],
+[
+"Town Deku Playground",
+"Trading Post",
+"both"
+],
+[
+"Town Shooting Gallery",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Trading Post",
+"Fishermans Hut",
+"both"
+],
+[
+"Treasure Shop",
+"Doggy Racetrack",
+"both"
+],
+[
+"Twinmolds Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp Poisoned 2",
+"South Clock Town 5",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain",
+"Zora Hall Japas Room",
+"both"
+],
+[
+"Woodfall Temple",
+"Snowhead Temple",
+"both"
+],
+[
+"Woods Of Mystery -> Southern Swamp Poisoned 7",
+"South Clock Town 2",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast 1",
+"Termina Field 5",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Zora Hall Evans Room",
+"Snowhead Great Fairy Fountain",
+"both"
+],
+[
+"Zora Hall Japas Room",
+"Ghost Hut",
+"both"
+],
+[
+"Zora Hall Lulus Room",
+"Zora Hall Evans Room",
+"both"
+],
+[
+"Zora Hall Mikaus Room",
+"Marine Research Lab",
+"both"
+],
+[
+"Zora Hall Shop",
+"Inn (East Clock Town:10)",
+"both"
+]
+],
+"all_pools/2": [
+[
+"Astral Observatory -> Termina Field 9",
+"Great Bay Coast 0",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory 1",
+"Ikana Canyon 0",
+"entrance"
+],
+[
+"Astral Observatory Passage -> East Clock Town 2",
+"South Clock Town 1",
+"entrance"
+],
+[
+"Beneath The Well",
+"Secret Shrine",
+"both"
+],
+[
+"Bomb Shop",
+"Zora Hall Mikaus Room",
+"both"
+],
+[
+"Clock Town East -> Astral Observatory 0",
+"Goron Racetrack 0",
+"entrance"
+],
+[
+"Clock Town East -> North Clock Town 1",
+"North Clock Town 2",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 2",
+"Path To Goron Village Winter 0",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 7",
+"Termina Field 0",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field 7",
+"Milk Road 1",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain",
+"Town Deku Playground",
+"both"
+],
+[
+"Clock Town Laundry -> South Clock Town 6",
+"Mountain Village Winter 6",
+"entrance"
+],
+[
+"Clock Town North -> East Clock Town 5",
+"Milk Road 2",
+"entrance"
+],
+[
+"Clock Town North -> South Clock Town 4",
+"East Clock Town 5",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field 8",
+"Road To Ikana 0",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 1",
+"Path To Snowhead 0",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 3",
+"Southern Swamp Poisoned 7",
+"entrance"
+],
+[
+"Clock Town South -> Laundry Pool 0",
+"Road To Ikana 1",
+"entrance"
+],
+[
+"Clock Town South -> North Clock Town 2",
+"Road To Southern Swamp 0",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field 6",
+"Astral Observatory 0",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 1",
+"Woodfall 0",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 2",
+"Southern Swamp Poisoned 2",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 3",
+"Path To Goron Village Winter 2",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 5",
+"Great Bay Coast 1",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field 0",
+"Termina Field 2",
+"entrance"
+],
+[
+"Cucco Shack",
+"Mayor Residence",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber",
+"Mountain Smithy",
+"both"
+],
+[
+"Deku Kings Chamber Holding Cell",
+"Swordsman School",
+"both"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 3",
+"Path To Mountain Village 0",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 4",
+"Road To Southern Swamp 1",
+"entrance"
+],
+[
+"Deku Shrine",
+"Deku Shrine",
+"both"
+],
+[
+"Doggy Racetrack",
+"Treasure Shop",
+"both"
+],
+[
+"Fishermans Hut",
+"Bomb Shop",
+"both"
+],
+[
+"Ghost Hut",
+"Snowhead Great Fairy Fountain",
+"both"
+],
+[
+"Gohts Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road 2",
+"Milk Road 3",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road 3",
+"Mountain Village Winter 4",
+"entrance"
+],
+[
+"Goron Graveyard",
+"Goron Shop",
+"both"
+],
+[
+"Goron Racetrack -> Path To Goron Village Winter 2",
+"East Clock Town 2",
+"entrance"
+],
+[
+"Goron Shop",
+"Great Bay Great Fairy Fountain",
+"both"
+],
+[
+"Goron Village -> Path To Goron Village Winter 1",
+"Termina Field 1",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field 2",
+"Astral Observatory 1",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape 0",
+"West Clock Town 1",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Great Bay Great Fairy Fountain",
+"Tourist Information",
+"both"
+],
+[
+"Great Bay Temple",
+"Great Bay Temple",
+"both"
+],
+[
+"Gyorgs Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Doggy Racetrack",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana 1",
+"Termina Field 9",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower 0",
+"Road To Ikana 2",
+"entrance"
+],
+[
+"Ikana Castle",
+"Oceanside Spider House",
+"both"
+],
+[
+"Ikana Graveyard Grotto",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana 2",
+"Termina Field 7",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain",
+"Zora Hall Evans Room",
+"both"
+],
+[
+"Inn (East Clock Town:10)",
+"Inn (East Clock Town:10)",
+"both"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Lone Peak Shrine",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Lottery Shop",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Magic Hags Potion Shop",
+"Fishermans Hut",
+"both"
+],
+[
+"Marine Research Lab",
+"Deku Kings Chamber Holding Cell",
+"both"
+],
+[
+"Mayor Residence",
+"Cucco Shack",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track 0",
+"Gorman Track 3",
+"entrance"
+],
+[
+"Milk Road -> Romani Ranch 0",
+"East Clock Town 0",
+"entrance"
+],
+[
+"Milk Road -> Termina Field 5",
+"Termina Field 3",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track 3",
+"North Clock Town 1",
+"entrance"
+],
+[
+"Mountain Smithy",
+"Deku Kings Chamber",
+"both"
+],
+[
+"Mountain Village -> Path To Goron Village Winter 0",
+"Termina Field 4",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village 1",
+"Laundry Pool 0",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead 0",
+"Gorman Track 0",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Music Box House",
+"Ikana Great Fairy Fountain",
+"both"
+],
+[
+"Oceanside Spider House",
+"Beneath The Well",
+"both"
+],
+[
+"Odolwas Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack 0",
+"West Clock Town 2",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village Winter 0",
+"Termina Field 6",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village Winter 2",
+"East Clock Town 3",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field 3",
+"Deku Palace 0",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village Winter 6",
+"Stone Tower 0",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village Winter 4",
+"South Clock Town 7",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead 0",
+"Snowhead 0",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Ranch House",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon 0",
+"South Clock Town 6",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard 0",
+"Ikana Canyon 3",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field 4",
+"North Clock Town 0",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp Poisoned 0",
+"Deku Palace 5",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field 1",
+"South Clock Town 4",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Romani Ranch -> Milk Road 1",
+"Termina Field 8",
+"entrance"
+],
+[
+"Secret Shrine",
+"Swamp Spider House",
+"both"
+],
+[
+"Snowhead Great Fairy Fountain",
+"Music Box House",
+"both"
+],
+[
+"Snowhead Near Path -> Path To Snowhead 1",
+"Path To Snowhead 1",
+"entrance"
+],
+[
+"Snowhead Temple",
+"Woodfall Temple",
+"both"
+],
+[
+"Southern Swamp Grotto",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery 0",
+"South Clock Town 2",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp 1",
+"Woods Of Mystery 0",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace 0",
+"Zora Cape 0",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace 5",
+"Termina Field 5",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall 0",
+"South Clock Town 3",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon 3",
+"Path To Mountain Village 1",
+"entrance"
+],
+[
+"Stone Tower Temple",
+"Snowhead Temple",
+"both"
+],
+[
+"Swamp Shooting Gallery",
+"Honey And Darling",
+"both"
+],
+[
+"Swamp Spider House",
+"Ikana Castle",
+"both"
+],
+[
+"Swordsman School",
+"Marine Research Lab",
+"both"
+],
+[
+"Termina Field -> East Clock Town 0",
+"Ikana Graveyard 0",
+"entrance"
+],
+[
+"Termina Field -> Milk Road 0",
+"Southern Swamp Poisoned 4",
+"entrance"
+],
+[
+"Termina Field -> North Clock Town 0",
+"Romani Ranch 0",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana 0",
+"Mountain Village Winter 2",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp 0",
+"Goron Village Winter 0",
+"entrance"
+],
+[
+"Termina Field -> South Clock Town 1",
+"Path To Goron Village Winter 1",
+"entrance"
+],
+[
+"Termina Field -> West Clock Town 0",
+"East Clock Town 1",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast 0",
+"West Clock Town 0",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village 0",
+"Milk Road 0",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Tourist Information",
+"Goron Graveyard",
+"both"
+],
+[
+"Town Deku Playground",
+"Zora Hall Shop",
+"both"
+],
+[
+"Town Shooting Gallery",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Trading Post",
+"Trading Post",
+"both"
+],
+[
+"Treasure Shop",
+"Lottery Shop",
+"both"
+],
+[
+"Twinmolds Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp Poisoned 2",
+"South Clock Town 5",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain",
+"Woodfall Great Fairy Fountain",
+"both"
+],
+[
+"Woodfall Temple",
+"Stone Tower Temple",
+"both"
+],
+[
+"Woods Of Mystery -> Southern Swamp Poisoned 7",
+"Southern Swamp Poisoned 0",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast 1",
+"Southern Swamp Poisoned 3",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Zora Hall Evans Room",
+"Clock Town Great Fairy Fountain",
+"both"
+],
+[
+"Zora Hall Japas Room",
+"Zora Hall Lulus Room",
+"both"
+],
+[
+"Zora Hall Lulus Room",
+"Magic Hags Potion Shop",
+"both"
+],
+[
+"Zora Hall Mikaus Room",
+"Ghost Hut",
+"both"
+],
+[
+"Zora Hall Shop",
+"Zora Hall Japas Room",
+"both"
+]
+],
+"all_pools/3": [
+[
+"Astral Observatory -> Termina Field 9",
+"Southern Swamp Poisoned 2",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory 1",
+"Laundry Pool 0",
+"entrance"
+],
+[
+"Astral Observatory Passage -> East Clock Town 2",
+"Termina Field 0",
+"entrance"
+],
+[
+"Beneath The Well",
+"Oceanside Spider House",
+"both"
+],
+[
+"Bomb Shop",
+"Snowhead Great Fairy Fountain",
+"both"
+],
+[
+"Clock Town East -> Astral Observatory 0",
+"Gorman Track 3",
+"entrance"
+],
+[
+"Clock Town East -> North Clock Town 1",
+"South Clock Town 3",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 2",
+"Snowhead 0",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 7",
+"Great Bay Coast 0",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field 7",
+"Path To Snowhead 1",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain",
+"Clock Town Great Fairy Fountain",
+"both"
+],
+[
+"Clock Town Laundry -> South Clock Town 6",
+"Termina Field 9",
+"entrance"
+],
+[
+"Clock Town North -> East Clock Town 5",
+"South Clock Town 5",
+"entrance"
+],
+[
+"Clock Town North -> South Clock Town 4",
+"West Clock Town 1",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field 8",
+"Termina Field 8",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 1",
+"Ikana Canyon 3",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 3",
+"Deku Palace 0",
+"entrance"
+],
+[
+"Clock Town South -> Laundry Pool 0",
+"Road To Southern Swamp 1",
+"entrance"
+],
+[
+"Clock Town South -> North Clock Town 2",
+"Termina Field 7",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field 6",
+"Milk Road 2",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 1",
+"North Clock Town 1",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 2",
+"East Clock Town 5",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 3",
+"Mountain Village Winter 4",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 5",
+"North Clock Town 2",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field 0",
+"Milk Road 1",
+"entrance"
+],
+[
+"Cucco Shack",
+"Cucco Shack",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber",
+"Trading Post",
+"both"
+],
+[
+"Deku Kings Chamber Holding Cell",
+"Mountain Smithy",
+"both"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 3",
+"South Clock Town 2",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 4",
+"Southern Swamp Poisoned 0",
+"entrance"
+],
+[
+"Deku Shrine",
+"Ikana Castle",
+"both"
+],
+[
+"Doggy Racetrack",
+"Mayor Residence",
+"both"
+],
+[
+"Fishermans Hut",
+"Fishermans Hut",
+"both"
+],
+[
+"Ghost Hut",
+"Swordsman School",
+"both"
+],
+[
+"Gohts Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road 2",
+"East Clock Town 2",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road 3",
+"Termina Field 6",
+"entrance"
+],
+[
+"Goron Graveyard",
+"Magic Hags Potion Shop",
+"both"
+],
+[
+"Goron Racetrack -> Path To Goron Village Winter 2",
+"Termina Field 5",
+"entrance"
+],
+[
+"Goron Shop",
+"Music Box House",
+"both"
+],
+[
+"Goron Village -> Path To Goron Village Winter 1",
+"Ikana Canyon 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field 2",
+"East Clock Town 1",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape 0",
+"Termina Field 1",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Great Bay Great Fairy Fountain",
+"Marine Research Lab",
+"both"
+],
+[
+"Great Bay Temple",
+"Woodfall Temple",
+"both"
+],
+[
+"Gyorgs Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Lottery Shop",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana 1",
+"Goron Village Winter 0",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower 0",
+"South Clock Town 7",
+"entrance"
+],
+[
+"Ikana Castle",
+"Deku Shrine",
+"both"
+],
+[
+"Ikana Graveyard Grotto",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana 2",
+"Termina Field 2",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain",
+"Deku Kings Chamber Holding Cell",
+"both"
+],
+[
+"Inn (East Clock Town:10)",
+"Deku Kings Chamber",
+"both"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Lone Peak Shrine",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Lottery Shop",
+"Honey And Darling",
+"both"
+],
+[
+"Magic Hags Potion Shop",
+"Tourist Information",
+"both"
+],
+[
+"Marine Research Lab",
+"Ikana Great Fairy Fountain",
+"both"
+],
+[
+"Mayor Residence",
+"Ranch House",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track 0",
+"Road To Ikana 2",
+"entrance"
+],
+[
+"Milk Road -> Romani Ranch 0",
+"West Clock Town 0",
+"entrance"
+],
+[
+"Milk Road -> Termina Field 5",
+"Woods Of Mystery 0",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track 3",
+"South Clock Town 1",
+"entrance"
+],
+[
+"Mountain Smithy",
+"Zora Hall Shop",
+"both"
+],
+[
+"Mountain Village -> Path To Goron Village Winter 0",
+"Stone Tower 0",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village 1",
+"Southern Swamp Poisoned 7",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead 0",
+"West Clock Town 2",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Music Box House",
+"Goron Graveyard",
+"both"
+],
+[
+"Oceanside Spider House",
+"Swamp Spider House",
+"both"
+],
+[
+"Odolwas Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack 0",
+"Romani Ranch 0",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village Winter 0",
+"Path To Snowhead 0",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village Winter 2",
+"Zora Cape 0",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field 3",
+"Termina Field 4",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village Winter 6",
+"Road To Southern Swamp 0",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village Winter 4",
+"Path To Goron Village Winter 1",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead 0",
+"East Clock Town 0",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Doggy Racetrack",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon 0",
+"Southern Swamp Poisoned 4",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard 0",
+"Milk Road 3",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field 4",
+"Southern Swamp Poisoned 3",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp Poisoned 0",
+"South Clock Town 6",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field 1",
+"Path To Mountain Village 1",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Romani Ranch -> Milk Road 1",
+"Path To Goron Village Winter 2",
+"entrance"
+],
+[
+"Secret Shrine",
+"Beneath The Well",
+"both"
+],
+[
+"Snowhead Great Fairy Fountain",
+"Great Bay Great Fairy Fountain",
+"both"
+],
+[
+"Snowhead Near Path -> Path To Snowhead 1",
+"East Clock Town 3",
+"entrance"
+],
+[
+"Snowhead Temple",
+"Snowhead Temple",
+"both"
+],
+[
+"Southern Swamp Grotto",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery 0",
+"Mountain Village Winter 6",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp 1",
+"Deku Palace 5",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace 0",
+"Road To Ikana 0",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace 5",
+"Road To Ikana 1",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall 0",
+"Astral Observatory 1",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon 3",
+"Mountain Village Winter 2",
+"entrance"
+],
+[
+"Stone Tower Temple",
+"Great Bay Temple",
+"both"
+],
+[
+"Swamp Shooting Gallery",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Swamp Spider House",
+"Secret Shrine",
+"both"
+],
+[
+"Swordsman School",
+"Zora Hall Mikaus Room",
+"both"
+],
+[
+"Termina Field -> East Clock Town 0",
+"South Clock Town 4",
+"entrance"
+],
+[
+"Termina Field -> Milk Road 0",
+"Goron Racetrack 0",
+"entrance"
+],
+[
+"Termina Field -> North Clock Town 0",
+"North Clock Town 0",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana 0",
+"Path To Mountain Village 0",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp 0",
+"Great Bay Coast 1",
+"entrance"
+],
+[
+"Termina Field -> South Clock Town 1",
+"Gorman Track 0",
+"entrance"
+],
+[
+"Termina Field -> West Clock Town 0",
+"Astral Observatory 0",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast 0",
+"Ikana Graveyard 0",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village 0",
+"Woodfall 0",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Tourist Information",
+"Zora Hall Lulus Room",
+"both"
+],
+[
+"Town Deku Playground",
+"Town Deku Playground",
+"both"
+],
+[
+"Town Shooting Gallery",
+"Treasure Shop",
+"both"
+],
+[
+"Trading Post",
+"Ghost Hut",
+"both"
+],
+[
+"Treasure Shop",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Twinmolds Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp Poisoned 2",
+"Termina Field 3",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain",
+"Zora Hall Evans Room",
+"both"
+],
+[
+"Woodfall Temple",
+"Stone Tower Temple",
+"both"
+],
+[
+"Woods Of Mystery -> Southern Swamp Poisoned 7",
+"Milk Road 0",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast 1",
+"Path To Goron Village Winter 0",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Zora Hall Evans Room",
+"Inn (East Clock Town:10)",
+"both"
+],
+[
+"Zora Hall Japas Room",
+"Goron Shop",
+"both"
+],
+[
+"Zora Hall Lulus Room",
+"Zora Hall Japas Room",
+"both"
+],
+[
+"Zora Hall Mikaus Room",
+"Bomb Shop",
+"both"
+],
+[
+"Zora Hall Shop",
+"Woodfall Great Fairy Fountain",
+"both"
+]
+],
+"all_pools/4": [
+[
+"Astral Observatory -> Termina Field 9",
+"Termina Field 1",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory 1",
+"Ikana Graveyard 0",
+"entrance"
+],
+[
+"Astral Observatory Passage -> East Clock Town 2",
+"West Clock Town 2",
+"entrance"
+],
+[
+"Beneath The Well",
+"Oceanside Spider House",
+"both"
+],
+[
+"Bomb Shop",
+"Ikana Great Fairy Fountain",
+"both"
+],
+[
+"Clock Town East -> Astral Observatory 0",
+"Milk Road 1",
+"entrance"
+],
+[
+"Clock Town East -> North Clock Town 1",
+"Road To Southern Swamp 1",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 2",
+"West Clock Town 1",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 7",
+"South Clock Town 4",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field 7",
+"Snowhead 0",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain",
+"Woodfall Great Fairy Fountain",
+"both"
+],
+[
+"Clock Town Laundry -> South Clock Town 6",
+"Termina Field 7",
+"entrance"
+],
+[
+"Clock Town North -> East Clock Town 5",
+"Southern Swamp Poisoned 2",
+"entrance"
+],
+[
+"Clock Town North -> South Clock Town 4",
+"Termina Field 8",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field 8",
+"Gorman Track 3",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 1",
+"Path To Goron Village Winter 0",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 3",
+"Termina Field 2",
+"entrance"
+],
+[
+"Clock Town South -> Laundry Pool 0",
+"Milk Road 0",
+"entrance"
+],
+[
+"Clock Town South -> North Clock Town 2",
+"East Clock Town 1",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field 6",
+"Southern Swamp Poisoned 4",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 1",
+"Goron Village Winter 0",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 2",
+"Gorman Track 0",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 3",
+"Astral Observatory 0",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 5",
+"East Clock Town 3",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field 0",
+"Goron Racetrack 0",
+"entrance"
+],
+[
+"Cucco Shack",
+"Lottery Shop",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber",
+"Goron Graveyard",
+"both"
+],
+[
+"Deku Kings Chamber Holding Cell",
+"Inn (East Clock Town:10)",
+"both"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 3",
+"Path To Snowhead 1",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 4",
+"Zora Cape 0",
+"entrance"
+],
+[
+"Deku Shrine",
+"Ikana Castle",
+"both"
+],
+[
+"Doggy Racetrack",
+"Treasure Shop",
+"both"
+],
+[
+"Fishermans Hut",
+"Ghost Hut",
+"both"
+],
+[
+"Ghost Hut",
+"Deku Kings Chamber",
+"both"
+],
+[
+"Gohts Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road 2",
+"North Clock Town 0",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road 3",
+"South Clock Town 3",
+"entrance"
+],
+[
+"Goron Graveyard",
+"Swordsman School",
+"both"
+],
+[
+"Goron Racetrack -> Path To Goron Village Winter 2",
+"West Clock Town 0",
+"entrance"
+],
+[
+"Goron Shop",
+"Zora Hall Lulus Room",
+"both"
+],
+[
+"Goron Village -> Path To Goron Village Winter 1",
+"South Clock Town 5",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field 2",
+"Road To Southern Swamp 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape 0",
+"Milk Road 3",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Great Bay Great Fairy Fountain",
+"Bomb Shop",
+"both"
+],
+[
+"Great Bay Temple",
+"Great Bay Temple",
+"both"
+],
+[
+"Gyorgs Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Mayor Residence",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana 1",
+"Stone Tower 0",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower 0",
+"Southern Swamp Poisoned 3",
+"entrance"
+],
+[
+"Ikana Castle",
+"Beneath The Well",
+"both"
+],
+[
+"Ikana Graveyard Grotto",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana 2",
+"Termina Field 9",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain",
+"Marine Research Lab",
+"both"
+],
+[
+"Inn (East Clock Town:10)",
+"Mountain Smithy",
+"both"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Lone Peak Shrine",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Lottery Shop",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Magic Hags Potion Shop",
+"Zora Hall Japas Room",
+"both"
+],
+[
+"Marine Research Lab",
+"Great Bay Great Fairy Fountain",
+"both"
+],
+[
+"Mayor Residence",
+"Cucco Shack",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track 0",
+"Great Bay Coast 1",
+"entrance"
+],
+[
+"Milk Road -> Romani Ranch 0",
+"East Clock Town 2",
+"entrance"
+],
+[
+"Milk Road -> Termina Field 5",
+"South Clock Town 6",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track 3",
+"Termina Field 4",
+"entrance"
+],
+[
+"Mountain Smithy",
+"Deku Kings Chamber Holding Cell",
+"both"
+],
+[
+"Mountain Village -> Path To Goron Village Winter 0",
+"Path To Snowhead 0",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village 1",
+"Termina Field 0",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead 0",
+"Path To Goron Village Winter 1",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Music Box House",
+"Magic Hags Potion Shop",
+"both"
+],
+[
+"Oceanside Spider House",
+"Secret Shrine",
+"both"
+],
+[
+"Odolwas Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack 0",
+"Path To Mountain Village 0",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village Winter 0",
+"Mountain Village Winter 4",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village Winter 2",
+"South Clock Town 7",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field 3",
+"Path To Goron Village Winter 2",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village Winter 6",
+"Road To Ikana 0",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village Winter 4",
+"Mountain Village Winter 2",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead 0",
+"Deku Palace 0",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon 0",
+"Romani Ranch 0",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard 0",
+"Southern Swamp Poisoned 7",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field 4",
+"Path To Mountain Village 1",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp Poisoned 0",
+"East Clock Town 5",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field 1",
+"Great Bay Coast 0",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Romani Ranch -> Milk Road 1",
+"Road To Ikana 1",
+"entrance"
+],
+[
+"Secret Shrine",
+"Swamp Spider House",
+"both"
+],
+[
+"Snowhead Great Fairy Fountain",
+"Town Deku Playground",
+"both"
+],
+[
+"Snowhead Near Path -> Path To Snowhead 1",
+"East Clock Town 0",
+"entrance"
+],
+[
+"Snowhead Temple",
+"Stone Tower Temple",
+"both"
+],
+[
+"Southern Swamp Grotto",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery 0",
+"Road To Ikana 2",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp 1",
+"Termina Field 3",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace 0",
+"Ikana Canyon 3",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace 5",
+"South Clock Town 1",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall 0",
+"North Clock Town 1",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon 3",
+"Ikana Canyon 0",
+"entrance"
+],
+[
+"Stone Tower Temple",
+"Snowhead Temple",
+"both"
+],
+[
+"Swamp Shooting Gallery",
+"Doggy Racetrack",
+"both"
+],
+[
+"Swamp Spider House",
+"Deku Shrine",
+"both"
+],
+[
+"Swordsman School",
+"Tourist Information",
+"both"
+],
+[
+"Termina Field -> East Clock Town 0",
+"Laundry Pool 0",
+"entrance"
+],
+[
+"Termina Field -> Milk Road 0",
+"Woodfall 0",
+"entrance"
+],
+[
+"Termina Field -> North Clock Town 0",
+"North Clock Town 2",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana 0",
+"Milk Road 2",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp 0",
+"Astral Observatory 1",
+"entrance"
+],
+[
+"Termina Field -> South Clock Town 1",
+"Woods Of Mystery 0",
+"entrance"
+],
+[
+"Termina Field -> West Clock Town 0",
+"Mountain Village Winter 6",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast 0",
+"South Clock Town 2",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village 0",
+"Southern Swamp Poisoned 0",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Tourist Information",
+"Music Box House",
+"both"
+],
+[
+"Town Deku Playground",
+"Zora Hall Shop",
+"both"
+],
+[
+"Town Shooting Gallery",
+"Ranch House",
+"both"
+],
+[
+"Trading Post",
+"Snowhead Great Fairy Fountain",
+"both"
+],
+[
+"Treasure Shop",
+"Honey And Darling",
+"both"
+],
+[
+"Twinmolds Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp Poisoned 2",
+"Termina Field 5",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain",
+"Trading Post",
+"both"
+],
+[
+"Woodfall Temple",
+"Woodfall Temple",
+"both"
+],
+[
+"Woods Of Mystery -> Southern Swamp Poisoned 7",
+"Termina Field 6",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast 1",
+"Deku Palace 5",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Zora Hall Evans Room",
+"Clock Town Great Fairy Fountain",
+"both"
+],
+[
+"Zora Hall Japas Room",
+"Zora Hall Mikaus Room",
+"both"
+],
+[
+"Zora Hall Lulus Room",
+"Goron Shop",
+"both"
+],
+[
+"Zora Hall Mikaus Room",
+"Fishermans Hut",
+"both"
+],
+[
+"Zora Hall Shop",
+"Zora Hall Evans Room",
+"both"
+]
+],
+"mixed_all/1": [
+[
+"Astral Observatory -> Astral Observatory Outside",
+"Great Bay Coast -> Zora Cape",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory",
+"Swamp Spider House Entrance -> Southern Swamp South",
+"entrance"
+],
+[
+"Astral Observatory Passage -> Clock Town East",
+"Clock Town South -> Termina Field",
+"entrance"
+],
+[
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"Path To Mountain Village Upper -> Mountain Village",
+"entrance"
+],
+[
+"Bomb Shop -> Clock Town West",
+"Ikana Canyon Lower -> Road To Ikana Above Ledge",
+"entrance"
+],
+[
+"Clock Town East -> Astral Observatory Passage",
+"Mountain Village -> Path To Mountain Village Upper",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town North",
+"Ikana Graveyard Lower -> Road To Ikana Below Ledge",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town South",
+"Goron Graveyard -> Mountain Village",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town South #2",
+"Gorman Track Front -> Milk Road",
+"entrance"
+],
+[
+"Clock Town East -> Inn #2",
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field",
+"Road To Ikana Field Side -> Termina Field",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"entrance"
+],
+[
+"Clock Town Laundry -> Clock Town South",
+"Road To Ikana Above Ledge -> Ikana Canyon Lower",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town East",
+"Tourist Information -> Southern Swamp North",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town South",
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field",
+"Southern Swamp South -> Deku Palace Outside",
+"entrance"
+],
+[
+"Clock Town North -> Town Deku Playground",
+"Goron Village -> Path To Goron Village",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town East",
+"Mountain Village -> Mountain Smithy",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town East #2",
+"Path To Goron Village -> Mountain Village",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town Laundry",
+"Mountain Village -> Path To Goron Village",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town North",
+"Ghost Hut -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town West",
+"Ikana Canyon Upper -> Stone Tower Bottom",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town West #2",
+"Zora Hall Mikaus Room -> Zora Hall",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field",
+"Astral Observatory Passage -> Clock Town East",
+"entrance"
+],
+[
+"Clock Town West -> Bomb Shop",
+"Great Bay Coast -> Termina Field Before Great Bay Coast",
+"entrance"
+],
+[
+"Clock Town West -> Clock Town South",
+"Zora Hall -> Zora Hall Evans Room",
+"entrance"
+],
+[
+"Clock Town West -> Clock Town South #2",
+"Woodfall -> Southern Swamp South Upper",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field",
+"Deku Palace Outside -> Southern Swamp South",
+"entrance"
+],
+[
+"Cucco Shack",
+"Doggy Racetrack",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"entrance"
+],
+[
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"entrance"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"Mountain Smithy -> Mountain Village",
+"entrance"
+],
+[
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"entrance"
+],
+[
+"Deku Palace Outside -> Deku Shrine Entrance",
+"Music Box House -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp South",
+"Clock Town West -> Termina Field",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp South Upper",
+"Snowhead Near Path -> Path To Snowhead Upper",
+"entrance"
+],
+[
+"Deku Shrine Entrance -> Deku Palace Outside",
+"Path To Goron Village -> Goron Village",
+"entrance"
+],
+[
+"Doggy Racetrack",
+"Treasure Shop",
+"both"
+],
+[
+"Fishermans Hut -> Great Bay Coast",
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"entrance"
+],
+[
+"Ghost Hut -> Ikana Canyon Upper",
+"Clock Town South -> Clock Town North",
+"entrance"
+],
+[
+"Gohts Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road Behind Fence",
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road",
+"Clock Town East -> Clock Town South #2",
+"entrance"
+],
+[
+"Goron Graveyard -> Mountain Village",
+"Clock Town East -> Clock Town South",
+"entrance"
+],
+[
+"Goron Racetrack -> Path To Goron Village",
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"entrance"
+],
+[
+"Goron Shop -> Goron Shrine",
+"Path To Snowhead Lower -> Mountain Village",
+"entrance"
+],
+[
+"Goron Shrine -> Goron Shop",
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"entrance"
+],
+[
+"Goron Village -> Path To Goron Village",
+"Clock Town North -> Town Deku Playground",
+"entrance"
+],
+[
+"Great Bay Coast -> Fishermans Hut",
+"Woods Of Mystery -> Southern Swamp Near Woods",
+"entrance"
+],
+[
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field Before Great Bay Coast",
+"Clock Town West -> Bomb Shop",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape",
+"Astral Observatory -> Astral Observatory Outside",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"entrance"
+],
+[
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"Ikana Canyon Upper -> Ghost Hut",
+"entrance"
+],
+[
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"Southern Swamp North -> Tourist Information",
+"entrance"
+],
+[
+"Gyorgs Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana Above Ledge",
+"Bomb Shop -> Clock Town West",
+"entrance"
+],
+[
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"Termina Field -> Road To Southern Swamp",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ghost Hut",
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"Southern Swamp South Upper -> Deku Palace Outside",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Music Box House",
+"Zora Hall Japas Room -> Zora Hall",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower Bottom",
+"Clock Town South -> Clock Town West",
+"entrance"
+],
+[
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"Termina Field -> Clock Town North",
+"entrance"
+],
+[
+"Ikana Graveyard Grotto",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana Below Ledge",
+"Clock Town East -> Clock Town North",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"Zora Hall -> Zora Hall Lulus Room",
+"entrance"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Inn -> Clock Town East #2",
+"Road To Southern Swamp -> Termina Field",
+"entrance"
+],
+[
+"Lone Peak Shrine",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Lottery Shop",
+"Ranch House",
+"both"
+],
+[
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"Clock Town East -> Inn #2",
+"entrance"
+],
+[
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"Goron Shrine -> Goron Shop",
+"entrance"
+],
+[
+"Mayor Residence",
+"Honey And Darling",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track Front",
+"Termina Field -> Clock Town South",
+"entrance"
+],
+[
+"Milk Road -> Termina Field",
+"Road To Southern Swamp -> Southern Swamp North",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track Back",
+"Stone Tower Bottom -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Mountain Smithy -> Mountain Village",
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"entrance"
+],
+[
+"Mountain Village -> Goron Graveyard",
+"Zora Hall Shop -> Zora Hall",
+"entrance"
+],
+[
+"Mountain Village -> Mountain Smithy",
+"Clock Town South -> Clock Town East",
+"entrance"
+],
+[
+"Mountain Village -> Path To Goron Village",
+"Clock Town South -> Clock Town Laundry",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village Upper",
+"Clock Town East -> Astral Observatory Passage",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead Lower",
+"Termina Field -> Road To Ikana Field Side",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Music Box House -> Ikana Canyon Upper",
+"Deku Palace Outside -> Deku Shrine Entrance",
+"entrance"
+],
+[
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"entrance"
+],
+[
+"Odolwas Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack",
+"Termina Field -> Clock Town East",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village",
+"Deku Shrine Entrance -> Deku Palace Outside",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village",
+"Clock Town South -> Clock Town East #2",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field Before Path To Mountain Village",
+"Woodfall Great Fairy Fountain -> Woodfall",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village",
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village",
+"Goron Shop -> Goron Shrine",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead Near Path",
+"Termina Field -> Clock Town West",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon Lower",
+"Clock Town Laundry -> Clock Town South",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard Lower",
+"Zora Hall -> Zora Hall Shop",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field",
+"Clock Town East -> Termina Field",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp North",
+"Milk Road -> Termina Field",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field",
+"Inn -> Clock Town East #2",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"Zora Hall -> Zora Hall Japas Room",
+"entrance"
+],
+[
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"entrance"
+],
+[
+"Snowhead Near Path -> Path To Snowhead Upper",
+"Deku Palace Outside -> Southern Swamp South Upper",
+"entrance"
+],
+[
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"Goron Racetrack -> Path To Goron Village",
+"entrance"
+],
+[
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"Southern Swamp South Upper -> Woodfall",
+"entrance"
+],
+[
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"Clock Town North -> Clock Town South",
+"entrance"
+],
+[
+"Southern Swamp Grotto",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village Lower",
+"entrance"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery",
+"Town Deku Playground -> Clock Town North",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp",
+"Zora Cape -> Great Bay Coast",
+"entrance"
+],
+[
+"Southern Swamp North -> Tourist Information",
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace Outside",
+"Clock Town North -> Termina Field",
+"entrance"
+],
+[
+"Southern Swamp South -> Swamp Spider House Entrance",
+"Zora Hall Lulus Room -> Zora Hall",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace Outside",
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall",
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon Upper",
+"Milk Road Behind Fence -> Gorman Track Back",
+"entrance"
+],
+[
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"Termina Field -> Milk Road",
+"entrance"
+],
+[
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"entrance"
+],
+[
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"entrance"
+],
+[
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"Gorman Track Back -> Milk Road Behind Fence",
+"entrance"
+],
+[
+"Swamp Shooting Gallery",
+"Lottery Shop",
+"both"
+],
+[
+"Swamp Spider House Entrance -> Southern Swamp South",
+"Astral Observatory Outside -> Astral Observatory",
+"entrance"
+],
+[
+"Termina Field -> Clock Town East",
+"Path To Goron Village -> Goron Racetrack",
+"entrance"
+],
+[
+"Termina Field -> Clock Town North",
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Termina Field -> Clock Town South",
+"Milk Road -> Gorman Track Front",
+"entrance"
+],
+[
+"Termina Field -> Clock Town West",
+"Path To Snowhead Upper -> Snowhead Near Path",
+"entrance"
+],
+[
+"Termina Field -> Milk Road",
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana Field Side",
+"Mountain Village -> Path To Snowhead Lower",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp",
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast",
+"Zora Hall -> Zora Hall Mikaus Room",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village Lower",
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Tourist Information -> Southern Swamp North",
+"Clock Town North -> Clock Town East",
+"entrance"
+],
+[
+"Town Deku Playground -> Clock Town North",
+"Southern Swamp Near Woods -> Woods Of Mystery",
+"entrance"
+],
+[
+"Town Shooting Gallery",
+"Mayor Residence",
+"both"
+],
+[
+"Treasure Shop",
+"Cucco Shack",
+"both"
+],
+[
+"Twinmolds Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp South Upper",
+"Clock Town West -> Clock Town South #2",
+"entrance"
+],
+[
+"Woodfall -> Woodfall Great Fairy Fountain",
+"Zora Hall Evans Room -> Zora Hall",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain -> Woodfall",
+"Path To Mountain Village Lower -> Termina Field Before Path To Mountain Village",
+"entrance"
+],
+[
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"Fishermans Hut -> Great Bay Coast",
+"entrance"
+],
+[
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"entrance"
+],
+[
+"Woods Of Mystery -> Southern Swamp Near Woods",
+"Great Bay Coast -> Fishermans Hut",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast",
+"Southern Swamp North -> Road To Southern Swamp",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"entrance"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Evans Room",
+"Clock Town West -> Clock Town South",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Japas Room",
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Lulus Room",
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Mikaus Room",
+"Termina Field Before Great Bay Coast -> Great Bay Coast",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Shop",
+"Road To Ikana Below Ledge -> Ikana Graveyard Lower",
+"entrance"
+],
+[
+"Zora Hall Evans Room -> Zora Hall",
+"Woodfall -> Woodfall Great Fairy Fountain",
+"entrance"
+],
+[
+"Zora Hall Japas Room -> Zora Hall",
+"Ikana Canyon Upper -> Music Box House",
+"entrance"
+],
+[
+"Zora Hall Lulus Room -> Zora Hall",
+"Southern Swamp South -> Swamp Spider House Entrance",
+"entrance"
+],
+[
+"Zora Hall Mikaus Room -> Zora Hall",
+"Clock Town South -> Clock Town West #2",
+"entrance"
+],
+[
+"Zora Hall Shop -> Zora Hall",
+"Mountain Village -> Goron Graveyard",
+"entrance"
+]
+],
+"mixed_all/2": [
+[
+"Astral Observatory -> Astral Observatory Outside",
+"Clock Town South -> Termina Field",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory",
+"Zora Hall -> Zora Hall Shop",
+"entrance"
+],
+[
+"Astral Observatory Passage -> Clock Town East",
+"Termina Field -> Road To Southern Swamp",
+"entrance"
+],
+[
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"Zora Hall -> Zora Hall Mikaus Room",
+"entrance"
+],
+[
+"Bomb Shop -> Clock Town West",
+"Path To Goron Village -> Goron Village",
+"entrance"
+],
+[
+"Clock Town East -> Astral Observatory Passage",
+"Zora Cape -> Great Bay Coast",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town North",
+"Goron Racetrack -> Path To Goron Village",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town South",
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town South #2",
+"Mountain Village -> Path To Goron Village",
+"entrance"
+],
+[
+"Clock Town East -> Inn #2",
+"Southern Swamp North -> Road To Southern Swamp",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field",
+"Milk Road -> Gorman Track Front",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"Deku Palace Outside -> Southern Swamp South",
+"entrance"
+],
+[
+"Clock Town Laundry -> Clock Town South",
+"Termina Field -> Clock Town East",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town East",
+"Clock Town West -> Clock Town South",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town South",
+"Zora Hall Evans Room -> Zora Hall",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field",
+"Road To Ikana Field Side -> Termina Field",
+"entrance"
+],
+[
+"Clock Town North -> Town Deku Playground",
+"Stone Tower Bottom -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town East",
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town East #2",
+"Town Deku Playground -> Clock Town North",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town Laundry",
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village Lower",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town North",
+"Swamp Spider House Entrance -> Southern Swamp South",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town West",
+"Path To Snowhead Lower -> Mountain Village",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town West #2",
+"Ikana Canyon Upper -> Stone Tower Bottom",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field",
+"Astral Observatory -> Astral Observatory Outside",
+"entrance"
+],
+[
+"Clock Town West -> Bomb Shop",
+"Zora Hall Shop -> Zora Hall",
+"entrance"
+],
+[
+"Clock Town West -> Clock Town South",
+"Clock Town North -> Clock Town East",
+"entrance"
+],
+[
+"Clock Town West -> Clock Town South #2",
+"Path To Goron Village -> Goron Racetrack",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field",
+"Termina Field Before Great Bay Coast -> Great Bay Coast",
+"entrance"
+],
+[
+"Cucco Shack",
+"Doggy Racetrack",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"Path To Mountain Village Lower -> Termina Field Before Path To Mountain Village",
+"entrance"
+],
+[
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"entrance"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"Southern Swamp South -> Deku Palace Outside",
+"entrance"
+],
+[
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"Milk Road -> Termina Field",
+"entrance"
+],
+[
+"Deku Palace Outside -> Deku Shrine Entrance",
+"Termina Field -> Clock Town West",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp South",
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp South Upper",
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Deku Shrine Entrance -> Deku Palace Outside",
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"entrance"
+],
+[
+"Doggy Racetrack",
+"Honey And Darling",
+"both"
+],
+[
+"Fishermans Hut -> Great Bay Coast",
+"Southern Swamp Near Woods -> Woods Of Mystery",
+"entrance"
+],
+[
+"Ghost Hut -> Ikana Canyon Upper",
+"Goron Shrine -> Goron Shop",
+"entrance"
+],
+[
+"Gohts Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road Behind Fence",
+"Road To Southern Swamp -> Southern Swamp North",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road",
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"entrance"
+],
+[
+"Goron Graveyard -> Mountain Village",
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"entrance"
+],
+[
+"Goron Racetrack -> Path To Goron Village",
+"Clock Town East -> Clock Town North",
+"entrance"
+],
+[
+"Goron Shop -> Goron Shrine",
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"entrance"
+],
+[
+"Goron Shrine -> Goron Shop",
+"Ghost Hut -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Goron Village -> Path To Goron Village",
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"entrance"
+],
+[
+"Great Bay Coast -> Fishermans Hut",
+"Termina Field -> Milk Road",
+"entrance"
+],
+[
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"Goron Graveyard -> Mountain Village",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field Before Great Bay Coast",
+"Ikana Graveyard Lower -> Road To Ikana Below Ledge",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape",
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"Clock Town South -> Clock Town East",
+"entrance"
+],
+[
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"entrance"
+],
+[
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"Termina Field -> Clock Town North",
+"entrance"
+],
+[
+"Gyorgs Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana Above Ledge",
+"Mountain Village -> Path To Snowhead Lower",
+"entrance"
+],
+[
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ghost Hut",
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"Goron Village -> Path To Goron Village",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"Deku Shrine Entrance -> Deku Palace Outside",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Music Box House",
+"Zora Hall Lulus Room -> Zora Hall",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower Bottom",
+"Clock Town South -> Clock Town West #2",
+"entrance"
+],
+[
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"Southern Swamp North -> Tourist Information",
+"entrance"
+],
+[
+"Ikana Graveyard Grotto",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana Below Ledge",
+"Great Bay Coast -> Termina Field Before Great Bay Coast",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"Deku Palace Outside -> Southern Swamp South Upper",
+"entrance"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Inn -> Clock Town East #2",
+"Road To Ikana Above Ledge -> Ikana Canyon Lower",
+"entrance"
+],
+[
+"Lone Peak Shrine",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Lottery Shop",
+"Treasure Shop",
+"both"
+],
+[
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"entrance"
+],
+[
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"entrance"
+],
+[
+"Mayor Residence",
+"Ranch House",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track Front",
+"Clock Town East -> Termina Field",
+"entrance"
+],
+[
+"Milk Road -> Termina Field",
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track Back",
+"Mountain Village -> Goron Graveyard",
+"entrance"
+],
+[
+"Mountain Smithy -> Mountain Village",
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"entrance"
+],
+[
+"Mountain Village -> Goron Graveyard",
+"Milk Road Behind Fence -> Gorman Track Back",
+"entrance"
+],
+[
+"Mountain Village -> Mountain Smithy",
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"entrance"
+],
+[
+"Mountain Village -> Path To Goron Village",
+"Clock Town East -> Clock Town South #2",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village Upper",
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead Lower",
+"Ikana Canyon Lower -> Road To Ikana Above Ledge",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Music Box House -> Ikana Canyon Upper",
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"entrance"
+],
+[
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"Ikana Canyon Upper -> Ghost Hut",
+"entrance"
+],
+[
+"Odolwas Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack",
+"Clock Town West -> Clock Town South #2",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village",
+"Bomb Shop -> Clock Town West",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village",
+"Woodfall Great Fairy Fountain -> Woodfall",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field Before Path To Mountain Village",
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village",
+"Southern Swamp South -> Swamp Spider House Entrance",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village",
+"Clock Town South -> Clock Town West",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead Near Path",
+"Southern Swamp South Upper -> Woodfall",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon Lower",
+"Inn -> Clock Town East #2",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard Lower",
+"Zora Hall -> Zora Hall Japas Room",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field",
+"Clock Town North -> Termina Field",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp North",
+"Gorman Track Back -> Milk Road Behind Fence",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field",
+"Woods Of Mystery -> Southern Swamp Near Woods",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"Zora Hall -> Zora Hall Evans Room",
+"entrance"
+],
+[
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"Southern Swamp South Upper -> Deku Palace Outside",
+"entrance"
+],
+[
+"Snowhead Near Path -> Path To Snowhead Upper",
+"Termina Field -> Clock Town South",
+"entrance"
+],
+[
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"entrance"
+],
+[
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"Tourist Information -> Southern Swamp North",
+"entrance"
+],
+[
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"Mountain Village -> Path To Mountain Village Upper",
+"entrance"
+],
+[
+"Southern Swamp Grotto",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"Goron Shop -> Goron Shrine",
+"entrance"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery",
+"Fishermans Hut -> Great Bay Coast",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp",
+"Clock Town East -> Inn #2",
+"entrance"
+],
+[
+"Southern Swamp North -> Tourist Information",
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace Outside",
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"entrance"
+],
+[
+"Southern Swamp South -> Swamp Spider House Entrance",
+"Path To Mountain Village Upper -> Mountain Village",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace Outside",
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall",
+"Path To Snowhead Upper -> Snowhead Near Path",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon Upper",
+"Clock Town North -> Town Deku Playground",
+"entrance"
+],
+[
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"Music Box House -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"Mountain Village -> Mountain Smithy",
+"entrance"
+],
+[
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"entrance"
+],
+[
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"Great Bay Coast -> Zora Cape",
+"entrance"
+],
+[
+"Swamp Shooting Gallery",
+"Lottery Shop",
+"both"
+],
+[
+"Swamp Spider House Entrance -> Southern Swamp South",
+"Clock Town South -> Clock Town North",
+"entrance"
+],
+[
+"Termina Field -> Clock Town East",
+"Clock Town Laundry -> Clock Town South",
+"entrance"
+],
+[
+"Termina Field -> Clock Town North",
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"entrance"
+],
+[
+"Termina Field -> Clock Town South",
+"Snowhead Near Path -> Path To Snowhead Upper",
+"entrance"
+],
+[
+"Termina Field -> Clock Town West",
+"Deku Palace Outside -> Deku Shrine Entrance",
+"entrance"
+],
+[
+"Termina Field -> Milk Road",
+"Great Bay Coast -> Fishermans Hut",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana Field Side",
+"Woodfall -> Southern Swamp South Upper",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp",
+"Astral Observatory Passage -> Clock Town East",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast",
+"Clock Town West -> Termina Field",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village Lower",
+"Clock Town South -> Clock Town Laundry",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Tourist Information -> Southern Swamp North",
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"entrance"
+],
+[
+"Town Deku Playground -> Clock Town North",
+"Clock Town South -> Clock Town East #2",
+"entrance"
+],
+[
+"Town Shooting Gallery",
+"Cucco Shack",
+"both"
+],
+[
+"Treasure Shop",
+"Mayor Residence",
+"both"
+],
+[
+"Twinmolds Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp South Upper",
+"Termina Field -> Road To Ikana Field Side",
+"entrance"
+],
+[
+"Woodfall -> Woodfall Great Fairy Fountain",
+"Zora Hall Japas Room -> Zora Hall",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain -> Woodfall",
+"Path To Goron Village -> Mountain Village",
+"entrance"
+],
+[
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"Gorman Track Front -> Milk Road",
+"entrance"
+],
+[
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"Clock Town East -> Clock Town South",
+"entrance"
+],
+[
+"Woods Of Mystery -> Southern Swamp Near Woods",
+"Road To Southern Swamp -> Termina Field",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast",
+"Clock Town East -> Astral Observatory Passage",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"Mountain Smithy -> Mountain Village",
+"entrance"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Evans Room",
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Japas Room",
+"Road To Ikana Below Ledge -> Ikana Graveyard Lower",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Lulus Room",
+"Zora Hall Mikaus Room -> Zora Hall",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Mikaus Room",
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Shop",
+"Astral Observatory Outside -> Astral Observatory",
+"entrance"
+],
+[
+"Zora Hall Evans Room -> Zora Hall",
+"Clock Town North -> Clock Town South",
+"entrance"
+],
+[
+"Zora Hall Japas Room -> Zora Hall",
+"Woodfall -> Woodfall Great Fairy Fountain",
+"entrance"
+],
+[
+"Zora Hall Lulus Room -> Zora Hall",
+"Ikana Canyon Upper -> Music Box House",
+"entrance"
+],
+[
+"Zora Hall Mikaus Room -> Zora Hall",
+"Zora Hall -> Zora Hall Lulus Room",
+"entrance"
+],
+[
+"Zora Hall Shop -> Zora Hall",
+"Clock Town West -> Bomb Shop",
+"entrance"
+]
+],
+"mixed_all/3": [
+[
+"Astral Observatory -> Astral Observatory Outside",
+"Great Bay Coast -> Zora Cape",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory",
+"Ikana Graveyard Lower -> Road To Ikana Below Ledge",
+"entrance"
+],
+[
+"Astral Observatory Passage -> Clock Town East",
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"entrance"
+],
+[
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"Southern Swamp North -> Road To Southern Swamp",
+"entrance"
+],
+[
+"Bomb Shop -> Clock Town West",
+"Great Bay Coast -> Termina Field Before Great Bay Coast",
+"entrance"
+],
+[
+"Clock Town East -> Astral Observatory Passage",
+"Mountain Village -> Path To Mountain Village Upper",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town North",
+"Stone Tower Bottom -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town South",
+"Zora Hall -> Zora Hall Evans Room",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town South #2",
+"Ikana Canyon Upper -> Stone Tower Bottom",
+"entrance"
+],
+[
+"Clock Town East -> Inn #2",
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field",
+"Path To Goron Village -> Goron Village",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"Clock Town East -> Inn #2",
+"entrance"
+],
+[
+"Clock Town Laundry -> Clock Town South",
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town East",
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"Astral Observatory Passage -> Clock Town East",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town South",
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field",
+"Termina Field -> Clock Town North",
+"entrance"
+],
+[
+"Clock Town North -> Town Deku Playground",
+"Zora Hall Shop -> Zora Hall",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town East",
+"Mountain Smithy -> Mountain Village",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town East #2",
+"Fishermans Hut -> Great Bay Coast",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town Laundry",
+"Southern Swamp North -> Tourist Information",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town North",
+"Goron Racetrack -> Path To Goron Village",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town West",
+"Great Bay Coast -> Fishermans Hut",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town West #2",
+"Goron Graveyard -> Mountain Village",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field",
+"Path To Mountain Village Upper -> Mountain Village",
+"entrance"
+],
+[
+"Clock Town West -> Bomb Shop",
+"Southern Swamp Near Woods -> Woods Of Mystery",
+"entrance"
+],
+[
+"Clock Town West -> Clock Town South",
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"entrance"
+],
+[
+"Clock Town West -> Clock Town South #2",
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field",
+"Milk Road -> Gorman Track Front",
+"entrance"
+],
+[
+"Cucco Shack",
+"Ranch House",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"Zora Hall -> Zora Hall Shop",
+"entrance"
+],
+[
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"Clock Town West -> Clock Town South #2",
+"entrance"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"entrance"
+],
+[
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"Clock Town North -> Clock Town South",
+"entrance"
+],
+[
+"Deku Palace Outside -> Deku Shrine Entrance",
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp South",
+"Zora Hall Japas Room -> Zora Hall",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp South Upper",
+"Zora Hall -> Zora Hall Japas Room",
+"entrance"
+],
+[
+"Deku Shrine Entrance -> Deku Palace Outside",
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"entrance"
+],
+[
+"Doggy Racetrack",
+"Lottery Shop",
+"both"
+],
+[
+"Fishermans Hut -> Great Bay Coast",
+"Clock Town South -> Clock Town East #2",
+"entrance"
+],
+[
+"Ghost Hut -> Ikana Canyon Upper",
+"Ikana Canyon Upper -> Music Box House",
+"entrance"
+],
+[
+"Gohts Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road Behind Fence",
+"Zora Hall -> Zora Hall Lulus Room",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road",
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"entrance"
+],
+[
+"Goron Graveyard -> Mountain Village",
+"Clock Town South -> Clock Town West #2",
+"entrance"
+],
+[
+"Goron Racetrack -> Path To Goron Village",
+"Clock Town South -> Clock Town North",
+"entrance"
+],
+[
+"Goron Shop -> Goron Shrine",
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"entrance"
+],
+[
+"Goron Shrine -> Goron Shop",
+"Termina Field -> Clock Town West",
+"entrance"
+],
+[
+"Goron Village -> Path To Goron Village",
+"Milk Road Behind Fence -> Gorman Track Back",
+"entrance"
+],
+[
+"Great Bay Coast -> Fishermans Hut",
+"Clock Town South -> Clock Town West",
+"entrance"
+],
+[
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"Goron Shop -> Goron Shrine",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field Before Great Bay Coast",
+"Bomb Shop -> Clock Town West",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape",
+"Astral Observatory -> Astral Observatory Outside",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"entrance"
+],
+[
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"entrance"
+],
+[
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"Path To Goron Village -> Mountain Village",
+"entrance"
+],
+[
+"Gyorgs Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Cucco Shack",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana Above Ledge",
+"Woods Of Mystery -> Southern Swamp Near Woods",
+"entrance"
+],
+[
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"Town Deku Playground -> Clock Town North",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"Deku Shrine Entrance -> Deku Palace Outside",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ghost Hut",
+"Zora Hall Evans Room -> Zora Hall",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"Swamp Spider House Entrance -> Southern Swamp South",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"Zora Cape -> Great Bay Coast",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Music Box House",
+"Ghost Hut -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower Bottom",
+"Clock Town East -> Clock Town South #2",
+"entrance"
+],
+[
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"Path To Snowhead Lower -> Mountain Village",
+"entrance"
+],
+[
+"Ikana Graveyard Grotto",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana Below Ledge",
+"Astral Observatory Outside -> Astral Observatory",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"Woodfall -> Woodfall Great Fairy Fountain",
+"entrance"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Inn -> Clock Town East #2",
+"Path To Snowhead Upper -> Snowhead Near Path",
+"entrance"
+],
+[
+"Lone Peak Shrine",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Lottery Shop",
+"Treasure Shop",
+"both"
+],
+[
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"Zora Hall -> Zora Hall Mikaus Room",
+"entrance"
+],
+[
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"entrance"
+],
+[
+"Mayor Residence",
+"Mayor Residence",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track Front",
+"Clock Town West -> Termina Field",
+"entrance"
+],
+[
+"Milk Road -> Termina Field",
+"Woodfall Great Fairy Fountain -> Woodfall",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track Back",
+"Goron Village -> Path To Goron Village",
+"entrance"
+],
+[
+"Mountain Smithy -> Mountain Village",
+"Clock Town South -> Clock Town East",
+"entrance"
+],
+[
+"Mountain Village -> Goron Graveyard",
+"Snowhead Near Path -> Path To Snowhead Upper",
+"entrance"
+],
+[
+"Mountain Village -> Mountain Smithy",
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"entrance"
+],
+[
+"Mountain Village -> Path To Goron Village",
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village Upper",
+"Clock Town East -> Astral Observatory Passage",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead Lower",
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Music Box House -> Ikana Canyon Upper",
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"entrance"
+],
+[
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"Clock Town North -> Clock Town East",
+"entrance"
+],
+[
+"Odolwas Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack",
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village",
+"Clock Town East -> Termina Field",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village",
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field Before Path To Mountain Village",
+"Southern Swamp South Upper -> Woodfall",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village",
+"Clock Town South -> Termina Field",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village",
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead Near Path",
+"Inn -> Clock Town East #2",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon Lower",
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard Lower",
+"Southern Swamp South -> Swamp Spider House Entrance",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field",
+"Termina Field -> Road To Ikana Field Side",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp North",
+"Zora Hall Mikaus Room -> Zora Hall",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field",
+"Termina Field -> Road To Southern Swamp",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"Mountain Village -> Mountain Smithy",
+"entrance"
+],
+[
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"Deku Palace Outside -> Deku Shrine Entrance",
+"entrance"
+],
+[
+"Snowhead Near Path -> Path To Snowhead Upper",
+"Mountain Village -> Goron Graveyard",
+"entrance"
+],
+[
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village Lower",
+"entrance"
+],
+[
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"Mountain Village -> Path To Snowhead Lower",
+"entrance"
+],
+[
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"Southern Swamp South -> Deku Palace Outside",
+"entrance"
+],
+[
+"Southern Swamp Grotto",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"Clock Town Laundry -> Clock Town South",
+"entrance"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery",
+"Clock Town West -> Bomb Shop",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp",
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Southern Swamp North -> Tourist Information",
+"Clock Town South -> Clock Town Laundry",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace Outside",
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"entrance"
+],
+[
+"Southern Swamp South -> Swamp Spider House Entrance",
+"Road To Ikana Below Ledge -> Ikana Graveyard Lower",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace Outside",
+"Zora Hall Lulus Room -> Zora Hall",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall",
+"Path To Mountain Village Lower -> Termina Field Before Path To Mountain Village",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon Upper",
+"Clock Town East -> Clock Town North",
+"entrance"
+],
+[
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"Road To Ikana Above Ledge -> Ikana Canyon Lower",
+"entrance"
+],
+[
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"Mountain Village -> Path To Goron Village",
+"entrance"
+],
+[
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"Termina Field -> Clock Town South",
+"entrance"
+],
+[
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"Gorman Track Front -> Milk Road",
+"entrance"
+],
+[
+"Swamp Shooting Gallery",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Swamp Spider House Entrance -> Southern Swamp South",
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"entrance"
+],
+[
+"Termina Field -> Clock Town East",
+"Tourist Information -> Southern Swamp North",
+"entrance"
+],
+[
+"Termina Field -> Clock Town North",
+"Clock Town North -> Termina Field",
+"entrance"
+],
+[
+"Termina Field -> Clock Town South",
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"entrance"
+],
+[
+"Termina Field -> Clock Town West",
+"Goron Shrine -> Goron Shop",
+"entrance"
+],
+[
+"Termina Field -> Milk Road",
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana Field Side",
+"Road To Ikana Field Side -> Termina Field",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp",
+"Road To Southern Swamp -> Termina Field",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast",
+"Woodfall -> Southern Swamp South Upper",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village Lower",
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Tourist Information -> Southern Swamp North",
+"Termina Field -> Clock Town East",
+"entrance"
+],
+[
+"Town Deku Playground -> Clock Town North",
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"entrance"
+],
+[
+"Town Shooting Gallery",
+"Honey And Darling",
+"both"
+],
+[
+"Treasure Shop",
+"Doggy Racetrack",
+"both"
+],
+[
+"Twinmolds Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp South Upper",
+"Termina Field Before Great Bay Coast -> Great Bay Coast",
+"entrance"
+],
+[
+"Woodfall -> Woodfall Great Fairy Fountain",
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain -> Woodfall",
+"Milk Road -> Termina Field",
+"entrance"
+],
+[
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"Music Box House -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"Path To Goron Village -> Goron Racetrack",
+"entrance"
+],
+[
+"Woods Of Mystery -> Southern Swamp Near Woods",
+"Ikana Canyon Lower -> Road To Ikana Above Ledge",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast",
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"Termina Field -> Milk Road",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"Clock Town West -> Clock Town South",
+"entrance"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Evans Room",
+"Clock Town East -> Clock Town South",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Japas Room",
+"Deku Palace Outside -> Southern Swamp South Upper",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Lulus Room",
+"Gorman Track Back -> Milk Road Behind Fence",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Mikaus Room",
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Shop",
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"entrance"
+],
+[
+"Zora Hall Evans Room -> Zora Hall",
+"Ikana Canyon Upper -> Ghost Hut",
+"entrance"
+],
+[
+"Zora Hall Japas Room -> Zora Hall",
+"Deku Palace Outside -> Southern Swamp South",
+"entrance"
+],
+[
+"Zora Hall Lulus Room -> Zora Hall",
+"Southern Swamp South Upper -> Deku Palace Outside",
+"entrance"
+],
+[
+"Zora Hall Mikaus Room -> Zora Hall",
+"Road To Southern Swamp -> Southern Swamp North",
+"entrance"
+],
+[
+"Zora Hall Shop -> Zora Hall",
+"Clock Town North -> Town Deku Playground",
+"entrance"
+]
+],
+"mixed_dungeons_overworld/5": [
+[
+"Astral Observatory -> Astral Observatory Outside",
+"Ikana Canyon Lower -> Road To Ikana Above Ledge",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory",
+"Clock Town East -> Clock Town North",
+"entrance"
+],
+[
+"Astral Observatory Passage -> Clock Town East",
+"Woodfall -> Southern Swamp South Upper",
+"entrance"
+],
+[
+"Beneath The Well",
+"Deku Shrine",
+"both"
+],
+[
+"Bomb Shop",
+"Ghost Hut",
+"both"
+],
+[
+"Clock Town East -> Astral Observatory Passage",
+"Milk Road -> Termina Field",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town North",
+"Astral Observatory Outside -> Astral Observatory",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town South",
+"Great Bay Coast -> Termina Field Before Great Bay Coast",
+"entrance"
+],
+[
+"Clock Town East -> Clock Town South #2",
+"Southern Swamp South -> Deku Palace Outside",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field",
+"Ikana Graveyard Lower -> Road To Ikana Below Ledge",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain",
+"Goron Shop",
+"both"
+],
+[
+"Clock Town Laundry -> Clock Town South",
+"Termina Field -> Clock Town South",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town East",
+"Great Bay Coast -> Zora Cape",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town South",
+"Termina Field -> Clock Town East",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field",
+"Path To Mountain Village Upper -> Mountain Village",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town East",
+"Clock Town West -> Clock Town South",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town East #2",
+"Zora Cape -> Great Bay Coast",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town Laundry",
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town North",
+"Goron Village -> Path To Goron Village",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town West",
+"Snowhead Near Path -> Path To Snowhead Upper",
+"entrance"
+],
+[
+"Clock Town South -> Clock Town West #2",
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field",
+"Southern Swamp Near Woods -> Woods Of Mystery",
+"entrance"
+],
+[
+"Clock Town West -> Clock Town South",
+"Clock Town South -> Clock Town East",
+"entrance"
+],
+[
+"Clock Town West -> Clock Town South #2",
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field",
+"Southern Swamp South Upper -> Deku Palace Outside",
+"entrance"
+],
+[
+"Cucco Shack",
+"Ranch House",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber",
+"Deku Kings Chamber Holding Cell",
+"both"
+],
+[
+"Deku Kings Chamber Holding Cell",
+"Music Box House",
+"both"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Deku Palace Outside -> Southern Swamp South",
+"Mountain Village -> Path To Goron Village",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp South Upper",
+"Path To Goron Village -> Goron Racetrack",
+"entrance"
+],
+[
+"Deku Shrine",
+"Ikana Castle",
+"both"
+],
+[
+"Doggy Racetrack",
+"Treasure Shop",
+"both"
+],
+[
+"Fishermans Hut",
+"Ikana Great Fairy Fountain",
+"both"
+],
+[
+"Ghost Hut",
+"Zora Hall Japas Room",
+"both"
+],
+[
+"Gohts Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road Behind Fence",
+"Path To Mountain Village Lower -> Termina Field Before Path To Mountain Village",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road",
+"Road To Southern Swamp -> Termina Field",
+"entrance"
+],
+[
+"Goron Graveyard",
+"Snowhead Great Fairy Fountain",
+"both"
+],
+[
+"Goron Racetrack -> Path To Goron Village",
+"Termina Field -> Road To Southern Swamp",
+"entrance"
+],
+[
+"Goron Shop",
+"Magic Hags Potion Shop",
+"both"
+],
+[
+"Goron Village -> Path To Goron Village",
+"Clock Town South -> Clock Town North",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field Before Great Bay Coast",
+"Clock Town East -> Clock Town South",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape",
+"Clock Town North -> Clock Town East",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Great Bay Great Fairy Fountain",
+"Zora Hall Mikaus Room",
+"both"
+],
+[
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"Termina Field -> Road To Ikana Field Side",
+"entrance"
+],
+[
+"Gyorgs Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Doggy Racetrack",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana Above Ledge",
+"Astral Observatory -> Astral Observatory Outside",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower Bottom",
+"Road To Ikana Above Ledge -> Ikana Canyon Lower",
+"entrance"
+],
+[
+"Ikana Castle",
+"Beneath The Well",
+"both"
+],
+[
+"Ikana Graveyard Grotto",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana Below Ledge",
+"Clock Town East -> Termina Field",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain",
+"Swordsman School",
+"both"
+],
+[
+"Inn (East Clock Town:10)",
+"Trading Post",
+"both"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Lone Peak Shrine",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Lottery Shop",
+"Honey And Darling",
+"both"
+],
+[
+"Magic Hags Potion Shop",
+"Town Deku Playground",
+"both"
+],
+[
+"Marine Research Lab",
+"Clock Town Great Fairy Fountain",
+"both"
+],
+[
+"Mayor Residence",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track Front",
+"Road To Ikana Below Ledge -> Ikana Graveyard Lower",
+"entrance"
+],
+[
+"Milk Road -> Termina Field",
+"Clock Town East -> Astral Observatory Passage",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track Back",
+"Road To Southern Swamp -> Southern Swamp North",
+"entrance"
+],
+[
+"Mountain Smithy",
+"Zora Hall Shop",
+"both"
+],
+[
+"Mountain Village -> Path To Goron Village",
+"Deku Palace Outside -> Southern Swamp South",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village Upper",
+"Termina Field -> Milk Road",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead Lower",
+"Path To Goron Village -> Goron Village",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Music Box House",
+"Inn (East Clock Town:10)",
+"both"
+],
+[
+"Oceanside Spider House",
+"Secret Shrine",
+"both"
+],
+[
+"Odolwas Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack",
+"Deku Palace Outside -> Southern Swamp South Upper",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village",
+"Mountain Village -> Path To Snowhead Lower",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village",
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field Before Path To Mountain Village",
+"Gorman Track Back -> Milk Road Behind Fence",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village",
+"Clock Town North -> Termina Field",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village",
+"Road To Ikana Field Side -> Termina Field",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead Near Path",
+"Termina Field -> Clock Town West",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon Lower",
+"Ikana Canyon Upper -> Stone Tower Bottom",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard Lower",
+"Milk Road -> Gorman Track Front",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field",
+"Path To Snowhead Lower -> Mountain Village",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp North",
+"Milk Road Behind Fence -> Gorman Track Back",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field",
+"Gorman Track Front -> Milk Road",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Secret Shrine",
+"Oceanside Spider House",
+"both"
+],
+[
+"Snowhead Great Fairy Fountain",
+"Mountain Smithy",
+"both"
+],
+[
+"Snowhead Near Path -> Path To Snowhead Upper",
+"Clock Town South -> Clock Town West",
+"entrance"
+],
+[
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"Woods Of Mystery -> Southern Swamp Near Woods",
+"entrance"
+],
+[
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"entrance"
+],
+[
+"Southern Swamp Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery",
+"Clock Town South -> Termina Field",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp",
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace Outside",
+"Clock Town East -> Clock Town South #2",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace Outside",
+"Clock Town West -> Termina Field",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall",
+"Termina Field -> Clock Town North",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon Upper",
+"Termina Field Before Great Bay Coast -> Great Bay Coast",
+"entrance"
+],
+[
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village Lower",
+"entrance"
+],
+[
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"Path To Goron Village -> Mountain Village",
+"entrance"
+],
+[
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"Clock Town South -> Clock Town Laundry",
+"entrance"
+],
+[
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"entrance"
+],
+[
+"Swamp Shooting Gallery",
+"Mayor Residence",
+"both"
+],
+[
+"Swamp Spider House",
+"Swamp Spider House",
+"both"
+],
+[
+"Swordsman School",
+"Fishermans Hut",
+"both"
+],
+[
+"Termina Field -> Clock Town East",
+"Clock Town North -> Clock Town South",
+"entrance"
+],
+[
+"Termina Field -> Clock Town North",
+"Southern Swamp South Upper -> Woodfall",
+"entrance"
+],
+[
+"Termina Field -> Clock Town South",
+"Clock Town Laundry -> Clock Town South",
+"entrance"
+],
+[
+"Termina Field -> Clock Town West",
+"Path To Snowhead Upper -> Snowhead Near Path",
+"entrance"
+],
+[
+"Termina Field -> Milk Road",
+"Mountain Village -> Path To Mountain Village Upper",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana Field Side",
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp",
+"Goron Racetrack -> Path To Goron Village",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast",
+"Stone Tower Bottom -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village Lower",
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Tourist Information",
+"Tourist Information",
+"both"
+],
+[
+"Town Deku Playground",
+"Zora Hall Evans Room",
+"both"
+],
+[
+"Town Shooting Gallery",
+"Lottery Shop",
+"both"
+],
+[
+"Trading Post",
+"Marine Research Lab",
+"both"
+],
+[
+"Treasure Shop",
+"Cucco Shack",
+"both"
+],
+[
+"Twinmolds Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp South Upper",
+"Astral Observatory Passage -> Clock Town East",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain",
+"Woodfall Great Fairy Fountain",
+"both"
+],
+[
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"Clock Town West -> Clock Town South #2",
+"entrance"
+],
+[
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"Southern Swamp North -> Road To Southern Swamp",
+"entrance"
+],
+[
+"Woods Of Mystery -> Southern Swamp Near Woods",
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast",
+"Clock Town South -> Clock Town East #2",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"Clock Town South -> Clock Town West #2",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Zora Hall Evans Room",
+"Bomb Shop",
+"both"
+],
+[
+"Zora Hall Japas Room",
+"Zora Hall Lulus Room",
+"both"
+],
+[
+"Zora Hall Lulus Room",
+"Great Bay Great Fairy Fountain",
+"both"
+],
+[
+"Zora Hall Mikaus Room",
+"Goron Graveyard",
+"both"
+],
+[
+"Zora Hall Shop",
+"Deku Kings Chamber",
+"both"
+]
+],
+"mixed_interiors_special_areas/5": [
+[
+"Astral Observatory -> Termina Field 9",
+"West Clock Town 1",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory 1",
+"Astral Observatory 0",
+"entrance"
+],
+[
+"Astral Observatory Passage -> East Clock Town 2",
+"Termina Field 9",
+"entrance"
+],
+[
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"Ikana Canyon Upper -> Ghost Hut",
+"entrance"
+],
+[
+"Bomb Shop -> Clock Town West",
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"entrance"
+],
+[
+"Clock Town East -> Astral Observatory 0",
+"Milk Road 0",
+"entrance"
+],
+[
+"Clock Town East -> Inn #2",
+"Swamp Spider House Entrance -> Southern Swamp South",
+"entrance"
+],
+[
+"Clock Town East -> North Clock Town 1",
+"Laundry Pool 0",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 2",
+"Path To Goron Village Winter 2",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 7",
+"Path To Snowhead 1",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field 7",
+"Ikana Canyon 0",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"Goron Shrine -> Goron Shop",
+"entrance"
+],
+[
+"Clock Town Laundry -> South Clock Town 6",
+"East Clock Town 5",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"Town Deku Playground -> Clock Town North",
+"entrance"
+],
+[
+"Clock Town North -> East Clock Town 5",
+"Road To Southern Swamp 1",
+"entrance"
+],
+[
+"Clock Town North -> South Clock Town 4",
+"Southern Swamp Poisoned 2",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field 8",
+"Milk Road 2",
+"entrance"
+],
+[
+"Clock Town North -> Town Deku Playground",
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 1",
+"Termina Field 1",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 3",
+"Goron Racetrack 0",
+"entrance"
+],
+[
+"Clock Town South -> Laundry Pool 0",
+"Milk Road 3",
+"entrance"
+],
+[
+"Clock Town South -> North Clock Town 2",
+"Ikana Canyon 3",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field 6",
+"Southern Swamp Poisoned 7",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 1",
+"Zora Cape 0",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 2",
+"Great Bay Coast 0",
+"entrance"
+],
+[
+"Clock Town West -> Bomb Shop",
+"Zora Hall Evans Room -> Zora Hall",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 3",
+"Termina Field 2",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 5",
+"Astral Observatory 1",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field 0",
+"Southern Swamp Poisoned 4",
+"entrance"
+],
+[
+"Cucco Shack",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"entrance"
+],
+[
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"Zora Hall -> Zora Hall Shop",
+"entrance"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"Woodfall Great Fairy Fountain -> Woodfall",
+"entrance"
+],
+[
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"Zora Hall Japas Room -> Zora Hall",
+"entrance"
+],
+[
+"Deku Palace Outside -> Deku Shrine Entrance",
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 3",
+"Mountain Village Winter 2",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 4",
+"Termina Field 7",
+"entrance"
+],
+[
+"Deku Shrine Entrance -> Deku Palace Outside",
+"Zora Hall -> Zora Hall Mikaus Room",
+"entrance"
+],
+[
+"Doggy Racetrack",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Fishermans Hut -> Great Bay Coast",
+"Southern Swamp South -> Swamp Spider House Entrance",
+"entrance"
+],
+[
+"Ghost Hut -> Ikana Canyon Upper",
+"Ikana Canyon Upper -> Music Box House",
+"entrance"
+],
+[
+"Gohts Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road 2",
+"Ikana Graveyard 0",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road 3",
+"Termina Field 6",
+"entrance"
+],
+[
+"Goron Graveyard -> Mountain Village",
+"Zora Hall -> Zora Hall Evans Room",
+"entrance"
+],
+[
+"Goron Racetrack -> Path To Goron Village Winter 2",
+"South Clock Town 2",
+"entrance"
+],
+[
+"Goron Shop -> Goron Shrine",
+"Great Bay Coast -> Fishermans Hut",
+"entrance"
+],
+[
+"Goron Shrine -> Goron Shop",
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"entrance"
+],
+[
+"Goron Village -> Path To Goron Village Winter 1",
+"Path To Mountain Village 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Fishermans Hut",
+"Goron Shop -> Goron Shrine",
+"entrance"
+],
+[
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"Bomb Shop -> Clock Town West",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field 2",
+"South Clock Town 3",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape 0",
+"Southern Swamp Poisoned 3",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"entrance"
+],
+[
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"Mountain Village -> Mountain Smithy",
+"entrance"
+],
+[
+"Great Bay Temple",
+"Great Bay Temple",
+"both"
+],
+[
+"Gyorgs Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Cucco Shack",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana 1",
+"East Clock Town 0",
+"entrance"
+],
+[
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ghost Hut",
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"Zora Hall Lulus Room -> Zora Hall",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"Mountain Smithy -> Mountain Village",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Music Box House",
+"Ghost Hut -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower 0",
+"South Clock Town 4",
+"entrance"
+],
+[
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"entrance"
+],
+[
+"Ikana Graveyard Grotto",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana 2",
+"Gorman Track 3",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"Zora Hall -> Zora Hall Lulus Room",
+"entrance"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Inn -> Clock Town East #2",
+"Woodfall -> Woodfall Great Fairy Fountain",
+"entrance"
+],
+[
+"Lone Peak Shrine",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Lottery Shop",
+"Ranch House",
+"both"
+],
+[
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"Clock Town North -> Town Deku Playground",
+"entrance"
+],
+[
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"Deku Palace Outside -> Deku Shrine Entrance",
+"entrance"
+],
+[
+"Mayor Residence",
+"Mayor Residence",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track 0",
+"South Clock Town 6",
+"entrance"
+],
+[
+"Milk Road -> Romani Ranch 0",
+"Romani Ranch 0",
+"entrance"
+],
+[
+"Milk Road -> Termina Field 5",
+"East Clock Town 2",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track 3",
+"North Clock Town 0",
+"entrance"
+],
+[
+"Mountain Smithy -> Mountain Village",
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"entrance"
+],
+[
+"Mountain Village -> Goron Graveyard",
+"Zora Hall Shop -> Zora Hall",
+"entrance"
+],
+[
+"Mountain Village -> Mountain Smithy",
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"entrance"
+],
+[
+"Mountain Village -> Path To Goron Village Winter 0",
+"Deku Palace 0",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village 1",
+"Termina Field 8",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead 0",
+"Path To Goron Village Winter 0",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Music Box House -> Ikana Canyon Upper",
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"entrance"
+],
+[
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"entrance"
+],
+[
+"Odolwas Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack 0",
+"East Clock Town 3",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village Winter 0",
+"Termina Field 3",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village Winter 2",
+"Mountain Village Winter 4",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field 3",
+"Goron Village Winter 0",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village Winter 6",
+"Termina Field 4",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village Winter 4",
+"Woodfall 0",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead 0",
+"East Clock Town 1",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Treasure Shop",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon 0",
+"Road To Ikana 2",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard 0",
+"Road To Ikana 1",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field 4",
+"Termina Field 5",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp Poisoned 0",
+"North Clock Town 1",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field 1",
+"Termina Field 0",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Romani Ranch -> Milk Road 1",
+"Milk Road 1",
+"entrance"
+],
+[
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"entrance"
+],
+[
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"entrance"
+],
+[
+"Snowhead Near Path -> Path To Snowhead 1",
+"Stone Tower 0",
+"entrance"
+],
+[
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Snowhead Temple",
+"Stone Tower Temple",
+"both"
+],
+[
+"Southern Swamp Grotto",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"Music Box House -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery 0",
+"South Clock Town 1",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp 1",
+"Woods Of Mystery 0",
+"entrance"
+],
+[
+"Southern Swamp North -> Tourist Information",
+"Tourist Information -> Southern Swamp North",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace 0",
+"Great Bay Coast 1",
+"entrance"
+],
+[
+"Southern Swamp South -> Swamp Spider House Entrance",
+"Fishermans Hut -> Great Bay Coast",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace 5",
+"West Clock Town 0",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall 0",
+"North Clock Town 2",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon 3",
+"Snowhead 0",
+"entrance"
+],
+[
+"Stone Tower Temple",
+"Snowhead Temple",
+"both"
+],
+[
+"Swamp Shooting Gallery",
+"Lottery Shop",
+"both"
+],
+[
+"Swamp Spider House Entrance -> Southern Swamp South",
+"Clock Town East -> Inn #2",
+"entrance"
+],
+[
+"Termina Field -> East Clock Town 0",
+"Deku Palace 5",
+"entrance"
+],
+[
+"Termina Field -> Milk Road 0",
+"Road To Ikana 0",
+"entrance"
+],
+[
+"Termina Field -> North Clock Town 0",
+"Mountain Village Winter 6",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana 0",
+"Path To Mountain Village 1",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp 0",
+"South Clock Town 7",
+"entrance"
+],
+[
+"Termina Field -> South Clock Town 1",
+"Gorman Track 0",
+"entrance"
+],
+[
+"Termina Field -> West Clock Town 0",
+"Road To Southern Swamp 0",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast 0",
+"West Clock Town 2",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village 0",
+"Path To Goron Village Winter 1",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Tourist Information -> Southern Swamp North",
+"Southern Swamp North -> Tourist Information",
+"entrance"
+],
+[
+"Town Deku Playground -> Clock Town North",
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"entrance"
+],
+[
+"Town Shooting Gallery",
+"Doggy Racetrack",
+"both"
+],
+[
+"Treasure Shop",
+"Honey And Darling",
+"both"
+],
+[
+"Twinmolds Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp Poisoned 2",
+"Path To Snowhead 0",
+"entrance"
+],
+[
+"Woodfall -> Woodfall Great Fairy Fountain",
+"Inn -> Clock Town East #2",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain -> Woodfall",
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"entrance"
+],
+[
+"Woodfall Temple",
+"Woodfall Temple",
+"both"
+],
+[
+"Woods Of Mystery -> Southern Swamp Poisoned 7",
+"Southern Swamp Poisoned 0",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast 1",
+"South Clock Town 5",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"entrance"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Evans Room",
+"Goron Graveyard -> Mountain Village",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Japas Room",
+"Zora Hall Mikaus Room -> Zora Hall",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Lulus Room",
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Mikaus Room",
+"Deku Shrine Entrance -> Deku Palace Outside",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Shop",
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"entrance"
+],
+[
+"Zora Hall Evans Room -> Zora Hall",
+"Clock Town West -> Bomb Shop",
+"entrance"
+],
+[
+"Zora Hall Japas Room -> Zora Hall",
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"entrance"
+],
+[
+"Zora Hall Lulus Room -> Zora Hall",
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"entrance"
+],
+[
+"Zora Hall Mikaus Room -> Zora Hall",
+"Zora Hall -> Zora Hall Japas Room",
+"entrance"
+],
+[
+"Zora Hall Shop -> Zora Hall",
+"Mountain Village -> Goron Graveyard",
+"entrance"
+]
+],
+"mixed_dungeons_interiors_special_areas/5": [
+[
+"Astral Observatory -> Termina Field 9",
+"Mountain Village Winter 4",
+"entrance"
+],
+[
+"Astral Observatory Outside -> Astral Observatory 1",
+"Great Bay Coast 1",
+"entrance"
+],
+[
+"Astral Observatory Passage -> East Clock Town 2",
+"North Clock Town 2",
+"entrance"
+],
+[
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"entrance"
+],
+[
+"Bomb Shop -> Clock Town West",
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"entrance"
+],
+[
+"Clock Town East -> Astral Observatory 0",
+"Milk Road 0",
+"entrance"
+],
+[
+"Clock Town East -> Inn #2",
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"entrance"
+],
+[
+"Clock Town East -> North Clock Town 1",
+"Ikana Graveyard 0",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 2",
+"Path To Mountain Village 0",
+"entrance"
+],
+[
+"Clock Town East -> South Clock Town 7",
+"South Clock Town 4",
+"entrance"
+],
+[
+"Clock Town East -> Termina Field 7",
+"Ikana Canyon 0",
+"entrance"
+],
+[
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"entrance"
+],
+[
+"Clock Town Laundry -> South Clock Town 6",
+"Termina Field 0",
+"entrance"
+],
+[
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"Mountain Smithy -> Mountain Village",
+"entrance"
+],
+[
+"Clock Town North -> East Clock Town 5",
+"Goron Village Winter 0",
+"entrance"
+],
+[
+"Clock Town North -> South Clock Town 4",
+"Astral Observatory 0",
+"entrance"
+],
+[
+"Clock Town North -> Termina Field 8",
+"Milk Road 2",
+"entrance"
+],
+[
+"Clock Town North -> Town Deku Playground",
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 1",
+"Termina Field 3",
+"entrance"
+],
+[
+"Clock Town South -> East Clock Town 3",
+"West Clock Town 1",
+"entrance"
+],
+[
+"Clock Town South -> Laundry Pool 0",
+"Deku Palace 0",
+"entrance"
+],
+[
+"Clock Town South -> North Clock Town 2",
+"East Clock Town 1",
+"entrance"
+],
+[
+"Clock Town South -> Termina Field 6",
+"Southern Swamp Poisoned 7",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 1",
+"Zora Cape 0",
+"entrance"
+],
+[
+"Clock Town South -> West Clock Town 2",
+"Gorman Track 3",
+"entrance"
+],
+[
+"Clock Town West -> Bomb Shop",
+"Goron Graveyard -> Mountain Village",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 3",
+"Road To Ikana 0",
+"entrance"
+],
+[
+"Clock Town West -> South Clock Town 5",
+"South Clock Town 2",
+"entrance"
+],
+[
+"Clock Town West -> Termina Field 0",
+"Southern Swamp Poisoned 4",
+"entrance"
+],
+[
+"Cucco Shack",
+"Mayor Residence",
+"both"
+],
+[
+"Curiosity Shop Back",
+"Curiosity Shop Back",
+"both"
+],
+[
+"Curiosity Shop Front",
+"Curiosity Shop Front",
+"both"
+],
+[
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"entrance"
+],
+[
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"entrance"
+],
+[
+"Deku Palace Bean Salesman Grotto",
+"Ikana Canyon Grotto",
+"both"
+],
+[
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell",
+"Clock Town Great Fairy Fountain -> Clock Town North",
+"entrance"
+],
+[
+"Deku Palace Outside -> Deku Shrine Entrance",
+"Inn -> Clock Town East #2",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 3",
+"South Clock Town 6",
+"entrance"
+],
+[
+"Deku Palace Outside -> Southern Swamp Poisoned 4",
+"Woods Of Mystery 0",
+"entrance"
+],
+[
+"Deku Shrine Entrance -> Deku Palace Outside",
+"Zora Hall -> Zora Hall Evans Room",
+"entrance"
+],
+[
+"Doggy Racetrack",
+"Swamp Shooting Gallery",
+"both"
+],
+[
+"Fishermans Hut -> Great Bay Coast",
+"Woodfall -> Woodfall Great Fairy Fountain",
+"entrance"
+],
+[
+"Ghost Hut -> Ikana Canyon Upper",
+"Goron Shrine -> Goron Shop",
+"entrance"
+],
+[
+"Gohts Lair",
+"Gohts Lair",
+"both"
+],
+[
+"Gorman Track Back -> Milk Road 2",
+"South Clock Town 3",
+"entrance"
+],
+[
+"Gorman Track Front -> Milk Road 3",
+"Snowhead 0",
+"entrance"
+],
+[
+"Goron Graveyard -> Mountain Village",
+"Clock Town West -> Bomb Shop",
+"entrance"
+],
+[
+"Goron Racetrack -> Path To Goron Village Winter 2",
+"Termina Field 2",
+"entrance"
+],
+[
+"Goron Shop -> Goron Shrine",
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"entrance"
+],
+[
+"Goron Shrine -> Goron Shop",
+"Ghost Hut -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Goron Village -> Path To Goron Village Winter 1",
+"North Clock Town 1",
+"entrance"
+],
+[
+"Great Bay Coast -> Fishermans Hut",
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"entrance"
+],
+[
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"entrance"
+],
+[
+"Great Bay Coast -> Pirates Fortress Exterior 0",
+"Pirates Fortress Exterior 0",
+"entrance"
+],
+[
+"Great Bay Coast -> Termina Field 2",
+"Road To Ikana 2",
+"entrance"
+],
+[
+"Great Bay Coast -> Zora Cape 0",
+"Termina Field 9",
+"entrance"
+],
+[
+"Great Bay Coast Cow Grotto",
+"Termina Field Bio Baba Grotto",
+"both"
+],
+[
+"Great Bay Coast Fisherman Grotto",
+"Termina Field Gossip Stone Grotto 4",
+"both"
+],
+[
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"entrance"
+],
+[
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"Mountain Village -> Mountain Smithy",
+"entrance"
+],
+[
+"Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple",
+"Clock Town East -> Inn #2",
+"entrance"
+],
+[
+"Gyorgs Lair",
+"Twinmolds Lair",
+"both"
+],
+[
+"Honey And Darling",
+"Honey And Darling",
+"both"
+],
+[
+"Ikana Canyon Grotto",
+"Woods Of Mystery Grotto",
+"both"
+],
+[
+"Ikana Canyon Lower -> Road To Ikana 1",
+"East Clock Town 0",
+"entrance"
+],
+[
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"Zora Hall Japas Room -> Zora Hall",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Beneath The Well Entrance",
+"Beneath The Well Entrance -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ghost Hut",
+"Music Box House -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"Tourist Information -> Southern Swamp North",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Music Box House",
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"entrance"
+],
+[
+"Ikana Canyon Upper -> Stone Tower 0",
+"Termina Field 7",
+"entrance"
+],
+[
+"Ikana Castle Front Entrance -> Ikana Canyon Upper",
+"Deku Palace Inside Lower -> Deku Kings Chamber",
+"entrance"
+],
+[
+"Ikana Graveyard Grotto",
+"Termina Field Pillar Grotto",
+"both"
+],
+[
+"Ikana Graveyard Lower -> Road To Ikana 2",
+"East Clock Town 5",
+"entrance"
+],
+[
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"entrance"
+],
+[
+"Inn (East Clock Town:9)",
+"Inn (East Clock Town:9)",
+"both"
+],
+[
+"Inn -> Clock Town East #2",
+"Deku Palace Outside -> Deku Shrine Entrance",
+"entrance"
+],
+[
+"Lone Peak Shrine",
+"Lone Peak Shrine",
+"both"
+],
+[
+"Lottery Shop",
+"Treasure Shop",
+"both"
+],
+[
+"Magic Hags Potion Shop -> Southern Swamp Near Woods",
+"Great Bay Coast -> Fishermans Hut",
+"entrance"
+],
+[
+"Marine Research Lab -> Great Bay Coast Marine Lab Exterior",
+"Great Bay Coast Marine Lab Exterior -> Marine Research Lab",
+"entrance"
+],
+[
+"Mayor Residence",
+"Lottery Shop",
+"both"
+],
+[
+"Milk Bar",
+"Milk Bar",
+"both"
+],
+[
+"Milk Road -> Gorman Track 0",
+"Romani Ranch 0",
+"entrance"
+],
+[
+"Milk Road -> Romani Ranch 0",
+"Stone Tower 0",
+"entrance"
+],
+[
+"Milk Road -> Termina Field 5",
+"East Clock Town 2",
+"entrance"
+],
+[
+"Milk Road Behind Fence -> Gorman Track 3",
+"North Clock Town 0",
+"entrance"
+],
+[
+"Mountain Smithy -> Mountain Village",
+"Clock Town North -> Clock Town Great Fairy Fountain",
+"entrance"
+],
+[
+"Mountain Village -> Goron Graveyard",
+"Town Deku Playground -> Clock Town North",
+"entrance"
+],
+[
+"Mountain Village -> Mountain Smithy",
+"Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain",
+"entrance"
+],
+[
+"Mountain Village -> Path To Goron Village Winter 0",
+"Woodfall 0",
+"entrance"
+],
+[
+"Mountain Village -> Path To Mountain Village 1",
+"Southern Swamp Poisoned 2",
+"entrance"
+],
+[
+"Mountain Village -> Path To Snowhead 0",
+"Astral Observatory 1",
+"entrance"
+],
+[
+"Mountain Village Tunnel Grotto",
+"Termina Field Cow Grotto",
+"both"
+],
+[
+"Music Box House -> Ikana Canyon Upper",
+"Ikana Canyon Upper -> Ghost Hut",
+"entrance"
+],
+[
+"Ocean Spider House Entrance Upper -> Great Bay Coast",
+"Great Bay Coast -> Ocean Spider House Entrance Upper",
+"entrance"
+],
+[
+"Odolwas Lair",
+"Gyorgs Lair",
+"both"
+],
+[
+"Path To Goron Village -> Goron Racetrack 0",
+"Termina Field 6",
+"entrance"
+],
+[
+"Path To Goron Village -> Goron Village Winter 0",
+"Termina Field 4",
+"entrance"
+],
+[
+"Path To Goron Village -> Mountain Village Winter 2",
+"Path To Mountain Village 1",
+"entrance"
+],
+[
+"Path To Goron Village Hot Spring Grotto",
+"Southern Swamp Grotto",
+"both"
+],
+[
+"Path To Goron Village Ramp Grotto",
+"Termina Field Tall Grass Grotto",
+"both"
+],
+[
+"Path To Mountain Village Lower -> Termina Field 3",
+"East Clock Town 3",
+"entrance"
+],
+[
+"Path To Mountain Village Upper -> Mountain Village Winter 6",
+"Path To Goron Village Winter 0",
+"entrance"
+],
+[
+"Path To Snowhead Grotto",
+"Road To Southern Swamp Grotto",
+"both"
+],
+[
+"Path To Snowhead Lower -> Mountain Village Winter 4",
+"Termina Field 5",
+"entrance"
+],
+[
+"Path To Snowhead Upper -> Snowhead 0",
+"Termina Field 8",
+"entrance"
+],
+[
+"Pirates Fortress Moat Lower -> Great Bay Coast 5",
+"Great Bay Coast 5",
+"entrance"
+],
+[
+"Post Office",
+"Post Office",
+"both"
+],
+[
+"Ranch Barn",
+"Ranch Barn",
+"both"
+],
+[
+"Ranch House",
+"Cucco Shack",
+"both"
+],
+[
+"Road To Ikana Above Ledge -> Ikana Canyon 0",
+"Termina Field 1",
+"entrance"
+],
+[
+"Road To Ikana Below Ledge -> Ikana Graveyard 0",
+"Great Bay Coast 0",
+"entrance"
+],
+[
+"Road To Ikana Field Side -> Termina Field 4",
+"West Clock Town 2",
+"entrance"
+],
+[
+"Road To Ikana Grotto",
+"Road To Ikana Grotto",
+"both"
+],
+[
+"Road To Southern Swamp -> Southern Swamp Poisoned 0",
+"Southern Swamp Poisoned 3",
+"entrance"
+],
+[
+"Road To Southern Swamp -> Termina Field 1",
+"Southern Swamp Poisoned 0",
+"entrance"
+],
+[
+"Road To Southern Swamp Grotto",
+"Termina Field Peahat Grotto",
+"both"
+],
+[
+"Romani Ranch -> Milk Road 1",
+"Milk Road 3",
+"entrance"
+],
+[
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"Zora Hall -> Zora Hall Mikaus Room",
+"entrance"
+],
+[
+"Snowhead Great Fairy Fountain -> Snowhead Outside Fountain",
+"Ikana Canyon Upper -> Ikana Great Fairy Fountain",
+"entrance"
+],
+[
+"Snowhead Near Path -> Path To Snowhead 1",
+"Gorman Track 0",
+"entrance"
+],
+[
+"Snowhead Outside Fountain -> Snowhead Great Fairy Fountain",
+"Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge",
+"entrance"
+],
+[
+"Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block",
+"Bomb Shop -> Clock Town West",
+"entrance"
+],
+[
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"Southern Swamp North -> Tourist Information",
+"entrance"
+],
+[
+"Southern Swamp Grotto",
+"Path To Goron Village Hot Spring Grotto",
+"both"
+],
+[
+"Southern Swamp Near Woods -> Magic Hags Potion Shop",
+"Deku Kings Chamber -> Deku Palace Inside Lower",
+"entrance"
+],
+[
+"Southern Swamp Near Woods -> Woods Of Mystery 0",
+"South Clock Town 1",
+"entrance"
+],
+[
+"Southern Swamp North -> Road To Southern Swamp 1",
+"Road To Southern Swamp 0",
+"entrance"
+],
+[
+"Southern Swamp North -> Tourist Information",
+"Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance",
+"entrance"
+],
+[
+"Southern Swamp South -> Deku Palace 0",
+"Road To Southern Swamp 1",
+"entrance"
+],
+[
+"Southern Swamp South -> Swamp Spider House Entrance",
+"Swamp Spider House Entrance -> Southern Swamp South",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Deku Palace 5",
+"West Clock Town 0",
+"entrance"
+],
+[
+"Southern Swamp South Upper -> Woodfall 0",
+"Mountain Village Winter 6",
+"entrance"
+],
+[
+"Stone Tower Bottom -> Ikana Canyon 3",
+"Milk Road 1",
+"entrance"
+],
+[
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"Zora Hall Lulus Room -> Zora Hall",
+"entrance"
+],
+[
+"Stone Tower Temple Entrance -> Stone Tower Top",
+"Clock Town North -> Town Deku Playground",
+"entrance"
+],
+[
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"Zora Hall -> Zora Hall Shop",
+"entrance"
+],
+[
+"Stone Tower Top -> Stone Tower Temple Entrance",
+"Ikana Great Fairy Fountain -> Ikana Canyon Upper",
+"entrance"
+],
+[
+"Swamp Shooting Gallery",
+"Ranch House",
+"both"
+],
+[
+"Swamp Spider House Entrance -> Southern Swamp South",
+"Southern Swamp South -> Swamp Spider House Entrance",
+"entrance"
+],
+[
+"Termina Field -> East Clock Town 0",
+"Ikana Canyon 3",
+"entrance"
+],
+[
+"Termina Field -> Milk Road 0",
+"Path To Snowhead 0",
+"entrance"
+],
+[
+"Termina Field -> North Clock Town 0",
+"Path To Snowhead 1",
+"entrance"
+],
+[
+"Termina Field -> Road To Ikana 0",
+"Path To Goron Village Winter 1",
+"entrance"
+],
+[
+"Termina Field -> Road To Southern Swamp 0",
+"Road To Ikana 1",
+"entrance"
+],
+[
+"Termina Field -> South Clock Town 1",
+"Path To Goron Village Winter 2",
+"entrance"
+],
+[
+"Termina Field -> West Clock Town 0",
+"Laundry Pool 0",
+"entrance"
+],
+[
+"Termina Field Before Great Bay Coast -> Great Bay Coast 0",
+"Goron Racetrack 0",
+"entrance"
+],
+[
+"Termina Field Before Path To Mountain Village -> Path To Mountain Village 0",
+"South Clock Town 7",
+"entrance"
+],
+[
+"Termina Field Bio Baba Grotto",
+"Great Bay Coast Fisherman Grotto",
+"both"
+],
+[
+"Termina Field Cow Grotto",
+"Path To Snowhead Grotto",
+"both"
+],
+[
+"Termina Field Dodongo Grotto",
+"Deku Palace Bean Salesman Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 1",
+"Great Bay Coast Cow Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 2",
+"Termina Field Scrub Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 3",
+"Path To Goron Village Ramp Grotto",
+"both"
+],
+[
+"Termina Field Gossip Stone Grotto 4",
+"Termina Field Gossip Stone Grotto 2",
+"both"
+],
+[
+"Termina Field Peahat Grotto",
+"Ikana Graveyard Grotto",
+"both"
+],
+[
+"Termina Field Pillar Grotto",
+"Termina Field Dodongo Grotto",
+"both"
+],
+[
+"Termina Field Scrub Grotto",
+"Termina Field Gossip Stone Grotto 1",
+"both"
+],
+[
+"Termina Field Tall Grass Grotto",
+"Termina Field Gossip Stone Grotto 3",
+"both"
+],
+[
+"Tourist Information -> Southern Swamp North",
+"Ikana Canyon Upper -> Ikana Castle Front Entrance",
+"entrance"
+],
+[
+"Town Deku Playground -> Clock Town North",
+"Mountain Village -> Goron Graveyard",
+"entrance"
+],
+[
+"Town Shooting Gallery",
+"Town Shooting Gallery",
+"both"
+],
+[
+"Treasure Shop",
+"Doggy Racetrack",
+"both"
+],
+[
+"Twinmolds Lair",
+"Odolwas Lair",
+"both"
+],
+[
+"Woodfall -> Southern Swamp Poisoned 2",
+"Mountain Village Winter 2",
+"entrance"
+],
+[
+"Woodfall -> Woodfall Great Fairy Fountain",
+"Fishermans Hut -> Great Bay Coast",
+"entrance"
+],
+[
+"Woodfall Great Fairy Fountain -> Woodfall",
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"entrance"
+],
+[
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"Zora Hall Evans Room -> Zora Hall",
+"entrance"
+],
+[
+"Woodfall Temple Entrance -> Woodfall Owl Statue Platform",
+"Ikana Canyon Upper -> Music Box House",
+"entrance"
+],
+[
+"Woods Of Mystery -> Southern Swamp Poisoned 7",
+"Deku Palace 5",
+"entrance"
+],
+[
+"Woods Of Mystery Grotto",
+"Zora Cape Grotto",
+"both"
+],
+[
+"Zora Cape -> Great Bay Coast 1",
+"South Clock Town 5",
+"entrance"
+],
+[
+"Zora Cape -> Zora Hall 0",
+"Zora Hall 0",
+"entrance"
+],
+[
+"Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance",
+"Goron Shop -> Goron Shrine",
+"entrance"
+],
+[
+"Zora Cape Grotto",
+"Mountain Village Tunnel Grotto",
+"both"
+],
+[
+"Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain",
+"Woodfall Great Fairy Fountain -> Woodfall",
+"entrance"
+],
+[
+"Zora Hall -> Zora Cape 1",
+"Zora Cape 1",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Evans Room",
+"Deku Shrine Entrance -> Deku Palace Outside",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Japas Room",
+"Zora Hall Shop -> Zora Hall",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Lulus Room",
+"Zora Hall Mikaus Room -> Zora Hall",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Mikaus Room",
+"Secret Shrine Entrance -> Ikana Canyon Lower",
+"entrance"
+],
+[
+"Zora Hall -> Zora Hall Shop",
+"Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple",
+"entrance"
+],
+[
+"Zora Hall Evans Room -> Zora Hall",
+"Woodfall Owl Statue Platform -> Woodfall Temple Entrance",
+"entrance"
+],
+[
+"Zora Hall Japas Room -> Zora Hall",
+"Ikana Canyon Lower -> Secret Shrine Entrance",
+"entrance"
+],
+[
+"Zora Hall Lulus Room -> Zora Hall",
+"Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance",
+"entrance"
+],
+[
+"Zora Hall Mikaus Room -> Zora Hall",
+"Zora Hall -> Zora Hall Lulus Room",
+"entrance"
+],
+[
+"Zora Hall Shop -> Zora Hall",
+"Zora Hall -> Zora Hall Japas Room",
+"entrance"
+]
+]
+}

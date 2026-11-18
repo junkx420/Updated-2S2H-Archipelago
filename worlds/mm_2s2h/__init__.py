@@ -17,8 +17,9 @@ from Fill import fill_restrictive
 from Options import OptionError
 from worlds.AutoWorld import LogicMixin, WebWorld, World
 
-from .enums_generated import (ABILITIES, DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_SHUFFLE,
-                              NPC_SOULS, OPTION_DEFAULTS, RC_ID, RI_ID)
+from .enums_generated import (ABILITIES, DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_NAMES,
+                              ENTRANCE_SHUFFLE, NPC_SOULS,
+                              OPTION_DEFAULTS, RC_ID, RI_ID)
 from .items_generated import ITEMS
 from .locations_generated import LOCATIONS
 from .macros_generated import CAN_USE_SWORD
@@ -82,19 +83,14 @@ ENTRANCE_ROW_INDEX = {row["into"]: i for i, row in enumerate(ENTRANCE_SHUFFLE)}
 
 
 def _door_name(row: dict) -> str:
-    """'WOODFALL_TEMPLE:0' -> 'Woodfall Temple'; a grotto by its region, 'RR_ZORA_CAPE_GROTTO' -> 'Zora Cape Grotto'"""
-    if row.get("grotto"):
-        return region_name(row["inside_region"])
-    if row.get("hours"):  # an interior by its region; the Inn's two doors by their way back as well
-        shared = sum(r["inside_region"] == row["inside_region"] for r in ENTRANCE_SHUFFLE) > 1
-        return region_name(row["inside_region"]) + (f" ({row['out'].replace('_', ' ').title()})" if shared else "")
-    return row["into"].split(":")[0].replace("_", " ").title()
+    """Spoiler name of a door pool's row, e.g. 'Woodfall Temple' or a grotto by its region, 'Zora Cape Grotto'
+    (EntranceShuffle.cpp entranceNames, also shown by the in-game entrance tracker)"""
+    return ENTRANCE_NAMES[row["into"]][0]
 
 
 def _place_name(entrance: str) -> str:
-    """'MOUNTAIN_VILLAGE_WINTER:6' -> 'Mountain Village Winter 6' (an overworld arrival)"""
-    scene, spawn = entrance.split(":")
-    return f"{scene.replace('_', ' ').title()} {spawn}"
+    """Spoiler name of an overworld row's place, 'MOUNTAIN_VILLAGE_WINTER:6' -> 'Mountain Village Winter 6'"""
+    return ENTRANCE_NAMES[entrance][0]
 
 
 def region_name(rr: str) -> str:
