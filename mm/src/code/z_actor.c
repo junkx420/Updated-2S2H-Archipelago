@@ -2983,7 +2983,9 @@ void Actor_Draw(PlayState* play, Actor* actor) {
         }
     }
 
-    if (GameInteractor_ShouldActorDraw(actor)) {
+    // 2S2H [Archipelago] An actor hidden by ShouldActorDraw casts no shadow either (NPC and boss souls)
+    bool shouldDraw = GameInteractor_ShouldActorDraw(actor);
+    if (shouldDraw) {
         actor->draw(actor, play);
         GameInteractor_ExecuteOnActorDraw(actor);
     }
@@ -2996,7 +2998,7 @@ void Actor_Draw(PlayState* play, Actor* actor) {
         }
     }
 
-    if (actor->shape.shadowDraw != NULL) {
+    if (shouldDraw && (actor->shape.shadowDraw != NULL)) {
         actor->shape.shadowDraw(actor, light, play);
     }
     actor->isDrawn = true;

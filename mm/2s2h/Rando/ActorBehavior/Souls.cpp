@@ -1,6 +1,7 @@
 #include "ActorBehavior.h"
 #include "Souls.h"
 #include <libultraship/bridge/consolevariablebridge.h>
+#include <algorithm>
 #include <unordered_set>
 #include <vector>
 #include "Rando/DrawFuncs.h"
@@ -12,6 +13,7 @@ extern "C" {
 #include "functions.h"
 
 #include "overlays/actors/ovl_Boss_Hakugin/z_boss_hakugin.h"
+#include "overlays/actors/ovl_En_Go/z_en_go.h"
 
 void BossHakugin_DrawIce(BossHakugin*, PlayState*);
 extern PlayState* gPlayState;
@@ -105,11 +107,16 @@ std::unordered_map<int16_t, RandoItemId> enemySoulMap = {
 // The apworld's rules are generated from this table (worlds/mm_2s2h/tools/gen_from_2s2h.py), so a check or event
 // that cannot be done without the NPC has to be listed here. Listing too much only restricts item placement,
 // listing too little can make a seed unbeatable.
+// level 1: the 30 souls of apworld 0.2, used with shuffle_npc_souls 1 and 2. level 2: added in 0.12, used with
+// shuffle_npc_souls 2 only. sceneId: the soul only owns its actors in this scene (EnSob1 runs as ACTOR_EN_OSSAN in
+// the Bomb, Goron and Zora shops, and the Trading Post is ACTOR_EN_OSSAN too); -1 is every scene.
 struct NpcSoul {
     RandoItemId randoItemId;
     std::vector<int16_t> actorIds;
     std::vector<RandoCheckId> checks;
     std::vector<RandoEvent> events;
+    int level = 1;
+    int16_t sceneId = -1;
 };
 
 // clang-format off
@@ -144,23 +151,106 @@ const std::vector<NpcSoul> npcSouls = {
     { RI_SOUL_NPC_TOILET_HAND, { ACTOR_EN_BJT }, { RC_STOCK_POT_INN_TOILET_HAND }, {} },
     { RI_SOUL_NPC_TOTO, { ACTOR_EN_TOTO }, { RC_MILK_BAR_CIRCUS_LEADER_MASK }, {} },
     { RI_SOUL_NPC_TREASURE_CHEST_SHOP_GAL, { ACTOR_EN_TAKARAYA }, { RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_DEKU, RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_GORON, RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_HUMAN, RC_CLOCK_TOWN_EAST_TREASURE_CHEST_GAME_ZORA }, {} },
+    // apworld 0.12 (level 2). Rows that list nothing only hide their NPCs: guards and other blockers, whose absence
+    // only makes the way easier. Where a check might need the NPC, it is listed anyway.
+    { RI_SOUL_NPC_KAFEI, { ACTOR_EN_TEST3 }, { RC_KAFEIS_HIDEOUT_PENDANT_OF_MEMORIES, RC_STOCK_POT_INN_COUPLES_MASK }, { RE_MEET_KAFEI, RE_RETRIEVE_SUN_MASK }, 2 },
+    { RI_SOUL_NPC_BOMB_SHOP_LADY, { ACTOR_EN_BABA }, { RC_CLOCK_TOWN_NORTH_BOMB_LADY }, { RE_SAVE_BOMB_SHOP_LADY }, 2 },
+    { RI_SOUL_NPC_CURIOSITY_SHOP_OWNER, { ACTOR_EN_FSN }, { RC_CURIOSITY_SHOP_SPECIAL_ITEM, RC_BOMB_SHOP_ITEM_04_OR_CURIOSITY_SHOP_ITEM, RC_KAFEIS_HIDEOUT_KEATON_MASK, RC_KAFEIS_HIDEOUT_LETTER_TO_MAMA }, {}, 2 },
+    { RI_SOUL_NPC_BOMB_SHOP_OWNER, { ACTOR_EN_OSSAN }, { RC_BOMB_SHOP_ITEM_01, RC_BOMB_SHOP_ITEM_02, RC_BOMB_SHOP_ITEM_03, RC_BOMB_SHOP_ITEM_04_OR_CURIOSITY_SHOP_ITEM }, {}, 2, SCENE_BOMYA },
+    { RI_SOUL_NPC_GORON_SHOPKEEPER, { ACTOR_EN_OSSAN }, { RC_GORON_SHOP_ITEM_01, RC_GORON_SHOP_ITEM_02, RC_GORON_SHOP_ITEM_03 }, {}, 2, SCENE_GORONSHOP },
+    { RI_SOUL_NPC_ZORA_SHOPKEEPER, { ACTOR_EN_OSSAN }, { RC_ZORA_SHOP_ITEM_01, RC_ZORA_SHOP_ITEM_02, RC_ZORA_SHOP_ITEM_03 }, {}, 2, SCENE_BANDROOM },
+    { RI_SOUL_NPC_TRADING_POST, { ACTOR_EN_OSSAN }, { RC_TRADING_POST_SHOP_ITEM_01, RC_TRADING_POST_SHOP_ITEM_02, RC_TRADING_POST_SHOP_ITEM_03, RC_TRADING_POST_SHOP_ITEM_04, RC_TRADING_POST_SHOP_ITEM_05, RC_TRADING_POST_SHOP_ITEM_06, RC_TRADING_POST_SHOP_ITEM_07, RC_TRADING_POST_SHOP_ITEM_08 }, {}, 2, SCENE_8ITEMSHOP },
+    { RI_SOUL_NPC_KOTAKE, { ACTOR_EN_TRT, ACTOR_EN_TRT2 }, { RC_HAGS_POTION_SHOP_ITEM_01, RC_HAGS_POTION_SHOP_ITEM_02, RC_HAGS_POTION_SHOP_ITEM_03, RC_HAGS_POTION_SHOP_KOTAKE }, { RE_ACCESS_RED_POTION_REFILL }, 2 },
+    { RI_SOUL_NPC_KOUME, { ACTOR_EN_TRU, ACTOR_EN_TRU_MT, ACTOR_EN_DNH, ACTOR_EN_SHN }, { RC_TOURIST_INFORMATION_ARCHERY, RC_TOURIST_INFORMATION_PICTOBOX, RC_TOURIST_INFORMATION_GOOD_PHOTO }, { RE_SAVED_KOUME, RE_SOUTHERN_SWAMP_RIDE_BOAT }, 2 },
+    { RI_SOUL_NPC_DEKU_KING, { ACTOR_EN_DNQ }, {}, { RE_RETURN_DEKU_PRINCESS, RE_ACCESS_PICTOGRAPH_DEKU_KING }, 2 },
+    { RI_SOUL_NPC_DEKU_PRINCESS, { ACTOR_EN_DNP }, {}, { RE_ACCESS_DEKU_PRINCESS, RE_RETURN_DEKU_PRINCESS }, 2 },
+    { RI_SOUL_NPC_DEKU_PALACE_RESIDENTS, { ACTOR_EN_GUARD_NUTS, ACTOR_EN_LOOK_NUTS, ACTOR_EN_DNS, ACTOR_EN_MS }, {}, {}, 2 },
+    { RI_SOUL_NPC_MONKEY, { ACTOR_EN_MNK }, { RC_DEKU_KINGS_CHAMBER_MONKEY }, {}, 2 },
+    { RI_SOUL_NPC_BUSINESS_SCRUBS, { ACTOR_EN_AKINDONUTS, ACTOR_EN_SELLNUTS, ACTOR_EN_SCOPENUTS }, { RC_CLOCK_TOWN_SCRUB_DEED, RC_SOUTHERN_SWAMP_SCRUB_DEED, RC_SOUTHERN_SWAMP_SCRUB_BEANS, RC_SOUTHERN_SWAMP_PIECE_OF_HEART, RC_GORON_VILLAGE_SCRUB_DEED, RC_GORON_VILLAGE_SCRUB_BOMB_BAG, RC_GORON_VILLAGE_PIECE_OF_HEART, RC_ZORA_HALL_SCRUB_DEED, RC_ZORA_HALL_SCRUB_POTION_REFILL, RC_ZORA_HALL_SCRUB_PIECE_OF_HEART, RC_IKANA_CANYON_SCRUB_HUGE_RUPEE, RC_IKANA_CANYON_SCRUB_POTION_REFILL, RC_IKANA_CANYON_SCRUB_PIECE_OF_HEART, RC_TERMINA_FIELD_GROTTO_SCRUB }, { RE_ACCESS_BLUE_POTION_REFILL, RE_ACCESS_GREEN_POTION_REFILL, RE_ACCESS_BEANS_REFILL, RE_TERMINA_FIELD_SCRUB_ENTERED_GROTTO }, 2 },
+    { RI_SOUL_NPC_GORONS, { ACTOR_EN_GO, ACTOR_EN_S_GORO, ACTOR_EN_IG, ACTOR_EN_DAI, ACTOR_EN_GEG }, { RC_GORON_VILLAGE_MEDIGORON, RC_MOUNTAIN_VILLAGE_DON_GERO_MASK }, {}, 2 },
+    { RI_SOUL_NPC_GORON_ELDER_AND_SON, { ACTOR_EN_JG, ACTOR_EN_GK }, { RC_PATH_TO_GORON_VILLAGE_LULLABY_INTRO, RC_GORON_SHRINE_FULL_LULLABY }, { RE_SPAWN_SIRLOIN }, 2 },
+    { RI_SOUL_NPC_GORON_RACERS, { ACTOR_EN_RG }, { RC_GORON_RACETRACK_GOLD_DUST }, { RE_ACCESS_GOLD_DUST }, 2 },
+    { RI_SOUL_NPC_DARMANI, { ACTOR_EN_GG, ACTOR_EN_GG2 }, { RC_GORON_GRAVEYARD_DARMANI }, {}, 2 },
+    { RI_SOUL_NPC_ZORAS, { ACTOR_EN_ZOT }, { RC_ZORA_HALL_SCENE_LIGHTS }, {}, 2 },
+    { RI_SOUL_NPC_INDIGO_GOS, { ACTOR_EN_ZOG, ACTOR_EN_ZOB, ACTOR_EN_ZOD, ACTOR_EN_ZOV }, { RC_GREAT_BAY_COAST_MIKAU }, {}, 2 },
+    { RI_SOUL_NPC_GREAT_BAY_FOLK, { ACTOR_EN_TSN, ACTOR_EN_JGAME_TSN, ACTOR_EN_OT, ACTOR_EN_MK }, { RC_GREAT_BAY_COAST_FISHERMAN_MINIGAME, RC_PINNACLE_ROCK_REUNITE_SEAHORSE }, { RE_ACCESS_SEAHORSE }, 2 },
+    { RI_SOUL_NPC_ROMANI_AND_CREMIA, { ACTOR_EN_MA4, ACTOR_EN_MA_YTS, ACTOR_EN_MA_YTO, ACTOR_OBJ_UM }, { RC_ROMANI_RANCH_EPONAS_SONG, RC_ROMANI_RANCH_ALIENS, RC_CREMIA_ESCORT }, { RE_COWS_FROM_ALIENS }, 2 },
+    { RI_SOUL_NPC_GORMAN, { ACTOR_EN_GM }, {}, {}, 2 },
+    { RI_SOUL_NPC_MR_BARTEN, { ACTOR_EN_TAB }, { RC_MILK_BAR_PURCHASE_MILK, RC_MILK_BAR_PURCHASE_CHATEAU }, {}, 2 },
+    { RI_SOUL_NPC_GUARDS_AND_OFFICIALS, { ACTOR_EN_STOP_HEISHI, ACTOR_EN_HEISHI, ACTOR_EN_BAISEN, ACTOR_EN_RECEPGIRL }, {}, {}, 2 },
+    { RI_SOUL_NPC_CARPENTERS, { ACTOR_EN_DAIKU, ACTOR_EN_DAIKU2, ACTOR_EN_MUTO }, {}, {}, 2 },
+    { RI_SOUL_NPC_BOMBERS, { ACTOR_EN_BOMBERS, ACTOR_EN_BOMBERS2, ACTOR_EN_BOMJIMA, ACTOR_EN_BOMJIMB }, { RC_CLOCK_TOWN_BOMBERS_NOTEBOOK }, { RE_HIDE_SEEK_DAY1, RE_HIDE_SEEK_DAY2, RE_HIDE_SEEK_DAY3, RE_BOMBERS_NORTH_DAY1, RE_BOMBERS_NORTH_DAY2, RE_BOMBERS_NORTH_DAY3, RE_BOMBERS_EAST_DAY1, RE_BOMBERS_EAST_DAY2, RE_BOMBERS_EAST_DAY3, RE_BOMBERS_WEST_DAY1, RE_BOMBERS_WEST_DAY2, RE_BOMBERS_WEST_DAY3, RE_BOMBER_CODE }, 2 },
+    { RI_SOUL_NPC_TOWNSFOLK, { ACTOR_EN_AH, ACTOR_EN_JA, ACTOR_EN_ANI, ACTOR_EN_BJI_01, ACTOR_EN_STH2 }, {}, {}, 2 },
+    { RI_SOUL_NPC_PAMELAS_FATHER, { ACTOR_EN_HG, ACTOR_EN_HGO }, { RC_MUSIC_BOX_HOUSE_FATHER }, {}, 2 },
+    { RI_SOUL_NPC_COMPOSER_BROTHERS, { ACTOR_EN_PO_COMPOSER }, { RC_BENEATH_THE_GRAVEYARD_SONG_OF_STORMS }, { RE_BREAK_SHARP_CURSE }, 2 },
+    { RI_SOUL_NPC_DAMPE, { ACTOR_EN_TK }, { RC_BENEATH_THE_GRAVEYARD_DAMPE_CHEST }, {}, 2 },
+    { RI_SOUL_NPC_FROGS, { ACTOR_EN_MINIFROG }, { RC_CLOCK_TOWN_LAUNDRY_FROG, RC_GREAT_BAY_TEMPLE_GEKKO_FROG, RC_SOUTHERN_SWAMP_FROG, RC_WOODFALL_TEMPLE_GEKKO_FROG, RC_MOUNTAIN_VILLAGE_FROG_CHOIR }, {}, 2 },
+    { RI_SOUL_NPC_KAEPORA_GAEBORA, { ACTOR_EN_OWL }, {}, {}, 2 },
+    { RI_SOUL_NPC_TALKING_GIBDOS, { ACTOR_EN_TALK_GIBUD }, {}, {}, 2 },
+    { RI_SOUL_NPC_PIRATES, { ACTOR_EN_GE1, ACTOR_EN_GE2, ACTOR_EN_GE3 }, {}, {}, 2 },
 };
+
+// Never hidden, whatever soul their actor belongs to: (params & mask) == value. They open a way the logic treats as
+// open: the Goron Shrine gatekeeper opens the shrine (Regions/North.cpp, Goron Village exit to the shrine).
+struct NpcSoulException {
+    int16_t actorId;
+    int16_t paramsMask;
+    int16_t paramsValue;
+};
+const std::vector<NpcSoulException> npcSoulExceptions = {
+    { ACTOR_EN_GO, 0xF, ENGO_GATEKEEPER }, // ENGO_GET_TYPE
+};
+
+// Actors that belong to the NPC they are attached to (actor->parent): Romani's balloon.
+const std::vector<std::pair<int16_t, int16_t>> npcSoulCompanions = {
+    { ACTOR_EN_PO_FUSEN, ACTOR_EN_MA4 },
+};
+
+// Soul actors with DynaPoly collision: while hidden their collision is off, it would be an invisible wall.
+const std::vector<int16_t> npcSoulDynaActors = { ACTOR_OBJ_UM };
 // clang-format on
 
-bool HaveNpcSoul(int16_t actorId) {
-    static std::vector<RandoInf> soulOfActor; // RANDO_INF_MAX: this actor has no soul
-    if (soulOfActor.empty()) {
-        soulOfActor.assign(ACTOR_ID_MAX, RANDO_INF_MAX);
+bool HaveNpcSoul(Actor* actor) {
+    int level = IS_RANDO ? RANDO_SAVE_OPTIONS[RO_SHUFFLE_NPC_SOULS] : RO_NPC_SOULS_OFF;
+    if (level == RO_NPC_SOULS_OFF) {
+        return true;
+    }
+    // per actor id: (scene or -1, flag) of each soul of the current level that owns it
+    static std::vector<std::vector<std::pair<int16_t, RandoInf>>> soulsOfActor;
+    static int soulsLevel = RO_NPC_SOULS_OFF;
+    if (soulsLevel != level) {
+        soulsLevel = level;
+        soulsOfActor.assign(ACTOR_ID_MAX, {});
         for (const auto& npcSoul : npcSouls) {
+            if (npcSoul.level > level) {
+                continue;
+            }
             for (int16_t npcActorId : npcSoul.actorIds) {
-                soulOfActor[npcActorId] = (RandoInf)NPC_SOUL_RI_TO_RANDO_INF(npcSoul.randoItemId);
+                soulsOfActor[npcActorId].push_back(
+                    { npcSoul.sceneId, (RandoInf)NPC_SOUL_RI_TO_RANDO_INF(npcSoul.randoItemId) });
             }
         }
     }
-    if (actorId < 0 || actorId >= ACTOR_ID_MAX || soulOfActor[actorId] == RANDO_INF_MAX) {
+    for (const auto& [childId, parentId] : npcSoulCompanions) {
+        if (actor->id == childId && actor->parent != NULL && actor->parent->id == parentId) {
+            actor = actor->parent;
+            break;
+        }
+    }
+    for (const auto& exception : npcSoulExceptions) {
+        if (actor->id == exception.actorId && (actor->params & exception.paramsMask) == exception.paramsValue) {
+            return true;
+        }
+    }
+    if (actor->id < 0 || actor->id >= ACTOR_ID_MAX) {
         return true;
     }
-    return Flags_GetRandoInf(soulOfActor[actorId]);
+    for (const auto& [sceneId, flag] : soulsOfActor[actor->id]) {
+        if (sceneId == -1 || (gPlayState != NULL && sceneId == gPlayState->sceneId)) {
+            return Flags_GetRandoInf(flag);
+        }
+    }
+    return true;
 }
 
 bool HaveEnemySoul(ActorId enemyId) {
@@ -204,25 +294,41 @@ void SetEnemyInjureGrayscale(bool enable) {
 void Rando::ActorBehavior::InitSoulsBehavior() {
     bool shouldBossRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_BOSS_SOULS] == RO_GENERIC_YES;
     bool shouldEnemyInjure = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_ENEMY_SOULS] == RO_GENERIC_YES;
-    bool shouldNpcRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_NPC_SOULS] == RO_GENERIC_YES;
+    bool shouldNpcRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_NPC_SOULS] != RO_NPC_SOULS_OFF;
 
-    // NPCs without their soul: no update (no talking, no rewards, no collision) and no draw. They cannot be
-    // targeted either; the flag comes back with the soul.
+    // NPCs without their soul: no update (no talking, no rewards, no collider, no sound) and no draw (and so no
+    // shadow, z_actor.c). They cannot be targeted either, and DynaPoly collision is off; both come back with the soul.
     static std::unordered_set<Actor*> untargetable;
-    COND_HOOK(OnSceneInit, shouldNpcRegister, [](s8 sceneId, s8 spawnNum) { untargetable.clear(); });
+    static std::unordered_set<Actor*> collisionOff;
+    COND_HOOK(OnSceneInit, shouldNpcRegister, [](s8 sceneId, s8 spawnNum) {
+        untargetable.clear();
+        collisionOff.clear();
+    });
     COND_HOOK(ShouldActorUpdate, shouldNpcRegister, [](Actor* actor, bool* should) {
-        if (!HaveNpcSoul(actor->id)) {
+        bool isDyna =
+            std::find(npcSoulDynaActors.begin(), npcSoulDynaActors.end(), actor->id) != npcSoulDynaActors.end();
+        if (!HaveNpcSoul(actor)) {
             *should = false;
             if (actor->flags & ACTOR_FLAG_ATTENTION_ENABLED) {
                 actor->flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
                 untargetable.insert(actor);
             }
-        } else if (!untargetable.empty() && untargetable.erase(actor)) {
-            actor->flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+            s32 bgId = isDyna ? ((DynaPolyActor*)actor)->bgId : BGACTOR_NEG_ONE;
+            if (bgId != BGACTOR_NEG_ONE && !collisionOff.count(actor)) {
+                DynaPoly_DisableCollision(gPlayState, &gPlayState->colCtx.dyna, bgId);
+                collisionOff.insert(actor);
+            }
+        } else {
+            if (!untargetable.empty() && untargetable.erase(actor)) {
+                actor->flags |= ACTOR_FLAG_ATTENTION_ENABLED;
+            }
+            if (isDyna && !collisionOff.empty() && collisionOff.erase(actor)) {
+                DynaPoly_EnableCollision(gPlayState, &gPlayState->colCtx.dyna, ((DynaPolyActor*)actor)->bgId);
+            }
         }
     });
     COND_HOOK(ShouldActorDraw, shouldNpcRegister, [](Actor* actor, bool* should) {
-        if (!HaveNpcSoul(actor->id)) {
+        if (!HaveNpcSoul(actor)) {
             *should = false;
         }
     });
