@@ -10,15 +10,20 @@
 5. Press **ESC → Dev Tools → Archipelago**, enter the server address, slot name and password, then connect.
 6. **While connected, create a new save file.** Leave native **Enable Rando** off; the multiworld supplies the options.
 
-## Trying 0.4.0
+## Trying the new mechanics (0.11.1)
 
-NPC souls, temple entrance shuffle and boss entrance shuffle are optional and off by default. Enable
-`shuffle_npc_souls`, `shuffle_dungeon_entrances` or `shuffle_boss_entrances` in your YAML to try them.
+NPC souls, door keys, Epona riding, bean planting and all entrance shuffles are optional and off by default.
+Enable them in your YAML (`shuffle_npc_souls`, `shuffle_door_keys`, `shuffle_epona_riding`, `shuffle_bean_planting`,
+`shuffle_dungeon_entrances`, `shuffle_boss_entrances`, `shuffle_grottos`, `shuffle_interiors`, `shuffle_overworld`,
+`shuffle_special_areas`, `mix_entrance_pools`). The example YAML contains a ready-made block to shuffle everything.
 Use a separate save and back up existing saves before experimenting.
 
-The 0.4 client accepts 0.1–0.4 seeds. A 0.1 client cannot play a 0.4 seed. The in-game check tracker does not
-evaluate extra access requirements for foreign temples/boss rooms; use the generated spoiler or Universal Tracker
-when checking those requirements. The new features are **not tested in game**.
+With shuffled entrances, open **Entrance Tracker** next to the check tracker: it remembers where each entrance led
+and hides destinations you have not visited unless you turn on **Show All (Spoilers)**.
+
+The 0.11 client accepts 0.1–0.11 seeds. Older clients cannot play a 0.11 seed. The in-game check tracker does not
+evaluate shuffled entrances or extra area rules; use Universal Tracker or the spoiler log for logic. The new
+mechanics are **not tested in game**.
 
 Report problems in [this repository's issues](https://github.com/junkx420/Updated-2S2H-Archipelago/issues),
 with the release, platform, relevant options and reproduction steps. Do not send support requests to the original projects.

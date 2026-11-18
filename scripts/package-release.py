@@ -1,4 +1,4 @@
-"""Package exact GitHub Actions artifacts and the pinned apworld checkout."""
+"""Package exact GitHub Actions artifacts and the pinned apworld checkout for one release version."""
 import hashlib
 import json
 import os
@@ -10,8 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=False)
 client_sha, world_sha = os.environ["CLIENT_SHA"], os.environ["APWORLD_SHA"]
+version = os.environ["RELEASE_VERSION"]
 world = ROOT / "world-source/worlds/mm_2s2h"
-assert json.loads((world / "archipelago.json").read_text())["world_version"] == "0.4.0"
+assert json.loads((world / "archipelago.json").read_text())["world_version"] == version
 
 with zipfile.ZipFile(DIST / "mm_2s2h.apworld", "w", zipfile.ZIP_DEFLATED) as archive:
     for path in sorted(world.rglob("*")):
@@ -31,17 +32,17 @@ for platform, label, binary in [("windows", "Windows", "2ship.exe"),
     # GitHub artifact downloads may not retain executable permissions.
     if platform == "linux":
         matches[0].chmod(0o755)
-    with zipfile.ZipFile(DIST / f"2S2H-Archipelago-0.4.0-{label}.zip", "w", zipfile.ZIP_DEFLATED) as archive:
+    with zipfile.ZipFile(DIST / f"2S2H-Archipelago-{version}-{label}.zip", "w", zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(source.rglob("*")):
             if path.is_file():
                 archive.write(path, Path("2S2H-Archipelago") / path.relative_to(source))
         archive.write(ROOT / "PLAYING.md", "2S2H-Archipelago/ARCHIPELAGO-INSTRUCTIONS.md")
         archive.writestr("2S2H-Archipelago/BUILD-INFO.json", json.dumps({
-            "release": "0.4.0", "client_commit": client_sha, "apworld_commit": world_sha,
+            "release": version, "client_commit": client_sha, "apworld_commit": world_sha,
             "build_run": os.environ["BUILD_RUN"], "platform": label,
         }, indent=2) + "\n")
 
-manifest = {"release": "0.4.0", "client_commit": client_sha, "apworld_commit": world_sha,
+manifest = {"release": version, "client_commit": client_sha, "apworld_commit": world_sha,
             "build_run": os.environ["BUILD_RUN"], "files": {}}
 for path in sorted(DIST.iterdir()):
     if zipfile.is_zipfile(path):

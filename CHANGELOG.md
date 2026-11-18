@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.11.1 — Regular release (new mechanics experimental)
+
+Client and **apworld 0.11.1**. Published as a regular release because every automated check passes and every new
+option is off by default; the new mechanics have **not been played in game** and remain experimental.
+
+### New since 0.4.0
+
+- **Door keys** (`shuffle_door_keys`): 26 buildings locked until their key is found; ways out never locked.
+- **Grotto shuffle** (`shuffle_grottos`): holes lead into other grottos; each grotto keeps its checks; you return
+  to the hole you used.
+- **Interior shuffle** (`shuffle_interiors`): building doors swap within the same opening-hours class.
+- **Overworld shuffle** (`shuffle_overworld`): outdoor exits coupled; Clock Town gates always lead out; underwater
+  ways mix only with each other; Link dismounts Epona on a shuffled exit.
+- **Special areas** (`shuffle_special_areas`): Spider Houses, Beneath the Well, Ikana Castle, Secret Shrine, Deku Shrine.
+- **Mixed pools** (`mix_entrance_pools`): temples, interiors, overworld and special areas in one pool; the inverted
+  Stone Tower Temple joins with temples. Boss rooms and grottos stay in their own pools.
+- **Abilities**: `shuffle_epona_riding` and `shuffle_bean_planting` add items that unlock riding and planting.
+- **Entrance tracker**: spoiler-free in-game window listing shuffled entrances; discoveries are saved.
+- Overfull pools drop traps and extra Plentiful copies instead of failing generation.
+
+### Validation and limits
+
+- 805 tests; 1200/1200 parity scenarios with new options off; 100/100 random seeds per new option and combined;
+  native test bench for every entrance pairing, warps, respawns and old saves.
+- Not tested in game. Linux/macOS untested in game. The in-game check tracker does not evaluate shuffled entrances.
+- Fixed exits and their reasons: [testing.md](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/apworld/worlds/mm_2s2h/docs/testing.md)
+
+[Release notes and downloads](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.11.1)
+
 ## 0.4.0 — Pre-release
 
 This is the first downloadable preview containing the changes after regular release **0.1.5**.

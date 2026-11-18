@@ -1,8 +1,16 @@
-name: Publish 0.4.0 preview
+name: Publish release
 
 on:
   workflow_dispatch:
     inputs:
+      version:
+        description: Release version without "v", e.g. 0.11.1 (must equal the apworld's world_version)
+        required: true
+        type: string
+      title:
+        description: Release title shown on GitHub
+        required: true
+        type: string
       build_run:
         description: Successful or running generate-builds run for the exact client commit
         required: true
@@ -15,13 +23,18 @@ on:
         description: Full apworld commit SHA
         required: true
         type: string
+      prerelease:
+        description: Publish as pre-release instead of a regular (latest) release
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
   actions: read
 
 concurrency:
-  group: publish-preview-0.4.0
+  group: publish-release-${{ inputs.version }}
   cancel-in-progress: false
 
 jobs:
@@ -31,18 +44,23 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
+      RELEASE_VERSION: ${{ inputs.version }}
+      RELEASE_TITLE: ${{ inputs.title }}
+      PRERELEASE: ${{ inputs.prerelease }}
       BUILD_RUN: ${{ inputs.build_run }}
       CLIENT_SHA: ${{ inputs.client_sha }}
       APWORLD_SHA: ${{ inputs.apworld_sha }}
     steps:
       - uses: actions/checkout@v6
-      - name: Verify source build and wait for all platforms
+      - name: Verify inputs, source build and wait for all platforms
         shell: bash
         run: |
           set -euo pipefail
+          [[ "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           [[ "$CLIENT_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$APWORLD_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$BUILD_RUN" =~ ^[0-9]+$ ]]
+          test -s "RELEASE-$RELEASE_VERSION.md"
           test "$(gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN" --jq .head_sha)" = "$CLIENT_SHA"
           test "$(gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN" --jq .name)" = generate-builds
           gh run watch "$BUILD_RUN" --exit-status --interval 30
@@ -60,17 +78,21 @@ jobs:
           path: world-source
           sparse-checkout: worlds/mm_2s2h
       - name: Package and check release contents
-        run: python3 scripts/package-preview.py
-      - name: Publish the pre-release after every package is ready
+        run: python3 scripts/package-release.py
+      - name: Publish after every package is ready
         shell: bash
         run: |
           set -euo pipefail
-          if gh release view v0.4.0 >/dev/null 2>&1; then
-            echo 'v0.4.0 already exists; refusing to replace its files.' >&2
+          tag="v$RELEASE_VERSION"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "$tag already exists; refusing to replace its files." >&2
             exit 1
           fi
-          gh release create v0.4.0 dist/* --target "$CLIENT_SHA" --draft --prerelease \
-            --title 'v0.4.0 — NPC souls, dungeon & boss entrance shuffle (preview)' \
-            --notes-file RELEASE-0.4.0.md
-          gh release edit v0.4.0 --draft=false --prerelease=true --latest=false
-          gh release view v0.4.0 --json url,isPrerelease,assets
+          gh release create "$tag" dist/* --target "$CLIENT_SHA" --draft \
+            --title "$RELEASE_TITLE" --notes-file "RELEASE-$RELEASE_VERSION.md"
+          if [ "$PRERELEASE" = "true" ]; then
+            gh release edit "$tag" --draft=false --prerelease=true --latest=false
+          else
+            gh release edit "$tag" --draft=false --prerelease=false --latest=true
+          fi
+          gh release view "$tag" --json url,isPrerelease,assets

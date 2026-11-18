@@ -1,87 +1,101 @@
 # Majora's Mask × Archipelago
 
 **Play 2 Ship 2 Harkinian in an Archipelago multiworld.** Find your friends' items across Termina while they
-send yours back — with the check pools and options of 2S2H's randomizer, plus experimental new shuffles.
+send yours back — with 2S2H's check pools and options, plus a full entrance randomizer, door keys, NPC souls and
+shuffled abilities.
 
-[![Regular release](https://img.shields.io/badge/regular_release-0.1.5-2ea44f)](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.1.5)
-[![Preview](https://img.shields.io/badge/pre--release-0.4.0-orange)](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.4.0)
+[![Latest release](https://img.shields.io/badge/release-0.11.1-2ea44f)](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.11.1)
+[![Status](https://img.shields.io/badge/new_features-experimental-orange)](#how-stable-is-it)
 [![Game port](https://img.shields.io/badge/2S2H-5.0.1-blue)](https://github.com/HarbourMasters/2ship2harkinian)
+[![Archipelago](https://img.shields.io/badge/Archipelago-0.6.6%2B-6c5ce7)](https://archipelago.gg)
 
-[Get started](PLAYING.md) · [Changelog](CHANGELOG.md) · [Report a problem](https://github.com/junkx420/Updated-2S2H-Archipelago/issues)
+**[Download 0.11.1](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.11.1)** ·
+[Get started](PLAYING.md) · [Changelog](CHANGELOG.md) ·
+[Report a problem](https://github.com/junkx420/Updated-2S2H-Archipelago/issues)
 
 > **Unofficial fan project.** Not made by, affiliated with, or endorsed by Harbour Masters, the 2 Ship 2 Harkinian
 > team, xirba13, MMRecompRando or Archipelago. Please report problems here, not to the original projects.
 
-## Choose your download
+## How stable is it?
 
-| | Regular release | Experimental preview |
-|---|---|---|
-| Release | **[0.1.5](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.1.5)** | **[0.4.0](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.4.0)** |
-| Bundled apworld | 0.1.4 | 0.4.0 |
-| Features | Established 0.1.x feature set and exact-location AP hints | Adds NPC souls, temple entrance shuffle, boss entrance shuffle and newer fixes |
-| Play coverage | Limited; regular release does not mean bug-free | New features **not tested in game** |
-| Best for | The established download line | Testing the new mechanics and reporting issues |
+0.11.1 is a **regular release**: every automated check passes, and all new options are **off by default**, so a
+seed without them plays like the established feature set. The new mechanics have **not been played in game yet**,
+so treat them as **experimental** — use a separate save, keep backups, and report what you find.
 
-Preview downloads are published automatically after all three platform builds and package checks succeed.
-If downloads are still being prepared, follow [publication progress](https://github.com/junkx420/Updated-2S2H-Archipelago/actions/workflows/publish-preview.yml).
-
-Each release includes **Windows, Linux and macOS clients**, `mm_2s2h.apworld` and an example YAML.
-Download the client and apworld from the **same release**. The preview also includes a manifest with exact commits
-and SHA-256 checksums. Older releases do not contain the newer features listed below.
+Each release includes **Windows, Linux and macOS clients**, `mm_2s2h.apworld`, an example YAML and a manifest with
+exact commits and SHA-256 checksums. Always use client and apworld from the **same release**.
 
 ## What's included
 
-| Feature | What you can do |
-|---|---|
-| **Multiworld items & hints** | Send and receive items; see their names and owners. Exact-location in-game hints become AP hints. |
-| **Check pools** | Shuffle songs, shops, owl statues, cows, fairies, tokens, enemy drops, grass, pots, crates, barrels, trees and more. |
-| **Item & time options** | Boss/enemy souls, ocarina buttons, swim, extra songs, clocks, Triforce Hunt, traps and plentiful items. |
-| **Dungeon items & logic** | Place keys/fairies anywhere, in their own dungeon or at start; use Glitchless, No Logic or Nearly No Logic. |
-| **Tracker & configuration** | Universal Tracker, item/location groups, starting inventory, access requirements and DeathLink. |
-| **NPC souls · preview** | Find 30 souls to restore NPC rewards, sales and minigames. Optional, off by default. |
-| **Temple entrances · preview** | Shuffle the four normal temple entrances with coupled return paths. Optional, off by default. |
-| **Boss rooms · preview** | Shuffle Odolwa, Goht, Gyorg and Twinmold independently of temple entrances. Optional, off by default. |
+### Multiworld basics
 
-In the preview, blue warps account for both entrance shuffles and return outside the temple whose boss door you
-used. Clear effects stay with the boss. The inverted Stone Tower exterior, Woodfall prison door, Majora and the
-Moon stay fixed. Grottos, houses, overworld transitions, spider houses and Pirate's Fortress are not shuffled.
+| Feature | What you get |
+|---|---|
+| **Items & hints** | Send and receive items with names and owners. Exact-location in-game hints become Archipelago hints. Other worlds' items look gray (filler), colored (useful) or colored with an arrow (progression/trap). |
+| **Check pools** | Songs, shops, owl statues, cows, fairies, tokens, enemy drops, grass, pots, crates, barrels, trees and more. |
+| **Items & time** | Boss/enemy souls, ocarina buttons, swim, extra songs, clocks, Triforce Hunt, traps and plentiful items. |
+| **Dungeon items & logic** | Keys and fairies anywhere, in their own dungeon or at start; Glitchless, No Logic or Nearly No Logic. |
+| **Tracking** | Universal Tracker, item/location groups, starting inventory, DeathLink. |
+
+### New mechanics · experimental, off by default
+
+| Feature | Option | What it does |
+|---|---|---|
+| **NPC souls** | `shuffle_npc_souls` | 30 souls for townsfolk and other NPCs. Their rewards, sales and minigames need their soul. |
+| **Temple entrances** | `shuffle_dungeon_entrances` | The four temple entrances lead to other temples, coupled. |
+| **Boss rooms** | `shuffle_boss_entrances` | Odolwa, Goht, Gyorg and Twinmold sit behind other boss doors. Blue warps return outside the temple you entered. |
+| **Door keys** | `shuffle_door_keys` | 26 buildings stay locked until you find their key. Ways out are never locked. |
+| **Grottos** | `shuffle_grottos` | Grotto holes lead into other grottos; you come back out where you fell in. |
+| **Interiors** | `shuffle_interiors` | Building doors lead into other buildings with the same opening hours. |
+| **Overworld** | `shuffle_overworld` | Exits between outdoor areas are shuffled, coupled. Clock Town's gates always lead out. |
+| **Special areas** | `shuffle_special_areas` | Spider Houses, Beneath the Well, Ikana Castle, Secret Shrine and Deku Shrine swap entrances. |
+| **Mixed pools** | `mix_entrance_pools` | Mix temples, interiors, overworld and special areas into one pool — or copy the "shuffle everything" block from the example YAML. |
+| **Epona riding** | `shuffle_epona_riding` | Riding Epona and Gorman's race need a new item. |
+| **Bean planting** | `shuffle_bean_planting` | Planting magic beans needs a new item. |
+| **Entrance tracker** | in game | A window next to the check tracker remembers where every shuffled entrance led — spoiler-free until you walk through. |
+
+Boss rooms and grottos always shuffle within their own pool; the Clock Tower, the Moon, one-way paths and mandatory
+cutscenes stay vanilla. [Every fixed exit and why](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/apworld/worlds/mm_2s2h/docs/testing.md)
 
 ## Start a multiworld
 
-1. Install [Archipelago 0.6.6+](https://archipelago.gg), download your chosen release, and install `mm_2s2h.apworld`.
+1. Install [Archipelago 0.6.6+](https://archipelago.gg), download the release and install `mm_2s2h.apworld`.
 2. Set your name and options in the example YAML; generate and host through Archipelago.
 3. Extract the client and provide your own **Majora's Mask (US)** ROM on first launch.
 4. **ESC → Dev Tools → Archipelago → Connect**, then **create a new save while connected**. Leave native
    **Enable Rando** off.
+5. Optional: open **Entrance Tracker** from the randomizer menu when you play with shuffled entrances.
 
-[Full setup instructions](PLAYING.md) · [Preview play-test checklist](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/apworld/worlds/mm_2s2h/docs/testing.md)
+[Full setup instructions](PLAYING.md)
 
-The 0.4 client accepts 0.1–0.4 seeds and loads older saves tolerantly. A 0.1 client cannot play 0.4 seeds.
+The 0.11 client accepts seeds from apworld 0.1 to 0.11 and loads older saves. Older clients cannot play 0.11 seeds.
 MMRecompRando (`mm_recomp`) seeds use a different world and are not compatible.
 
 ## What has been checked?
 
-The current 0.4 source passed **531 tests**, **1200/1200 original-logic parity scenarios** with the entrance
-options off, and **200/200 randomized seeds** across boss-only and combined entrance shuffles. A native harness
-also exercised **2304 option/permutation cases**, **23040 warps** and **44352 respawn checks** with mocked game APIs.
+| Check | Result |
+|---|---|
+| Automated tests | **805 passed**, 0 failed |
+| Original-logic parity (all new options off) | **1200 / 1200** scenarios identical to 2S2H |
+| Random seeds | **100 / 100** for every new option and with all options combined |
+| Native client test bench | real redirect code for every entrance pairing, including warps, respawns and old saves |
+| In-game play | **not yet** for the new mechanics; Linux/macOS untested in game |
 
-These checks do not run the game. First multiworld sessions on the older feature set worked, but the new NPC
-souls and entrance shuffles still need in-game testing. Linux/macOS runtime behavior is also untested.
-The in-game check tracker does not evaluate extra access rules for foreign temples/boss rooms.
-
-[Detailed results, limitations and reproduction checklist](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/apworld/worlds/mm_2s2h/docs/testing.md)
+The in-game *check* tracker does not evaluate shuffled entrances or extra area rules; use Universal Tracker or the
+spoiler log for logic. [Detailed results and play-test checklist](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/apworld/worlds/mm_2s2h/docs/testing.md)
 
 ## Source & development
 
 | Branch | Contents |
 |---|---|
 | [`client`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/client) | 2S2H 5.0.1 with the AP client and new mechanics; platform builds run in GitHub Actions. |
-| [`apworld`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/apworld/worlds/mm_2s2h) | Archipelago world 0.4.0, generated logic, options and validation tools. |
-| [`main`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/main) | Project overview, setup, changelog and preview packaging workflow. |
+| [`apworld`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/apworld/worlds/mm_2s2h) | Archipelago world 0.11.1, generated logic, options and validation tools. |
+| [`main`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/main) | Project overview, setup, changelog and release packaging workflow. |
 
-The generator reads the fork's C++ enums, checks, items, regions and feature tables. AP IDs derive from those
-enum values, options travel as `RO_*` names, and saved pairings rebuild the same entrances in Universal Tracker.
-The original 2S2H region/combat logic remains unchanged; parity checks guard the default behavior.
+The world's logic is generated from the fork's C++ sources: enums, checks, items, regions and the feature tables
+for souls, keys, abilities and entrances. AP IDs derive from enum values, options travel as `RO_*` names, and
+saved pairings rebuild the same entrances in Universal Tracker. The original 2S2H region logic is never edited;
+parity checks guard the default behavior.
 
 ## Credits
 
