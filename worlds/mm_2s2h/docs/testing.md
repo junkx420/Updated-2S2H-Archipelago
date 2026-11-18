@@ -976,3 +976,64 @@ keeps the inverted temple entrance vanilla.
   mixed-temple warp through the other bosses.
 - Save and reload a mixed seed, then take the same entrances before reconnecting. Load a 0.9 save and connect it
   to its original slot. Verify that its old pairs and the vanilla inverted entrance still apply.
+
+### Stage 4a – abilities (apworld 0.11.0)
+
+- `Rando/MiscBehavior/Abilities.cpp` supplies the option, item and save flag for both abilities, and identifies the
+  original logic expressions the generator augments. The generator checks the referenced macro and branch names and
+  preserves the clauses around each branch. The original `Logic.h` and `Logic/Regions/*.cpp` serve as the parity reference.
+- `Player_ActionHandler_3` checks the ride ability before setting mounted state. `Horse_Spawn` clears the carried
+  mount when the ability is locked, then still dispatches the scripted Ranch layers. The song and call go through
+  `z_message.c` and `EnHorse` as before. The two Gorman payment helpers in `z_en_in.c` check before debiting rupees,
+  ahead of the transition that the skip enhancement intercepts. The Garo check, both Great Bay fence directions,
+  both Ikana directions and the riding branches of the inner Gorman-track exits require the ability as well as the
+  original song rule. The Night 2 escape via the alien-defense event remains a separate branch.
+- `ObjBean` checks the bean ability when offering a planting exchange. The player's exchange code consumes the bean
+  only after receiving that offer. The watering and platform branches run independently of the ability. The generator
+  augments both `CAN_GROW_BEAN_PLANT` and `CAN_USE_DAY2_RAIN_BEAN`; the latter has its own beans-plus-clock branch for
+  the Doggy Racetrack and upper Deku Palace. The normal water sources, Song of Storms, Hookshot/Zora alternatives,
+  bean refills and the Beneath the Well trade keep their original rules.
+- Item IDs are appended as 297 and 298 (AP IDs 757924137 and 757924138). The client accepts 0.1–0.11. New options and
+  flags use existing save arrays. Universal Tracker restores both options and the entrance maps from slot data.
+
+#### Verification
+
+- `pytest test/general worlds/mm_2s2h/test -q` passed 794 tests and 151,158 subtests. Both sets of golden
+  fingerprints matched with the ability options off (78/78).
+- `test_abilities.py` passed 15 focused tests covering the two toggles, original prerequisites, Day 2 and Night 2,
+  alternative routes, pool trimming, No Logic, Nearly No Logic, a beatable mixed fill and tracker reconstruction.
+  The tracker comparison uses identical inventories, sweeping only event locations. A full CLI seed with Epona in
+  `start_inventory_from_pool` placed it once in the precollected inventory, and placed one bean ability in the pool.
+- `random_seeds.py` passed 100/100 with both abilities on and randomized mixed entrance pools. The rebuilt parity
+  harness matched 1200/1200 scenarios with the new options off. The generator translated all rules.
+- The C++ harness passed 32 hook decisions, six Romani return scenarios with and without the item, 12 Gorman fee
+  scenarios with and without race skip, two planting cases and two uses of an already planted bean. The latter cover
+  water contact and rain. In the Romani tests the scripted layers mount, while normal scene entry with a carried
+  mount and the song leaves the player on foot without the ability. The rest of the entrance harness also passed.
+- The 0.10 slot fixture came from apworld commit `8ff28914`. The C++ harness uses the 0.10 save structs and codec from
+  client commit `aa6d5b494`. It preserves 49 regular pairs, 70 mixed pairs and old IDs, and loads both ability options and
+  flags as off. Universal Tracker also reproduces the original connections from the fixture.
+- Initial pytest runs reported `AssertionError` on the song cases and a `KeyError: 'RR_DEKU_PALACE_INSIDE'`.
+  The fixtures now include the precollected ocarina buttons and use the correct region ID. The start inventory
+  test uses the CLI, and the tracker test sweeps events with a fixed inventory. The first C++ harness attempts
+  reported `C2065: 'f32': undeclared identifier` and failed `slot.apworldVersion == "0.10.0"`. The mocked game
+  fields and the version assertion for newly generated slots were updated.
+- The Windows x64 Release client built locally. The first MSVC run reported `C2855: command-line option '/Z7'
+  inconsistent with precompiled header`. The build recreated the affected headers. Offline CMake configuration
+  left `stb_image.h` empty, causing `C3861: 'stbi_image_free': identifier not found` and then `LNK2001` on the stale
+  stb library. Restoring the pinned header from a verified local cache and recompiling `stb_impl.c` resolved those.
+  The final link passed with local PDB output disabled after `LNK1103: debugging information corrupt`.
+
+#### In-game checklist — not tested in game
+
+- Play Epona's Song near a cow and call Epona with riding locked. Try the mount and both Great Bay and Ikana fences
+  after collecting the ability. Ride through a mixed land exit, turn back on foot and verify the return point.
+- Start Romani's training without the ability, finish and collect the check. Also lose or leave early with Epona's
+  Song already learned. On the next normal scene entry, confirm Link is on foot and cannot remount.
+- Try the Gorman race on the ordinary and alternate dialogue paths, with race skip on and off. While locked, confirm
+  the fee stays in the wallet and the race does not start. Take the Night 2 track route after saving the cows.
+- At the Doggy Racetrack and Deku Palace, try to plant before and after collecting the ability. Check bean ammo,
+  water from a bottle, Song of Storms and natural rain at 07:00–17:30 on Day 2. Ride an already planted bean. Try the
+  bean refill and the Beneath the Well trade while planting is locked.
+- Save and reload with the abilities collected, reset the three-day cycle and load an existing 0.10 save offline.
+  Verify its original mixed entrances, riding and planting. Check the item pickup models and text in a 0.11 seed.

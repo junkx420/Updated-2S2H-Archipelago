@@ -14,6 +14,7 @@ using u32 = uint32_t;
 using s8 = int8_t;
 using s16 = int16_t;
 using s32 = int32_t;
+using f32 = float;
 #include "rando_save.h" // verbatim from z64save.h
 struct RespawnData { u16 entrance = 0; s8 data = 0; int position = 0; };
 struct Vec3f { float x = 0, y = 0, z = 0; };
@@ -23,17 +24,39 @@ struct SaveContext {
     struct Save {
         struct Ship { RandoSaveInfo rando; } shipSaveInfo;
         u16 entrance = 0;
-        struct SaveInfo { HorseData horseData; } saveInfo;
+        u16 cutsceneIndex = 0;
+        struct SaveInfo {
+            HorseData horseData;
+            struct { int rupees = 0; } playerData;
+        } saveInfo;
     } save;
     u16 nextCutsceneIndex = 0;
     int respawnFlag = 0;
     RespawnData respawn[4];
+    int sceneLayer = 0;
+    int forcedSeqId = 0;
 };
-struct Actor { struct { Vec3f pos; } world; struct { Vec3s rot; } shape; };
-struct Player { Actor actor; Actor* rideActor = nullptr; };
+struct Actor {
+    struct { Vec3f pos; } world;
+    struct { Vec3s rot; } shape;
+    Actor* child = nullptr;
+    int id = 0;
+    float xzDistToPlayer = 0;
+};
+struct Player { Actor actor; Actor* rideActor = nullptr; int transformation = 0; unsigned stateFlags1 = 0; };
 struct CutsceneContext { int state = 0; };
+struct MessageContext { int choiceIndex = 0; int unk1206C = 0; };
 enum { CS_STATE_IDLE = 0 };
-struct PlayState { u16 nextEntrance = 0; s16 sceneId = 0; int position = 0; CutsceneContext csCtx; Player* player = nullptr; };
+struct PlayState {
+    u16 nextEntrance = 0;
+    s16 sceneId = 0;
+    int position = 0;
+    CutsceneContext csCtx;
+    Player* player = nullptr;
+    MessageContext msgCtx;
+    int actorCtx = 0, colCtx = 0, state = 0, colChkCtx = 0;
+    int transitionType = 0, transitionTrigger = 0;
+};
 #define GET_PLAYER(play) ((play)->player)
 inline int gHorseIsMounted = 0; // z64horse.h
 inline bool hasEponasSong = false;

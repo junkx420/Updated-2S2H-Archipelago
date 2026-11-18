@@ -52,7 +52,8 @@ def build(options: dict, seed: int, fill: bool = True) -> MultiWorld:
 
 
 # Options added after 0.7.0: off, they are only a new key in the slot data, which the 0.7.0 fingerprints cannot have.
-NEW_OPTIONS = {"RO_SHUFFLE_OVERWORLD", "RO_SHUFFLE_SPECIAL_AREAS", "RO_MIX_ENTRANCE_POOLS"}  # 0.8 through 0.10
+NEW_OPTIONS = {"RO_SHUFFLE_OVERWORLD", "RO_SHUFFLE_SPECIAL_AREAS", "RO_MIX_ENTRANCE_POOLS",
+               "RO_SHUFFLE_EPONA_RIDING", "RO_SHUFFLE_BEAN_PLANTING"}  # 0.8 through 0.11
 
 
 def fingerprint(mw: MultiWorld) -> str:

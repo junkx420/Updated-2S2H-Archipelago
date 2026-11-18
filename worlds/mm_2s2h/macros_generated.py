@@ -33,7 +33,7 @@ def CAN_FULLY_CUT_KEATON_GRASS(s):  # Logic.h:198
     return ((HAS_MAGIC(s) and (GET_CUR_EQUIP_VALUE(s, 'EQUIP_TYPE_SWORD') >= 2)) and CHECK_WEEKEVENTREG(s, 'WEEKEVENTREG_RECEIVED_GREAT_SPIN_ATTACK'))
 
 def CAN_RIDE_EPONA(s):  # Logic.h:205
-    return CAN_PLAY_SONG(s, 'EPONA')
+    return (((not s.opt('RO_SHUFFLE_EPONA_RIDING')) or Flags_GetRandoInf(s, 'RANDO_INF_OBTAINED_ABILITY_RIDE_EPONA')) and CAN_PLAY_SONG(s, 'EPONA'))
 
 def GBT_CAN_REVERSE_WATER_FLOW(s):  # Logic.h:206
     return ((s.ev('RE_GREAT_BAY_RED_SWITCH_1') and s.ev('RE_GREAT_BAY_RED_SWITCH_2')) and HAS_ITEM(s, 'ITEM_HOOKSHOT'))
@@ -45,10 +45,10 @@ def CAN_USE_PROJECTILE(s):  # Logic.h:219
     return (((HAS_ITEM(s, 'ITEM_BOW') or HAS_ITEM(s, 'ITEM_HOOKSHOT')) or (CAN_BE_DEKU(s) and HAS_MAGIC(s))) or CAN_BE_ZORA(s))
 
 def CAN_GROW_BEAN_PLANT(s):  # Logic.h:221
-    return (HAS_ITEM(s, 'ITEM_MAGIC_BEANS') and (CAN_PLAY_SONG(s, 'STORMS') or (HAS_BOTTLE(s) and (CAN_ACCESS(s, 'SPRING_WATER') or CAN_ACCESS(s, 'HOT_SPRING_WATER')))))
+    return (((not s.opt('RO_SHUFFLE_BEAN_PLANTING')) or Flags_GetRandoInf(s, 'RANDO_INF_OBTAINED_ABILITY_PLANT_BEANS')) and (HAS_ITEM(s, 'ITEM_MAGIC_BEANS') and (CAN_PLAY_SONG(s, 'STORMS') or (HAS_BOTTLE(s) and (CAN_ACCESS(s, 'SPRING_WATER') or CAN_ACCESS(s, 'HOT_SPRING_WATER'))))))
 
 def CAN_USE_DAY2_RAIN_BEAN(s):  # Logic.h:227
-    return (CAN_GROW_BEAN_PLANT(s) or (HAS_ITEM(s, 'ITEM_MAGIC_BEANS') and CLOCK_DAY2(s)))
+    return (((not s.opt('RO_SHUFFLE_BEAN_PLANTING')) or Flags_GetRandoInf(s, 'RANDO_INF_OBTAINED_ABILITY_PLANT_BEANS')) and (CAN_GROW_BEAN_PLANT(s) or (HAS_ITEM(s, 'ITEM_MAGIC_BEANS') and CLOCK_DAY2(s))))
 
 def CAN_LIGHT_TORCH_NEAR_ANOTHER(s):  # Logic.h:229
     return (HAS_ITEM(s, 'ITEM_DEKU_STICK') or CAN_USE_MAGIC_ARROW(s, 'FIRE'))

@@ -10,6 +10,7 @@
 #include "overworld.h"
 #include "special_areas.h"
 #include "mixed.h"
+#include "abilities.h"
 
 using namespace Rando::EntranceShuffle;
 
@@ -180,4 +181,6 @@ int main(int argc, char** argv) {
     TestLegacy08();
     TestMixedEntrances();
     TestLegacy09(argv[1]);
+    TestAbilityActions();
+    TestLegacy10();
 }

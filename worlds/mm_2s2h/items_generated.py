@@ -4,6 +4,8 @@
 ITEMS = {
     'RI_UNKNOWN': ('Unknown', 'RITYPE_JUNK', 'ITEM_NONE'),
     'RI_ABILITY_SWIM': ('Ability to Swim', 'RITYPE_MAJOR', 'ITEM_NONE'),
+    'RI_ABILITY_RIDE_EPONA': ('Ability to Ride Epona', 'RITYPE_MAJOR', 'ITEM_NONE'),
+    'RI_ABILITY_PLANT_BEANS': ('Ability to Plant Beans', 'RITYPE_MAJOR', 'ITEM_NONE'),
     'RI_ARROW_FIRE': ('Fire Arrows', 'RITYPE_MAJOR', 'ITEM_ARROW_FIRE'),
     'RI_ARROW_ICE': ('Ice Arrows', 'RITYPE_MAJOR', 'ITEM_ARROW_ICE'),
     'RI_ARROW_LIGHT': ('Light Arrows', 'RITYPE_MAJOR', 'ITEM_ARROW_LIGHT'),

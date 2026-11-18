@@ -5,7 +5,7 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 ## Downloads
 
 The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages NPC souls,
-temple entrances and boss entrances with a matching client. The current source is **apworld 0.10.0**.
+temple entrances and boss entrances with a matching client. The current source is **apworld 0.11.0**.
 The new mechanics are **not tested in game**. Platform builds and preview publication run on GitHub Actions.
 See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago#choose-your-download),
 [changelog](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/main/CHANGELOG.md) and
@@ -144,6 +144,14 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
     saves the endpoints separately from the existing row-indexed pairs, and loads 0.9 slot data and saves with
     their original pairs. The C++ test writes a save with the original 0.9 codec and loads it with 0.10.
     [Test details](docs/testing.md#stage-6c--mixed-entrance-pools-apworld-0100). **Not tested in game.**
+- **Ability shuffle in apworld 0.11.0.** `shuffle_epona_riding` and `shuffle_bean_planting` are independent, default-off
+  options. Each adds a progression item. Epona's ability gates mounting, carrying a mount across scenes and entering
+  the Gorman race. Playing the song, calling Epona, cow checks, Romani's practice and the Night 2 track route are
+  available without the ability. The bean ability gates planting. An existing plant can still be watered and ridden.
+  The generated logic keeps the original item and water requirements, including the separate Day 2 rain path.
+  No Logic and Nearly No Logic keep the in-game locks and generate without the access rules. The 0.11 client and
+  Universal Tracker support existing 0.10 seeds with both abilities off. See [testing.md](docs/testing.md#stage-4a--abilities-apworld-0110).
+  **Not tested in game.**
 - **Pool trimming** (apworld 0.7.1, no new ids or options, client unchanged): when the item pool is larger than the
   shuffled locations, `create_items` removes junk (as before), then traps, then extra Plentiful Items copies (picked
   at random; every original item stays). Each trimmed trap/copy count is logged as a warning. Only if the pool is

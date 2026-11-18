@@ -137,6 +137,12 @@ ShuffleNpcSouls = _shuffle("ShuffleNpcSouls", "RO_SHUFFLE_NPC_SOULS", "NPC Souls
                            "30 townsfolk and other NPCs (Granny, Anju, the Banker, Tingle, the cows, ...) are not there "
                            "until their soul is found: no rewards, no minigames, no sales from them.")
 ShuffleSwim = _shuffle("ShuffleSwim", "RO_SHUFFLE_SWIM", "Shuffle Swim", "The ability to swim is an item.")
+ShuffleEponaRiding = _shuffle("ShuffleEponaRiding", "RO_SHUFFLE_EPONA_RIDING", "Shuffle Epona Riding",
+                             "Find the Ability to Ride Epona to mount her or enter the Gorman race. You can still "
+                             "play the song, call Epona, play for cows and ride in Romani's practice.")
+ShuffleBeanPlanting = _shuffle("ShuffleBeanPlanting", "RO_SHUFFLE_BEAN_PLANTING", "Shuffle Bean Planting",
+                              "Find the Ability to Plant Beans before planting a Magic Bean. Once planted, beans "
+                              "grow and carry Link as usual.")
 ShuffleOcarinaButtons = _shuffle("ShuffleOcarinaButtons", "RO_SHUFFLE_OCARINA_BUTTONS", "Ocarina Buttons", "Each ocarina button is an item.")
 ShuffleSongSun = _shuffle("ShuffleSongSun", "RO_SHUFFLE_SONG_SUN", "Sun's Song", "Adds Sun's Song to the pool.")
 ShuffleSongDoubleTime = _shuffle("ShuffleSongDoubleTime", "RO_SHUFFLE_SONG_DOUBLE_TIME", "Song of Double Time", "Song of Double Time is an item.")
@@ -336,6 +342,8 @@ class MM2S2HOptions(PerGameCommonOptions):
     shuffle_dungeon_entrances: ShuffleDungeonEntrances
     shuffle_boss_entrances: ShuffleBossEntrances
     shuffle_door_keys: ShuffleDoorKeys
+    shuffle_epona_riding: ShuffleEponaRiding
+    shuffle_bean_planting: ShuffleBeanPlanting
     shuffle_grottos: ShuffleGrottos
     shuffle_interiors: ShuffleInteriors
     shuffle_overworld: ShuffleOverworld

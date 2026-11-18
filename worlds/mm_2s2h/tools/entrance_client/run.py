@@ -19,17 +19,18 @@ root = Path(sys.argv[1]).resolve()
 build = here / "build"
 build.mkdir(exist_ok=True)
 legacy09_commit = "87077c1bd19b46a6e82cfdea489867a3fad99ae3"
+legacy10_commit = "aa6d5b494"
 
 
-def legacy09_source(path: str) -> str:
-    return subprocess.check_output(["git", "-C", str(root), "show", f"{legacy09_commit}:{path}"], encoding="utf-8")
+def historical_source(revision: str, path: str) -> str:
+    return subprocess.check_output(["git", "-C", str(root), "show", f"{revision}:{path}"], encoding="utf-8")
 
 
 enums = {}
 for path in (root / "mm/include/z64scene.h", root / "mm/2s2h/Rando/Types.h"):
     enums.update(parse_enums(strip_comments(path.read_text(encoding="utf-8"))))
 lines = []
-for name in ("RandoOptionId", "EntranceSceneId", "RandoItemId", "RandoInf", "RandoEvent"):
+for name in ("RandoOptionId", "EntranceSceneId", "RandoItemId", "RandoInf", "RandoEvent", "RandoRegionId"):
     lines.append("enum " + name + " {" + ",".join(f"{k}={v}" for k, v in enums[name].items()) + "};")
 lines.append("constexpr int RO_GENERIC_OFF = 0;")
 lines.append(f"constexpr int RC_MAX = {enums['RandoCheckId']['RC_MAX']};")
@@ -105,9 +106,9 @@ def save_codec(source: str) -> str:
                                      encoding="utf-8")
 
 # Encode a save with the historical types, IDs, row order and codec alongside the current reader.
-old_enums = parse_enums(strip_comments(legacy09_source("mm/2s2h/Rando/Types.h")))
-old_scenes = parse_enums(strip_comments(legacy09_source("mm/include/z64scene.h")))["EntranceSceneId"]
-old_rows_source = legacy09_source("mm/2s2h/Rando/MiscBehavior/EntranceShuffle.cpp")
+old_enums = parse_enums(strip_comments(historical_source(legacy09_commit, "mm/2s2h/Rando/Types.h")))
+old_scenes = parse_enums(strip_comments(historical_source(legacy09_commit, "mm/include/z64scene.h")))["EntranceSceneId"]
+old_rows_source = historical_source(legacy09_commit, "mm/2s2h/Rando/MiscBehavior/EntranceShuffle.cpp")
 old_table = re.search(r"shuffleEntrances\s*=\s*\{(.*?)\n\};", strip_comments(old_rows_source), re.S).group(1)
 old_rows = [(old_scenes[f"ENTR_SCENE_{scene}"] << 9) | (int(spawn) << 4)
             for scene, spawn in re.findall(r"\{\s*RO_\w+,\s*ENTRANCE\(\s*(\w+),\s*(\d+)\s*\)", old_table)]
@@ -123,14 +124,47 @@ old_limits = {name: old_enums[enum][name] for enum, name in (
     + "inline const std::unordered_map<std::string, size_t> optionIds = {"
     + ", ".join(f'{{"{key}", {value}}}' for key, value in old_options.items() if key != "RO_MAX") + "};\n"
     + "inline constexpr u16 entrances[] = {" + ", ".join(map(str, old_rows)) + "};\n"
-    + save_structs(legacy09_source("mm/include/z64save.h")) + "\n"
-    + save_codec(legacy09_source("mm/2s2h/BenJsonConversions.hpp")) + "}\n", encoding="utf-8")
+    + save_structs(historical_source(legacy09_commit, "mm/include/z64save.h")) + "\n"
+    + save_codec(historical_source(legacy09_commit, "mm/2s2h/BenJsonConversions.hpp")) + "}\n", encoding="utf-8")
+
+old10 = parse_enums(strip_comments(historical_source(legacy10_commit, "mm/2s2h/Rando/Types.h")))
+for enum, sentinel in (("RandoItemId", "RI_MAX"), ("RandoOptionId", "RO_MAX"), ("RandoInf", "RANDO_INF_MAX")):
+    assert all(enums[enum][key] == value for key, value in old10[enum].items() if key != sentinel), enum
+(build / "legacy10_codec.h").write_text(
+    '#pragma once\nnamespace legacy10 {\n'
+    + f'inline constexpr int RO_MAX = {old10["RandoOptionId"]["RO_MAX"]};\n'
+    + f'inline constexpr int RANDO_INF_MAX = {old10["RandoInf"]["RANDO_INF_MAX"]};\n'
+    + save_structs(historical_source(legacy10_commit, "mm/include/z64save.h")) + "\n"
+    + save_codec(historical_source(legacy10_commit, "mm/2s2h/BenJsonConversions.hpp")) + "}\n", encoding="utf-8")
 # Game functions the overworld redirect calls, verbatim (z_scene.c, z_play.c).
 scene_c = (root / "mm/src/code/z_scene.c").read_text(encoding="utf-8").replace("\r\n", "\n")
 play_c = (root / "mm/src/code/z_play.c").read_text(encoding="utf-8").replace("\r\n", "\n")
 functions = [re.search(r"u16 Entrance_Create\(s32 scene, s32 spawn, s32 layer\) \{.*?\n}\n", scene_c, re.S).group(0),
              re.search(r"s16 Play_GetOriginalSceneId\(s16 sceneId\) \{.*?\n}\n", play_c, re.S).group(0)]
 (build / "game_functions.h").write_text("#pragma once\n" + "".join("inline " + f for f in functions), encoding="utf-8")
+
+# Compile the actual action entry points against the mock state. Rename the C parameter `this` for C++.
+def game_functions(path, names):
+    source = (root / "mm/src" / path).read_text(encoding="utf-8")
+    result = []
+    for name in names:
+        body = re.search(rf"^(?:void|s32) {name}\([^;]*?\) \{{.*?\n\}}\n", source, re.M | re.S).group(0)
+        result.append(re.sub(r"\bthis\b", "self", body))
+    return "\n".join(result)
+
+
+gorman = (root / "mm/src/overlays/actors/ovl_En_In/z_en_in.c").read_text(encoding="utf-8")
+race_starts = re.findall(r"case 0x3475:\n(.*?)\n\s*break;", gorman, re.S)
+assert len(race_starts) == 2 and race_starts[0] == race_starts[1]
+skip_race = (root / "mm/2s2h/Enhancements/Minigames/SkipHorseRace.cpp").read_text(encoding="utf-8")
+skip_body = re.search(r"COND_VB_SHOULD\(VB_PLAY_TRANSITION_CS, CVAR, \{(.*?)\n    \}\);", skip_race, re.S).group(1)
+(build / "game_ability_functions.h").write_text(
+    game_functions("code/z_actor.c", ("Player_MountHorse",))
+    + game_functions("code/z_horse.c", ("Horse_SpawnOverworld", "Horse_SpawnMinigame", "Horse_Spawn"))
+    + game_functions("overlays/actors/ovl_En_In/z_en_in.c", ("func_808F4150", "func_808F4270"))
+    + game_functions("overlays/actors/ovl_Obj_Bean/z_obj_bean.c", ("func_80937FC8", "func_80938834"))
+    + "\nvoid StartGormanRace(PlayState* play) {\n" + race_starts[0] + "\n}\n"
+    + "\nvoid SkipGormanRace() {" + skip_body + "\n}\n", encoding="utf-8")
 # Overworld rows as the apworld was generated: row index, "into", index of the opposite row.
 over = [i for i, row in enumerate(ENTRANCE_SHUFFLE) if row["option"] == "RO_SHUFFLE_OVERWORLD"]
 over_index = {ENTRANCE_SHUFFLE[i]["into"]: i for i in over}
@@ -161,14 +195,18 @@ from worlds.mm_2s2h.test.test_pool_trim import build as build_world  # noqa: E40
 from worlds.mm_2s2h.test.test_special_areas import ALL_OWN, DATA  # noqa: E402
 
 legacy09 = (DATA / "slot_data_0_9_0_all_pools.json").read_text(encoding="utf-8")
+legacy10 = (DATA / "slot_data_0_10_0_mixed.json").read_text(encoding="utf-8")
+assert all(key in old10["RandoOptionId"] for key in json.loads(legacy10)["options"])
 mixed_slots = [build_world(ALL_OWN | {"mix_entrance_pools": pools}, 610, fill=False).worlds[1].fill_slot_data()
                for count in range(2, 5) for pools in combinations(ENTRANCE_MIX_POOLS, count)]
 (build / "mixed_slots.h").write_text(
     '#pragma once\ninline const char* legacy09Slot = R"slot(' + legacy09 + ')slot";\n'
+    'inline const char* legacy10Slot = R"slot(' + legacy10 + ')slot";\n'
     'inline const char* mixedSlots[] = {\n' +
     "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in mixed_slots) + '\n};\n', encoding="utf-8")
 json_include = root / "build/x64/vcpkg/installed/x64-windows-static/include"
-for name in ("Rando/Rando.h", "Rando/Logic/Logic.h", "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h", "z64horse.h"):
+for name in ("Rando/Rando.h", "Rando/Logic/Logic.h", "2s2h/Rando/Rando.h", "2s2h/Rando/Types.h",
+             "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h", "z64horse.h"):
     header = build / name
     header.parent.mkdir(parents=True, exist_ok=True)
     header.write_text('#include "mock.h"\n', encoding="utf-8")

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from .enums_generated import ENEMY_SOULS, RandoInf, RI_ID
+from .enums_generated import ABILITIES, ENEMY_SOULS, RandoInf, RI_ID
 from .time_logic import TimeContext, TIME_SLICE
 
 # ---------------------------------------------------------------------------------------------
@@ -67,6 +67,7 @@ FLAGS = {
     "RI_SONG_DOUBLE_TIME": "RANDO_INF_OBTAINED_SONG_DOUBLE_TIME",
     "RI_SONG_INVERTED_TIME": "RANDO_INF_OBTAINED_SONG_INVERTED_TIME",
 }
+FLAGS.update({item: flag for item, (_, flag) in ABILITIES.items()})
 _inf_by_value = {v: k for k, v in RandoInf.items()}
 for _ri, _v in RI_ID.items():  # souls and door keys: SOUL_RI_TO_RANDO_INF / NPC_SOUL_RI_TO_RANDO_INF
     if _ri.startswith("RI_SOUL_NPC_"):

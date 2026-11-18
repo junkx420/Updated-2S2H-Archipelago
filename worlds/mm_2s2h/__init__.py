@@ -17,7 +17,7 @@ from Fill import fill_restrictive
 from Options import OptionError
 from worlds.AutoWorld import LogicMixin, WebWorld, World
 
-from .enums_generated import (DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_SHUFFLE,
+from .enums_generated import (ABILITIES, DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_SHUFFLE,
                               NPC_SOULS, OPTION_DEFAULTS, RC_ID, RI_ID)
 from .items_generated import ITEMS
 from .locations_generated import LOCATIONS
@@ -494,6 +494,7 @@ class MM2S2HWorld(World):
                      if ro["RO_CLOCK_SHUFFLE_PROGRESSIVE"] == 0 else ["RI_TIME_PROGRESSIVE"] * 6)
         if ro["RO_SHUFFLE_SWIM"]:
             pool.append("RI_ABILITY_SWIM")
+        pool += [item for item, (opt, _) in ABILITIES.items() if ro[opt]]
         if ro["RO_SHUFFLE_OCARINA_BUTTONS"]:
             pool += [k for k in RI_ID if k.startswith("RI_OCARINA_BUTTON_")]
         for opt, ri in (("RO_SHUFFLE_SONG_SUN", "RI_SONG_SUN"), ("RO_SHUFFLE_SONG_DOUBLE_TIME", "RI_SONG_DOUBLE_TIME"),

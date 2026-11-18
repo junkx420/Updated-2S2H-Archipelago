@@ -40,7 +40,7 @@ inline void TestMixedEntrances() {
     for (const char* fixture : mixedSlots) {
         ApSlot::SlotData slot;
         assert(slot.Parse(json::parse(fixture)).empty());
-        assert(slot.apworldVersion == "0.10.0");
+        assert(slot.apworldVersion == "0.11.0");
         LoadSlot(slot);
         auto& save = gSaveContext.save.shipSaveInfo.rando;
         std::copy(std::begin(options), std::end(options), save.randoSaveOptions);
@@ -184,7 +184,7 @@ inline void TestLegacy09(const char* savePath) {
     playState = { inverted.into, inverted.outsideScene, 0 };
     OnBeforeTransitionSetup();
     assert(playState.nextEntrance == inverted.into);
-    std::cout << "0.9 save written with " << legacy09::revision << " and loaded with 0.10: "
+    std::cout << "0.9 save written with " << legacy09::revision << " and loaded with the current codec: "
               << slot.entrancePairs.size() << " pairs preserved, mixing off, "
               << std::size(restored.mixedEntrancePairs) << " zero mixed endpoints\n";
 }
