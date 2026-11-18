@@ -2,6 +2,7 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/ObjectExtension/ActorListIndex.h"
 #include "2s2h/CustomItem/CustomItem.h"
+#include "2s2h/Rando/ObjectMarker.h"
 
 extern "C" {
 #include "functions.h"
@@ -86,6 +87,9 @@ void Rando::ActorBehavior::InitObjCombBehavior() {
         }
 
         Rando::ActorBehavior::SetObjectRandoCheckId(actor, randoCheckId);
+        if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_HIVE_DROPS] != RO_GENERIC_OFF) {
+            ObjectMarker::AttachTint(actor, randoCheckId);
+        }
     });
 
     COND_VB_SHOULD(VB_BEEHIVE_SPAWN_ACTOR, IS_RANDO, {

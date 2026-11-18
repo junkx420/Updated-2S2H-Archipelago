@@ -3,6 +3,7 @@
 #include "2s2h/CustomItem/CustomItem.h"
 #include "assets/2s2h_assets.h"
 #include "2s2h/ObjectExtension/ActorListIndex.h"
+#include "2s2h/Rando/ObjectMarker.h"
 #include "2s2h/ShipUtils.h"
 
 extern "C" {
@@ -165,6 +166,13 @@ void IdentifyTreeAndSpawnItem(Actor* actor) {
     if (it != treeActorIdMap.end()) {
         randoCheckId = it->second;
     }
+
+    const auto tintPasses = actor->id == ACTOR_EN_WOOD02 ? Rando::ObjectMarker::TintPasses::OpaqueAndTranslucent
+                                                         : Rando::ObjectMarker::TintPasses::Opaque;
+    const auto lastCheckId = randoCheckId == RC_TERMINA_FIELD_MAN_IN_THE_TREE_RUPEE_01
+                                 ? RC_TERMINA_FIELD_MAN_IN_THE_TREE_RUPEE_02
+                                 : randoCheckId;
+    Rando::ObjectMarker::AttachTint(actor, randoCheckId, lastCheckId, tintPasses);
 
     // For the man in the tree rupees, attempt to spawn an extra item
     if (randoCheckId == RC_TERMINA_FIELD_MAN_IN_THE_TREE_RUPEE_01) {

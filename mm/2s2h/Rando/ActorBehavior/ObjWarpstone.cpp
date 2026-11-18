@@ -1,8 +1,10 @@
 #include "ActorBehavior.h"
 #include <libultraship/bridge/consolevariablebridge.h>
+#include "2s2h/Rando/ObjectMarker.h"
 
 extern "C" {
 #include "variables.h"
+#include "overlays/actors/ovl_Obj_Warpstone/z_obj_warpstone.h"
 }
 
 RandoCheckId Identify_Statue(u8 refId) {
@@ -35,6 +37,11 @@ RandoCheckId Identify_Statue(u8 refId) {
 }
 
 void Rando::ActorBehavior::InitObjWarpstoneBehavior() {
+    const bool markShuffledOwls = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_OWL_STATUES] != RO_GENERIC_OFF;
+    COND_ID_HOOK(OnActorInit, ACTOR_OBJ_WARPSTONE, markShuffledOwls, [](Actor* actor) {
+        ObjectMarker::AttachTint(actor, Identify_Statue(OBJ_WARPSTONE_GET_OWL_WARP_ID(actor)));
+    });
+
     COND_VB_SHOULD(VB_OWL_STATUE_ACTIVATE, IS_RANDO, {
         u8 warpstoneId = (u8)va_arg(args, u32);
         RandoCheckId randoCheckId = Identify_Statue(warpstoneId);

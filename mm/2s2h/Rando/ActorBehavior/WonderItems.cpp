@@ -2,6 +2,7 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/CustomItem/CustomItem.h"
 #include "2s2h/ObjectExtension/ActorListIndex.h"
+#include "2s2h/Rando/ObjectMarker.h"
 
 extern "C" {
 #include "overlays/actors/ovl_En_Invisible_Ruppe/z_en_invisible_ruppe.h"
@@ -182,8 +183,56 @@ void WonderItemInit(Actor* actor, RandoCheckId randoCheckId, bool isInvisible, b
     *should = false;
 }
 
+namespace {
+
+bool IsTerminaWall(const Actor* actor) {
+    return gPlayState->sceneId == SCENE_00KEIKOKU && GAKUFU_GET_TYPE(actor) == GAKUFU_TERMINA_FIELD;
+}
+
+std::optional<Color_RGBA8> GetTerminaWallMarkerColor() {
+    return Rando::ObjectMarker::GetFixedColor(RC_TERMINA_FIELD_WALL_WONDER_ITEM_01,
+                                              RC_TERMINA_FIELD_WALL_WONDER_ITEM_15);
+}
+
+void DrawTerminaWallMarker(Actor* actor, PlayState* play) {
+    auto color = GetTerminaWallMarkerColor();
+    if (!color) {
+        if (actor->draw == DrawTerminaWallMarker) {
+            actor->draw = nullptr;
+        }
+        return;
+    }
+
+    Vec3f pos = actor->world.pos;
+    pos.x += 12.0f * Math_SinS(actor->shape.rot.y);
+    pos.y += 45.0f;
+    pos.z += 12.0f * Math_CosS(actor->shape.rot.y);
+    Rando::ObjectMarker::DrawSparkle(play, pos, color);
+}
+
+} // namespace
+
 void Rando::ActorBehavior::InitWonderItemsBehavior() {
     bool shouldRegister = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_WONDER_ITEMS];
+
+    COND_ID_HOOK(OnActorInit, ACTOR_OBJ_DORA, shouldRegister, [](Actor* actor) {
+        if (gPlayState->sceneId == SCENE_DOUJOU) {
+            ObjectMarker::AttachTint(actor, RC_SWORDSMAN_SCHOOL_WONDER_ITEM);
+        }
+    });
+
+    COND_ID_HOOK(OnActorUpdate, ACTOR_EN_GAKUFU, shouldRegister, [](Actor* actor) {
+        // The original update hides the notes after playing the song, even while checks remain open.
+        if (actor->draw == nullptr && IsTerminaWall(actor) && GetTerminaWallMarkerColor()) {
+            actor->draw = DrawTerminaWallMarker;
+        }
+    });
+
+    COND_ID_HOOK(OnActorDraw, ACTOR_EN_GAKUFU, shouldRegister, [](Actor* actor) {
+        if (actor->draw != DrawTerminaWallMarker && IsTerminaWall(actor)) {
+            DrawTerminaWallMarker(actor, gPlayState);
+        }
+    });
 
     COND_VB_SHOULD(VB_DROP_COLLECTIBLE, shouldRegister, {
         Vec3f position = va_arg(args, Vec3f);

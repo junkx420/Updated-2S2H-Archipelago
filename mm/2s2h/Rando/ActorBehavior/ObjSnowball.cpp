@@ -3,6 +3,7 @@
 #include "2s2h/CustomItem/CustomItem.h"
 #include "assets/2s2h_assets.h"
 #include "2s2h/ObjectExtension/ActorListIndex.h"
+#include "2s2h/Rando/ObjectMarker.h"
 #include "2s2h/ShipUtils.h"
 
 extern "C" {
@@ -221,6 +222,11 @@ void SpawnSnowballDrop(Vec3f pos, RandoCheckId randoCheckId) {
 void Rando::ActorBehavior::InitObjSnowballBehavior() {
     COND_ID_HOOK(ShouldActorInit, ACTOR_OBJ_SNOWBALL, IS_RANDO, IdentifySnowball);
     COND_ID_HOOK(ShouldActorInit, ACTOR_OBJ_SNOWBALL2, IS_RANDO, IdentifySnowball);
+
+    const bool markShuffledSnowballs = IS_RANDO && RANDO_SAVE_OPTIONS[RO_SHUFFLE_SNOWBALL_DROPS] != RO_GENERIC_OFF;
+    const auto markSnowball = [](Actor* actor) { ObjectMarker::AttachTint(actor, GetObjectRandoCheckId(actor)); };
+    COND_ID_HOOK(OnActorInit, ACTOR_OBJ_SNOWBALL, markShuffledSnowballs, markSnowball);
+    COND_ID_HOOK(OnActorInit, ACTOR_OBJ_SNOWBALL2, markShuffledSnowballs, markSnowball);
 
     COND_VB_SHOULD(VB_SNOWBALL_DROP_COLLECTIBLE, IS_RANDO, {
         Actor* actor = va_arg(args, Actor*);

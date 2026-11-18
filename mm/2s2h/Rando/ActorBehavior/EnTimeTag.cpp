@@ -1,10 +1,12 @@
 #include "ActorBehavior.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/Rando/Logic/Logic.h"
+#include "2s2h/Rando/ObjectMarker.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
 
 extern "C" {
 #include "variables.h"
+#include "overlays/actors/ovl_En_Time_Tag/z_en_time_tag.h"
 #include "src/overlays/actors/ovl_En_Toto/z_en_toto.h"
 extern void func_80BA36C0(EnToto* enToto, PlayState* play, s32 index);
 }
@@ -14,6 +16,22 @@ extern void func_80BA36C0(EnToto* enToto, PlayState* play, s32 index);
 #define ENGRAVING_TEXT_ID 0xC02
 
 void Rando::ActorBehavior::InitEnTimeTagBehavior() {
+    COND_ID_HOOK(OnActorInit, ACTOR_EN_TIME_TAG, IS_RANDO, [](Actor* actor) {
+        if (gPlayState->sceneId == SCENE_20SICHITAI && TIMETAG_GET_TYPE(actor) == TIMETAG_SOARING_ENGRAVING &&
+            ObjectMarker::IsOpen(RC_SOUTHERN_SWAMP_SONG_OF_SOARING)) {
+            actor->draw = [](Actor* engraving, PlayState* play) {
+                auto color = ObjectMarker::GetColor(RC_SOUTHERN_SWAMP_SONG_OF_SOARING);
+                if (!color) {
+                    engraving->draw = nullptr;
+                    return;
+                }
+                Vec3f pos = engraving->world.pos;
+                pos.y += 25.0f;
+                ObjectMarker::DrawSparkle(play, pos, color);
+            };
+        }
+    });
+
     COND_ID_HOOK(OnOpenText, ENGRAVING_TEXT_ID, IS_RANDO, [](u16* textId, bool* loadFromMessageTable) {
         if (!RANDO_SAVE_CHECKS[RC_SOUTHERN_SWAMP_SONG_OF_SOARING].cycleObtained) {
             RANDO_SAVE_CHECKS[RC_SOUTHERN_SWAMP_SONG_OF_SOARING].eligible = true;
