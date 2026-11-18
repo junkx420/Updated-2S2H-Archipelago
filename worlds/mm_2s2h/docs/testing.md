@@ -1230,3 +1230,48 @@ Every model below is not tested in game.
 - A soul as an item on the ground (e.g. a freestanding check): it stands above the floor, not in it, nothing reaches
   through a wall.
 - A door key and the riding ability: room key and horse, on the ground and in the get-item animation.
+
+### Stage 8b – open object check markers
+
+`Rando/ObjectMarker.cpp` checks the shuffled and obtained flags in the current save. It supplies the fixed yellow
+marker and uses the same item conversion and CSMC classes as pots. The draw wrapper disables grayscale in every
+display buffer it tints before control returns to the actor renderer and its shadow pass. The engraving and music
+wall use the Wonder Item sparkle sprite on a fixed pulse. The music wall keeps its marker when the original notes
+disappear after playing the song. Objects with several checks use the fixed yellow marker in both CSMC modes.
+
+#### Verification
+
+- The Windows x64 Release client built locally at client commit `661b00c0c`.
+- `pytest test/general worlds/mm_2s2h/test -q` passed 832 tests and 153,932 subtests. The initial run failed in
+  `TestSettingsSave.test_save` with `PermissionError: [Errno 13] Permission denied` on `host.yaml.tmp`. Using `TEMP`
+  and `TMP` inside the workspace resolved it.
+- The rebuilt parity harness matched 1,200 of 1,200 scenarios with `compare.py 150`.
+- clang-format passed for all eight changed client files.
+- CMake reported `curl: (6) Could not resolve host: raw.githubusercontent.com` and left `stb_image.h` empty.
+  The local build used the SHA-256-verified pinned header from an existing cache. MSBuild stalled at
+  `Checking Build System` inside the sandbox, and a single-node retry reported `C1902: Program database manager
+  mismatch`. Building outside the sandbox passed that step.
+- MSVC reported `C2664` on the sparkle display-list handle and `LNK2001` on `FrameInterpolation_RecordOpenChild`
+  and `FrameInterpolation_RecordCloseChild`. The draw uses the usual cast for an asset handle and uses the
+  engine's C-linkage declarations at file scope.
+
+#### In-game checklist — not tested in game
+
+For **every row**, check the marker before collection, switch CSMC on and off, then collect the check and confirm
+the normal appearance in both settings. Also check the same object with its shuffle option off where applicable
+and in a non-randomized save. Use nearby unshuffled or collected objects and shadows to spot any color bleed.
+
+| Object | What to check while open and on collection |
+|---|---|
+| Small snowball | Yellow with CSMC off and tinted by item class with CSMC on. Check while it is held and again after collecting the drop and respawning the snowball. |
+| Large snowball | The same tint as small snowballs. Check the normal break animation and that an intact snowball looks normal after collecting its drop and reloading the room. |
+| Trees | Check woodland trees, palms, and snow-covered trees. Both trunk and foliage show the marker, with item-class tint under CSMC. Bonk the tree, collect the drop, and check that the same standing tree returns to normal. |
+| Tree with the two Termina Field rupees | Fixed yellow with either CSMC setting. Collect each rupee first in separate trials. The marker stays until the other is collected, including after a scene reload. |
+| Beehives | Yellow or item-class tint while hanging and swinging. Check normal appearance when respawned after collection. Include the cow grotto variants and the Pirates' Fortress hive with its existing drop fallback when the hive is already gone. |
+| Swordsman's School gong | Yellow or item-class tint while intact, including while the gong and chain are moving. Collect the gong's drop and check that they return to normal in the same room. |
+| Owl statues | Yellow or item-class tint on the statue model. Activation flashes keep their normal colors. The statue looks normal when the check is collected. |
+| Termina Field music wall | Fixed yellow sparkle with either CSMC setting, independent of the reward timetable. Play the song and verify that the marker persists when the notes disappear. Collect the reward groups over several visits and confirm the sparkle ends only after the last open check. The Milk Bar music staff keeps its normal appearance. |
+| Song of Soaring engraving | Yellow sparkle with CSMC off and item-class sparkle with CSMC on. Read the engraving, collect the check and verify the sparkle disappears immediately. |
+
+For CSMC colors, compare examples of major, minor, health, boss key, mask, token, small key, stray fairy and filler
+with the corresponding pots. Check pots, crates, barrels, grass and the original Wonder Item sparkles as well.

@@ -43,6 +43,11 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   How a soul looks is client-only: `Rando/DrawNpcSouls.cpp` draws the NPC's model in a blue light (stage 8c); a new
   soul needs a row there too, otherwise it shows only the blue flame. Door keys show Anju's room key, riding Epona
   Gorman's horse (`DrawItem.cpp`).
+- In stage 8b the client marks **open object checks**. Shuffled snowballs, trees, beehives, the Swordsman's School
+  gong and owl statues are tinted while their checks are open. The Song of Soaring engraving and the Termina Field
+  music wall sparkle. `Rando/ObjectMarker.cpp` supplies the yellow default and the Chest Size Matches Contents
+  palette based on the pot categories. Objects with several checks use the fixed yellow marker until all are collected.
+  See [the in-game checklist](docs/testing.md#stage-8b--open-object-check-markers).
 - **Dungeon entrance shuffle** (`shuffle_dungeon_entrances`, apworld 0.3): the doors of the four temples lead into a
   random one of them, coupled (the temple's exit and its boss's blue warp lead back out of the door used). The table
   `shuffleEntrances` in `Rando/MiscBehavior/EntranceShuffle.cpp` has one row per door (option, way in, way out,
