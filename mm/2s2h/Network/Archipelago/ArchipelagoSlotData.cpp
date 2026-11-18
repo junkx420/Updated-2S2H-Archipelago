@@ -43,6 +43,9 @@ std::vector<std::string> SlotData::Parse(const nlohmann::json& data) {
         }
         deathLink = data.value("death_link", false);
         randomSeed = data.value("seed", 0u);
+        if (data.contains("mixed_entrance_pairs")) {
+            mixedEntrancePairs = data["mixed_entrance_pairs"].get<std::vector<std::pair<int32_t, int32_t>>>();
+        }
     } catch (const std::exception& e) { warnings.push_back(std::string("parse error: ") + e.what()); }
     valid = true;
     return warnings;
@@ -54,7 +57,7 @@ std::string SlotData::Describe() const {
         << (version2s2h.empty() ? "?" : version2s2h) << "\n";
     out << "  " << options.size() << " randomizer options, " << prices.size() << " prices, " << startingItems.size()
         << " starting items, " << vanillaSkulltulas.size() << " vanilla skulltulas, " << entrancePairs.size()
-        << " shuffled entrances\n";
+        << " shuffled entrances, " << mixedEntrancePairs.size() << " mixed entrance pairs\n";
     out << "  DeathLink: " << (deathLink ? "on" : "off");
     return out.str();
 }

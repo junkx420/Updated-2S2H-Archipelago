@@ -87,7 +87,8 @@ extern const std::vector<u16> overworldWaterEntrances;
 bool LogicGrottoEntrance(s32 entrance, s32* logicEntrance);
 
 // Writes the pairing from the apworld's slot_data ([door's "into", "into" of the area behind it]) into the save.
-void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs);
+void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs,
+              const std::vector<std::pair<int32_t, int32_t>>& mixedPairs = {});
 
 // BeforeTransitionSetup hook: replaces play->nextEntrance when it goes through a shuffled door.
 void OnBeforeTransitionSetup();

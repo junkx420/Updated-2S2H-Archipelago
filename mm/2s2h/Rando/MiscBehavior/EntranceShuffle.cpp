@@ -23,7 +23,7 @@ const std::vector<ShuffleEntrance> shuffleEntrances = {
     { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(WOODFALL_TEMPLE, 0),    ENTRANCE(WOODFALL, 1),    SCENE_MITURIN,  SCENE_21MITURINMAE, SCENE_MITURIN_BS, { ENTRANCE(WOODFALL_TEMPLE, 1), ENTRANCE(WOODFALL, 0) } },
     { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(SNOWHEAD_TEMPLE, 0),    ENTRANCE(SNOWHEAD, 1),    SCENE_HAKUGIN,  SCENE_12HAKUGINMAE, SCENE_HAKUGIN_BS, { ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 7) } },
     { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(GREAT_BAY_TEMPLE, 0),   ENTRANCE(ZORA_CAPE, 7),   SCENE_SEA,      SCENE_31MISAKI,     SCENE_SEA_BS,     { ENTRANCE(ZORA_CAPE, 9), ENTRANCE(ZORA_CAPE, 8) } },
-    // The inverted exterior is not shuffled. Boss rows below resolve its boss warp separately.
+    // The inverted exterior has its own row at the end of the table.
     { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(STONE_TOWER_TEMPLE, 0), ENTRANCE(STONE_TOWER, 2), SCENE_INISIE_N, SCENE_F40,          SCENE_MAX,        {} },
     // Boss doors and blue warps (Regions/*Temple.cpp); append only, including the inverted temple's own boss door.
     { RO_SHUFFLE_BOSS_ENTRANCES, ENTRANCE(ODOLWAS_LAIR, 0),   ENTRANCE(WOODFALL_TEMPLE, 1),         SCENE_MITURIN_BS, SCENE_MITURIN,  SCENE_MITURIN_BS, { ENTRANCE(WOODFALL_TEMPLE, 1), ENTRANCE(WOODFALL, 0) }, ENTRANCE(WOODFALL, 1) },
@@ -203,7 +203,34 @@ const std::vector<ShuffleEntrance> shuffleEntrances = {
     { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(IKANA_CASTLE, 1),             ENTRANCE(IKANA_CANYON, 8),                 SCENE_CASTLE,           SCENE_IKANA,            SCENE_MAX, {} },
     { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(SECRET_SHRINE, 0),            ENTRANCE(IKANA_CANYON, 12),                SCENE_RANDOM,           SCENE_IKANA,            SCENE_MAX, {} },
     { RO_SHUFFLE_SPECIAL_AREAS, ENTRANCE(DEKU_SHRINE, 0),              ENTRANCE(DEKU_PALACE, 4),                  SCENE_DANPEI,           SCENE_22DEKUCITY,       SCENE_MAX, {} },
+    // Only when the temple pool participates in mixed entrance shuffle.
+    { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(STONE_TOWER_TEMPLE_INVERTED, 0), ENTRANCE(STONE_TOWER_INVERTED, 1), SCENE_INISIE_R, SCENE_F41, SCENE_MAX, {} },
 };
+
+// AP option names, native shuffle toggles and bits of RO_MIX_ENTRANCE_POOLS. Read by the generator.
+struct EntranceMixPool {
+    const char* name;
+    RandoOptionId option;
+    u32 bit;
+};
+
+static const EntranceMixPool entranceMixPools[] = {
+    { "dungeons", RO_SHUFFLE_DUNGEON_ENTRANCES, 1 },
+    { "interiors", RO_SHUFFLE_INTERIORS, 2 },
+    { "overworld", RO_SHUFFLE_OVERWORLD, 4 },
+    { "special_areas", RO_SHUFFLE_SPECIAL_AREAS, 8 },
+};
+
+// Keep these edges vanilla when their pool is mixed. The first two doors have short closures and the ranch
+// opens on day 3 or after breaking the boulder. Keep both ends of that overworld transition together.
+static const std::vector<u16> entranceMixFixed = {
+    ENTRANCE(TRADING_POST, 0),
+    ENTRANCE(SWORDMANS_SCHOOL, 0),
+    ENTRANCE(ROMANI_RANCH, 0),
+    ENTRANCE(MILK_ROAD, 1),
+};
+
+static constexpr u16 mixedOnlyEntrance = ENTRANCE(STONE_TOWER_TEMPLE_INVERTED, 0);
 
 // Overworld rows whose arrival is under water: both ways of these transitions are taken swimming (Zora in the logic),
 // so they pair only among each other. A land exit (any form) never leads into water, where a Deku or Goron would void
@@ -308,6 +335,8 @@ const std::vector<ShuffleAreaRule> shuffleAreaRules = {
     { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(GREAT_BAY_TEMPLE, 0),   [] { return CAN_BE_ZORA && HAS_ITEM(ITEM_HOOKSHOT); } },
     // Stone Tower climb and door (East.cpp RR_STONE_TOWER_BOTTOM, _MIDDLE, _UPPER, _TOP)
     { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(STONE_TOWER_TEMPLE, 0), [] { return HAS_ITEM(ITEM_HOOKSHOT) && CAN_PLAY_SONG(ELEGY) && CAN_BE_GORON && CAN_BE_ZORA; } },
+    // The vanilla way to inverted Stone Tower also needs light arrows (East.cpp, RR_STONE_TOWER_TOP).
+    { RO_SHUFFLE_DUNGEON_ENTRANCES, ENTRANCE(STONE_TOWER_TEMPLE_INVERTED, 0), [] { return HAS_ITEM(ITEM_HOOKSHOT) && CAN_PLAY_SONG(ELEGY) && CAN_BE_GORON && CAN_BE_ZORA && HAS_ITEM(ITEM_BOW) && HAS_ITEM(ITEM_ARROW_LIGHT) && HAS_MAGIC; } },
     // WoodfallTemple.cpp:228 guarantees Deku and Bow before the vanilla boss door.
     { RO_SHUFFLE_BOSS_ENTRANCES, ENTRANCE(ODOLWAS_LAIR, 0),   [] { return CAN_BE_DEKU && HAS_ITEM(ITEM_BOW); } },
     // SnowheadTemple.cpp:260 guarantees Goron before the temple interior; Logic.h's fight rule only tests Fire Arrows.
@@ -350,9 +379,15 @@ const std::vector<ShuffleAreaRule> shuffleAreaRules = {
 
 // Elements, not bytes: the field is u16 since apworld 0.6 (u8[32] before; GetGrownArray loads both).
 static constexpr size_t MAX_ROWS = sizeof(RandoSaveInfo::entrancePairs) / sizeof(RandoSaveInfo::entrancePairs[0]);
+static constexpr size_t MAX_ENDPOINTS =
+    sizeof(RandoSaveInfo::mixedEntrancePairs) / sizeof(RandoSaveInfo::mixedEntrancePairs[0]);
 
 static u16* SavedPairs() {
     return gSaveContext.save.shipSaveInfo.rando.entrancePairs;
+}
+
+static u16* SavedMixedPairs() {
+    return gSaveContext.save.shipSaveInfo.rando.mixedEntrancePairs;
 }
 
 static bool IsInteriorRow(size_t row) {
@@ -376,9 +411,81 @@ static bool IsWaterRow(size_t row) {
                overworldWaterEntrances.end();
 }
 
-static bool CanPair(size_t door, size_t inside) {
-    if (shuffleEntrances[door].option != shuffleEntrances[inside].option || IsWaterRow(door) != IsWaterRow(inside)) {
+static bool MixSelected(RandoOptionId option) {
+    u32 mask = RANDO_SAVE_OPTIONS[RO_MIX_ENTRANCE_POOLS];
+    if ((mask & (mask - 1)) == 0 || RANDO_SAVE_OPTIONS[option] == RO_GENERIC_OFF) {
         return false;
+    }
+    for (const auto& pool : entranceMixPools) {
+        if (pool.option == option) {
+            return (mask & pool.bit) != 0;
+        }
+    }
+    return false;
+}
+
+static bool FixedWhenMixed(size_t row) {
+    return std::find(entranceMixFixed.begin(), entranceMixFixed.end(), shuffleEntrances[row].into) !=
+           entranceMixFixed.end();
+}
+
+static bool IsMixedRow(size_t row) {
+    return MixSelected(shuffleEntrances[row].option) && !FixedWhenMixed(row) && !IsWaterRow(row) &&
+           (!IsInteriorRow(row) || HoursOf(row) == INTERIOR_ALWAYS_OPEN);
+}
+
+static bool IsClockTownScene(s16 scene) {
+    return scene == SCENE_CLOCKTOWER || scene == SCENE_TOWN || scene == SCENE_BACKTOWN || scene == SCENE_ICHIBA ||
+           scene == SCENE_ALLEY;
+}
+
+static bool IsTownGate(const ShuffleEntrance& row) {
+    return row.option == RO_SHUFFLE_OVERWORLD && IsClockTownScene(row.outsideScene) &&
+           !IsClockTownScene(row.insideScene);
+}
+
+static bool IsMixedEndpoint(size_t endpoint) {
+    size_t row = endpoint / 2;
+    return endpoint < MAX_ENDPOINTS && row < shuffleEntrances.size() && IsMixedRow(row) &&
+           (endpoint % 2 == 0 || shuffleEntrances[row].option != RO_SHUFFLE_OVERWORLD);
+}
+
+static bool CanMix(size_t first, size_t second) {
+    if (first == second || !IsMixedEndpoint(first) || !IsMixedEndpoint(second)) {
+        return false;
+    }
+    const auto& a = shuffleEntrances[first / 2];
+    const auto& b = shuffleEntrances[second / 2];
+    if (IsTownGate(a)) {
+        return b.option == RO_SHUFFLE_OVERWORLD && !IsClockTownScene(b.outsideScene);
+    }
+    if (IsTownGate(b)) {
+        return a.option == RO_SHUFFLE_OVERWORLD && !IsClockTownScene(a.outsideScene);
+    }
+    return a.option == RO_SHUFFLE_OVERWORLD || b.option == RO_SHUFFLE_OVERWORLD || (first % 2 != second % 2);
+}
+
+static size_t MixedPartner(size_t endpoint) {
+    u16 value = SavedMixedPairs()[endpoint];
+    if (value != 0 && CanMix(endpoint, value - 1) && SavedMixedPairs()[value - 1] == endpoint + 1) {
+        return value - 1;
+    }
+    return endpoint;
+}
+
+static u16 EndpointArrival(size_t endpoint) {
+    const auto& row = shuffleEntrances[endpoint / 2];
+    return endpoint % 2 == 0 ? row.outOf : row.into;
+}
+
+static bool CanPair(size_t door, size_t inside) {
+    if (shuffleEntrances[door].option != shuffleEntrances[inside].option || IsWaterRow(door) != IsWaterRow(inside) ||
+        IsMixedRow(door) || IsMixedRow(inside) || shuffleEntrances[door].into == mixedOnlyEntrance ||
+        shuffleEntrances[inside].into == mixedOnlyEntrance) {
+        return false;
+    }
+    if (MixSelected(shuffleEntrances[door].option) && (FixedWhenMixed(door) || FixedWhenMixed(inside))) {
+        return door == inside;
     }
     return !IsInteriorRow(door) ||
            (HoursOf(door) == HoursOf(inside) && (HoursOf(door) != INTERIOR_OWN_HOURS || door == inside));
@@ -410,7 +517,8 @@ static size_t DoorForInside(size_t inside) {
     return inside;
 }
 
-void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs) {
+void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs,
+              const std::vector<std::pair<int32_t, int32_t>>& mixedPairs) {
     std::fill(SavedPairs(), SavedPairs() + MAX_ROWS, (u16)0);
     auto rowOf = [](int32_t into) -> size_t {
         for (size_t row = 0; row < shuffleEntrances.size() && row < MAX_ROWS; row++) {
@@ -425,6 +533,22 @@ void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs) {
         size_t inside = rowOf(insideInto);
         if (door < MAX_ROWS && inside < MAX_ROWS && CanPair(door, inside)) {
             SavedPairs()[door] = (u16)(inside + 1);
+        }
+    }
+    u16* mixed = SavedMixedPairs();
+    std::fill(mixed, mixed + MAX_ENDPOINTS, (u16)0);
+    for (const auto& [a, b] : mixedPairs) {
+        if (!CanMix(a, b) || mixed[a] != 0 || mixed[b] != 0) {
+            std::fill(mixed, mixed + MAX_ENDPOINTS, (u16)0);
+            return;
+        }
+        mixed[a] = (u16)(b + 1);
+        mixed[b] = (u16)(a + 1);
+    }
+    for (size_t endpoint = 0; endpoint < 2 * shuffleEntrances.size(); endpoint++) {
+        if (IsMixedEndpoint(endpoint) && mixed[endpoint] == 0) {
+            std::fill(mixed, mixed + MAX_ENDPOINTS, (u16)0);
+            return;
         }
     }
 }
@@ -772,12 +896,56 @@ static bool RedirectSpecialArea(PlayState* play) {
     return false;
 }
 
+static s16 MixedScene(s16 scene) {
+    // The engine shares scene flags across inversion, but the normal and inverted doors are distinct.
+    return (scene == SCENE_INISIE_R || scene == SCENE_F41) ? scene : Play_GetOriginalSceneId(scene);
+}
+
+static bool RedirectMixed(PlayState* play) {
+    if (RANDO_SAVE_OPTIONS[RO_MIX_ENTRANCE_POOLS] == RO_GENERIC_OFF ||
+        (gSaveContext.respawnFlag != 0 && gSaveContext.respawnFlag != -2)) {
+        return false;
+    }
+    u16 next = play->nextEntrance;
+    u16 place = PlaceOf(next);
+    s16 scene = MixedScene(play->sceneId);
+    for (size_t endpoint = 0; endpoint < 2 * shuffleEntrances.size(); endpoint++) {
+        if (SavedMixedPairs()[endpoint] == 0) {
+            continue;
+        }
+        const auto& row = shuffleEntrances[endpoint / 2];
+        bool inner = endpoint % 2 != 0;
+        if (scene != (inner ? row.insideScene : row.outsideScene) || place != (inner ? row.outOf : row.into)) {
+            continue;
+        }
+        // Great Bay's turtle can initiate its entrance transition during a cutscene.
+        if (play->csCtx.state != CS_STATE_IDLE && (inner || row.into != ENTRANCE(GREAT_BAY_TEMPLE, 0))) {
+            return false;
+        }
+        size_t partner = MixedPartner(endpoint);
+        if (partner == endpoint || EndpointArrival(partner) == place) {
+            return true;
+        }
+        play->nextEntrance = EndpointArrival(partner);
+        if (gSaveContext.nextCutsceneIndex >= 0xFFF0) {
+            gSaveContext.nextCutsceneIndex = 0xFFEF;
+        }
+        if (gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance == next) {
+            gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = play->nextEntrance;
+        }
+        LeaveEponaAtExit(play);
+        return true;
+    }
+    return false;
+}
+
 void OnBeforeTransitionSetup() {
     PlayState* play = gPlayState;
     if (play == nullptr) {
         return;
     }
-    if (RedirectGrotto(play) || RedirectInterior(play) || RedirectOverworld(play) || RedirectSpecialArea(play)) {
+    if (RedirectMixed(play) || RedirectGrotto(play) || RedirectInterior(play) || RedirectOverworld(play) ||
+        RedirectSpecialArea(play)) {
         return;
     }
     u16 next = play->nextEntrance;
@@ -820,9 +988,16 @@ void OnBeforeTransitionSetup() {
         for (size_t temple = 0; temple < shuffleEntrances.size() && temple < MAX_ROWS; temple++) {
             if (shuffleEntrances[temple].option == RO_SHUFFLE_DUNGEON_ENTRANCES &&
                 shuffleEntrances[temple].outOf == exterior) {
-                size_t templeDoor = DoorForInside(temple);
-                exterior = shuffleEntrances[templeDoor].outOf;
-                moved |= templeDoor != temple;
+                size_t endpoint = 2 * temple + 1;
+                size_t partner = MixedPartner(endpoint);
+                if (partner != endpoint) {
+                    exterior = EndpointArrival(partner);
+                    moved |= partner != 2 * temple;
+                } else {
+                    size_t templeDoor = DoorForInside(temple);
+                    exterior = shuffleEntrances[templeDoor].outOf;
+                    moved |= templeDoor != temple;
+                }
                 break;
             }
         }

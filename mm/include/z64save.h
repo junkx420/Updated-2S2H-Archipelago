@@ -394,6 +394,7 @@ typedef struct RandoSaveInfo {
     // Entrance shuffle, per row of Rando/MiscBehavior/EntranceShuffle.cpp: 1 + the row whose inside is behind this
     // door; 0 = the door's own inside (unshuffled). u8[32] before apworld 0.6, now sized for every exit of the logic
     u16 entrancePairs[512];
+    u16 mixedEntrancePairs[1024]; // two endpoints per entrance row; partner + 1, or zero
 } RandoSaveInfo;
 
 // These are values added by 2S2H that we need to be persisted to the save file

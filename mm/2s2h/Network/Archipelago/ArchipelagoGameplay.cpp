@@ -62,7 +62,7 @@ void ApplySlotOptions(const ApSlot::SlotData& options) {
         RANDO_SAVE_OPTIONS[optionId] = value;
     }
     // Stored in the save, so the shuffled doors work right after loading, before reconnecting.
-    Rando::EntranceShuffle::SetPairs(options.entrancePairs);
+    Rando::EntranceShuffle::SetPairs(options.entrancePairs, options.mixedEntrancePairs);
     // apworld 0.7 added the Zora Hall Rooms key. Older seeds have none in their pool: their Zora Hall doors stay open.
     int major = 0, minor = 0;
     bool hasZoraHallKey =
