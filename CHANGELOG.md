@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.12.0 — Regular release (new mechanics experimental)
+
+Client and **apworld 0.12.0**. Every automated check passes and new options are off by default; nothing new has been
+**played in game** yet.
+
+- **Souls for all NPCs** (`shuffle_npc_souls: all`): 65 souls. Without its soul an NPC is not in the world: no model,
+  shadow, voice or reward. `classic` (and `true` in old YAMLs) keeps the 30 souls of 0.11 unchanged.
+- NPCs that open a way stay (Goron Shrine gatekeeper, Sakon, Pamela, story and cutscene characters). Blockers such
+  as guards and pirates are simply gone while hidden. Cremia's cart has no collision while hidden.
+- Small pools put souls without checks into the start inventory instead of failing generation.
+- **Models:** found souls show their NPC instead of a blue flame; door keys and Epona riding have their own models.
+- Hidden NPCs and bosses no longer cast a shadow.
+- Validation: 832 tests, 1200/1200 parity, 100/100 seeds with `all` alone and with every option. Not tested in game.
+
+[Release notes and downloads](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.12.0)
+
 ## 0.11.1 — Regular release (new mechanics experimental)
 
 Client and **apworld 0.11.1**. Published as a regular release because every automated check passes and every new
