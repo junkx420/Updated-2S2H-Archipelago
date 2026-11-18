@@ -1710,6 +1710,12 @@ void Rando::RegisterMenu() {
     mBenMenu->AddWidget(path, "Popout Settings", WIDGET_WINDOW_BUTTON)
         .CVar("gWindows.CheckTrackerSettings")
         .WindowName("Check Tracker Settings");
+
+    mBenMenu->AddSidebarEntry("Rando", "Entrance Tracker", 1);
+    path.sidebarName = "Entrance Tracker";
+    mBenMenu->AddWidget(path, "Toggle Entrance Tracker", WIDGET_WINDOW_BUTTON)
+        .CVar("gWindows.EntranceTracker")
+        .WindowName("Entrance Tracker");
 }
 
 static RegisterMenuInitFunc initFunc(Rando::RegisterMenu);

@@ -11,6 +11,7 @@
 #include "CosmeticEditor.h"
 #include "Notification.h"
 #include "2s2h/Rando/CheckTracker/CheckTracker.h"
+#include "2s2h/Rando/EntranceTracker/EntranceTracker.h"
 
 #ifdef __APPLE__
 #include <fast/backends/gfx_metal.h>
@@ -62,6 +63,7 @@ std::shared_ptr<BenMenu> mBenMenu;
 std::shared_ptr<Notification::Window> mNotificationWindow;
 std::shared_ptr<Rando::CheckTracker::CheckTrackerWindow> mRandoCheckTrackerWindow;
 std::shared_ptr<Rando::CheckTracker::SettingsWindow> mRandoCheckTrackerSettingsWindow;
+std::shared_ptr<Rando::EntranceTracker::EntranceTrackerWindow> mRandoEntranceTrackerWindow;
 std::shared_ptr<ItemTrackerWindow> mItemTrackerWindow;
 std::shared_ptr<ItemTrackerSettingsWindow> mItemTrackerSettingsWindow;
 std::shared_ptr<DisplayOverlayWindow> mDisplayOverlayWindow;
@@ -177,6 +179,10 @@ void SetupGuiElements() {
         "gWindows.CheckTrackerSettings", "Check Tracker Settings");
     gui->AddGuiWindow(mRandoCheckTrackerSettingsWindow);
 
+    mRandoEntranceTrackerWindow = std::make_shared<Rando::EntranceTracker::EntranceTrackerWindow>(
+        "gWindows.EntranceTracker", "Entrance Tracker", ImVec2(520, 480));
+    gui->AddGuiWindow(mRandoEntranceTrackerWindow);
+
     mInputViewer = std::make_shared<InputViewer>("gWindows.InputViewer", "Input Viewer");
     gui->AddGuiWindow(mInputViewer);
     mInputViewerSettings = std::make_shared<InputViewerSettingsWindow>("gWindows.InputViewerSettings",
@@ -200,6 +206,7 @@ void Destroy() {
     mNotificationWindow = nullptr;
     mRandoCheckTrackerWindow = nullptr;
     mRandoCheckTrackerSettingsWindow = nullptr;
+    mRandoEntranceTrackerWindow = nullptr;
 
     mHookDebuggerWindow = nullptr;
     mSaveEditorWindow = nullptr;

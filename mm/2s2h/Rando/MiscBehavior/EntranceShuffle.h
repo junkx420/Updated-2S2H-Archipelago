@@ -3,6 +3,7 @@
 
 #include "Rando/Rando.h"
 #include <functional>
+#include <string>
 #include <vector>
 
 namespace Rando {
@@ -81,6 +82,42 @@ extern const std::vector<InteriorEntrance> interiorEntrances;
 // "into" of the overworld rows (RO_SHUFFLE_OVERWORLD) that arrive under water. Both ways of such a transition are
 // taken swimming, so these rows pair only among each other, the others only among themselves. Read by the generator.
 extern const std::vector<u16> overworldWaterEntrances;
+
+// Names of a row as the apworld's spoiler log writes them (matched by "into"), shown by the in-game entrance tracker.
+// "name" is the door-pool name (temples, boss rooms, grottos, interiors, special areas: "A <=> B") or, for an overworld
+// row, its place ("East Clock Town 1"). doorExit and insideExit are the Archipelago exits of both sides ("Region ->
+// Region [#n]"), used by mixed pools; insideExit is empty for overworld rows. The generator takes "name" over and
+// checks the exit names against the logic graph. Read by the apworld generator.
+struct EntranceName {
+    u16 into;
+    const char* name;
+    const char* doorExit;
+    const char* insideExit;
+};
+
+extern const std::vector<EntranceName> entranceNames;
+
+// One line of the entrance tracker, one per line of the spoiler log: a door pool's coupled pair (twoWay, "A <=> B"), an
+// overworld exit or a mixed endpoint. Endpoints are 2 * row (door side) and 2 * row + 1 (inside side), as in
+// RandoSaveInfo::mixedEntrancePairs and entrancesDiscovered.
+struct TrackedEntrance {
+    size_t from;        // endpoint taken
+    size_t to;          // endpoint whose arrival it leads to (the door pools' area behind the door: its inside side)
+    RandoOptionId pool; // the row's own option
+    bool mixed;
+    bool twoWay;
+    s16 fromScene; // scene of the side taken (original scene id)
+};
+
+// The shuffled lines of the current save; rows whose pool is off, or that never move, are left out.
+std::vector<TrackedEntrance> TrackedEntrances();
+// Set once Link went through either side of the line (both sides of a coupled pairing are marked together).
+bool IsDiscovered(size_t endpoint);
+// Display names of a line, word for word the spoiler log's ("from" is the entrance column, "to" the exit column).
+std::string FromName(const TrackedEntrance& line);
+std::string ToName(const TrackedEntrance& line);
+// The grotto row of the current grotto (they all share SCENE_KAKUSIANA), or (size_t)-1.
+size_t CurrentGrottoRow();
 
 // In-game check tracker: with Shuffle Grottos on, the logic entrance of the grotto the player is in, decided by the
 // real entrance and the grotto data instead of the place outside (the grotto may lie behind another hole).

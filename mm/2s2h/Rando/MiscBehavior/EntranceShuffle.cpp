@@ -322,6 +322,170 @@ const std::vector<GrottoEntrance> grottoEntrances = {
     { ENTRANCE(GROTTOS, 30), ENTRANCE(GROTTOS, 4),  0xB8, GROTTO_HOLE },       // Ikana Graveyard
     { ENTRANCE(GROTTOS, 31), ENTRANCE(GROTTOS, 4),  0x96, GROTTO_HOLE },       // Road to Ikana
 };
+
+// Spoiler-log names of every shuffleEntrances row, in row order (see EntranceShuffle.h). Append a row's names with
+// the row; the generator checks them.
+const std::vector<EntranceName> entranceNames = {
+    // into,                       name,              door side's exit,                    inside side's exit
+    { ENTRANCE(WOODFALL_TEMPLE, 0), "Woodfall Temple", "Woodfall Owl Statue Platform -> Woodfall Temple Entrance", "Woodfall Temple Entrance -> Woodfall Owl Statue Platform" },
+    { ENTRANCE(SNOWHEAD_TEMPLE, 0), "Snowhead Temple", "Snowhead Outside Temple Entrance -> Snowhead Temple Entrance Before Block", "Snowhead Temple Entrance Before Block -> Snowhead Outside Temple Entrance" },
+    { ENTRANCE(GREAT_BAY_TEMPLE, 0), "Great Bay Temple", "Zora Cape Before Great Bay Temple -> Great Bay Temple Entrance", "Great Bay Temple Entrance -> Zora Cape Before Great Bay Temple" },
+    { ENTRANCE(STONE_TOWER_TEMPLE, 0), "Stone Tower Temple", "Stone Tower Top -> Stone Tower Temple Entrance", "Stone Tower Temple Entrance -> Stone Tower Top" },
+    { ENTRANCE(ODOLWAS_LAIR, 0), "Odolwas Lair", "Woodfall Temple Pre Boss Room -> Woodfall Temple Boss Room", "Woodfall Temple Boss Room -> Woodfall Temple Deku Princess Room" },
+    { ENTRANCE(GOHTS_LAIR, 0), "Gohts Lair", "Snowhead Temple Central Room Third Floor -> Snowhead Temple Boss Room", "Snowhead Temple Boss Room -> Menu" },
+    { ENTRANCE(GYORGS_LAIR, 0), "Gyorgs Lair", "Great Bay Temple Pre Boss Room -> Great Bay Temple Boss Room", "Great Bay Temple Boss Room -> Zora Cape Before Great Bay Temple" },
+    { ENTRANCE(TWINMOLDS_LAIR, 0), "Twinmolds Lair", "Stone Tower Temple Inverted Twinmold Boss Entrance -> Stone Tower Temple Boss Room", "Stone Tower Temple Boss Room -> Ikana Canyon Upper" },
+    { ENTRANCE(GROTTOS, 0), "Termina Field Gossip Stone Grotto 3", "Termina Field -> Termina Field Gossip Stone Grotto 3", "Termina Field Gossip Stone Grotto 3 -> Termina Field" },
+    { ENTRANCE(GROTTOS, 1), "Termina Field Gossip Stone Grotto 1", "Termina Field -> Termina Field Gossip Stone Grotto 1", "Termina Field Gossip Stone Grotto 1 -> Termina Field" },
+    { ENTRANCE(GROTTOS, 2), "Termina Field Gossip Stone Grotto 4", "Termina Field -> Termina Field Gossip Stone Grotto 4", "Termina Field Gossip Stone Grotto 4 -> Termina Field" },
+    { ENTRANCE(GROTTOS, 3), "Termina Field Gossip Stone Grotto 2", "Termina Field -> Termina Field Gossip Stone Grotto 2", "Termina Field Gossip Stone Grotto 2 -> Termina Field" },
+    { ENTRANCE(GROTTOS, 5), "Path To Goron Village Hot Spring Grotto", "Path To Goron Village -> Path To Goron Village Hot Spring Grotto", "Path To Goron Village Hot Spring Grotto -> Path To Goron Village" },
+    { ENTRANCE(GROTTOS, 7), "Termina Field Dodongo Grotto", "Termina Field -> Termina Field Dodongo Grotto", "Termina Field Dodongo Grotto -> Termina Field" },
+    { ENTRANCE(GROTTOS, 9), "Termina Field Scrub Grotto", "Termina Field -> Termina Field Scrub Grotto", "Termina Field Scrub Grotto -> Termina Field" },
+    { ENTRANCE(GROTTOS, 11), "Termina Field Bio Baba Grotto", "Termina Field -> Termina Field Bio Baba Grotto", "Termina Field Bio Baba Grotto -> Termina Field" },
+    { ENTRANCE(GROTTOS, 12), "Deku Palace Bean Salesman Grotto", "Deku Palace Inside Lower -> Deku Palace Bean Salesman Grotto", "Deku Palace Bean Salesman Grotto -> Deku Palace Inside Lower" },
+    { ENTRANCE(GROTTOS, 13), "Termina Field Peahat Grotto", "Termina Field -> Termina Field Peahat Grotto", "Termina Field Peahat Grotto -> Termina Field" },
+    { ENTRANCE(GROTTOS, 16), "Lone Peak Shrine", "Lone Peak Shrine Entrance -> Lone Peak Shrine", "Lone Peak Shrine -> Lone Peak Shrine Entrance" },
+    { ENTRANCE(GROTTOS, 17), "Termina Field Cow Grotto", "Termina Field -> Termina Field Cow Grotto", "Termina Field Cow Grotto -> Termina Field" },
+    { ENTRANCE(GROTTOS, 18), "Termina Field Pillar Grotto", "Termina Field -> Termina Field Pillar Grotto", "Termina Field Pillar Grotto -> Termina Field" },
+    { ENTRANCE(GROTTOS, 19), "Termina Field Tall Grass Grotto", "Termina Field -> Termina Field Tall Grass Grotto", "Termina Field Tall Grass Grotto -> Termina Field" },
+    { ENTRANCE(GROTTOS, 20), "Road To Southern Swamp Grotto", "Road To Southern Swamp -> Road To Southern Swamp Grotto", "Road To Southern Swamp Grotto -> Road To Southern Swamp" },
+    { ENTRANCE(GROTTOS, 21), "Southern Swamp Grotto", "Southern Swamp South -> Southern Swamp Grotto", "Southern Swamp Grotto -> Southern Swamp South" },
+    { ENTRANCE(GROTTOS, 22), "Woods Of Mystery Grotto", "Woods Of Mystery -> Woods Of Mystery Grotto", "Woods Of Mystery Grotto -> Woods Of Mystery" },
+    { ENTRANCE(GROTTOS, 23), "Mountain Village Tunnel Grotto", "Mountain Village -> Mountain Village Tunnel Grotto", "Mountain Village Tunnel Grotto -> Mountain Village" },
+    { ENTRANCE(GROTTOS, 24), "Path To Goron Village Ramp Grotto", "Path To Goron Village -> Path To Goron Village Ramp Grotto", "Path To Goron Village Ramp Grotto -> Path To Goron Village" },
+    { ENTRANCE(GROTTOS, 25), "Path To Snowhead Grotto", "Path To Snowhead Upper -> Path To Snowhead Grotto", "Path To Snowhead Grotto -> Path To Snowhead Upper" },
+    { ENTRANCE(GROTTOS, 26), "Great Bay Coast Fisherman Grotto", "Great Bay Coast -> Great Bay Coast Fisherman Grotto", "Great Bay Coast Fisherman Grotto -> Great Bay Coast" },
+    { ENTRANCE(GROTTOS, 27), "Great Bay Coast Cow Grotto", "Great Bay Coast Cliffside -> Great Bay Coast Cow Grotto", "Great Bay Coast Cow Grotto -> Great Bay Coast" },
+    { ENTRANCE(GROTTOS, 28), "Zora Cape Grotto", "Zora Cape -> Zora Cape Grotto", "Zora Cape Grotto -> Zora Cape" },
+    { ENTRANCE(GROTTOS, 29), "Ikana Canyon Grotto", "Ikana Canyon Lower -> Ikana Canyon Grotto", "Ikana Canyon Grotto -> Ikana Canyon Lower" },
+    { ENTRANCE(GROTTOS, 30), "Ikana Graveyard Grotto", "Ikana Graveyard Lower -> Ikana Graveyard Grotto", "Ikana Graveyard Grotto -> Ikana Graveyard Lower" },
+    { ENTRANCE(GROTTOS, 31), "Road To Ikana Grotto", "Road To Ikana Field Side -> Road To Ikana Grotto", "Road To Ikana Grotto -> Road To Ikana Field Side" },
+    { ENTRANCE(TRADING_POST, 0), "Trading Post", "Clock Town West -> Trading Post", "Trading Post -> Clock Town West" },
+    { ENTRANCE(BOMB_SHOP, 0), "Bomb Shop", "Clock Town West -> Bomb Shop", "Bomb Shop -> Clock Town West" },
+    { ENTRANCE(CURIOSITY_SHOP, 0), "Curiosity Shop Front", "Clock Town West -> Curiosity Shop Front", "Curiosity Shop Front -> Clock Town West" },
+    { ENTRANCE(CURIOSITY_SHOP, 1), "Curiosity Shop Back", "Clock Town Laundry -> Curiosity Shop Back", "Curiosity Shop Back -> Clock Town Laundry" },
+    { ENTRANCE(SWORDMANS_SCHOOL, 0), "Swordsman School", "Clock Town West -> Swordsman School", "Swordsman School -> Clock Town West" },
+    { ENTRANCE(POST_OFFICE, 0), "Post Office", "Clock Town West -> Post Office", "Post Office -> Clock Town West" },
+    { ENTRANCE(LOTTERY_SHOP, 0), "Lottery Shop", "Clock Town West -> Lottery Shop", "Lottery Shop -> Clock Town West" },
+    { ENTRANCE(HONEY_AND_DARLINGS_SHOP, 0), "Honey And Darling", "Clock Town East -> Honey And Darling", "Honey And Darling -> Clock Town East" },
+    { ENTRANCE(MILK_BAR, 0), "Milk Bar", "Clock Town East -> Milk Bar", "Milk Bar -> Clock Town East" },
+    { ENTRANCE(MAYORS_RESIDENCE, 0), "Mayor Residence", "Clock Town East -> Mayor Residence", "Mayor Residence -> Clock Town East" },
+    { ENTRANCE(TOWN_SHOOTING_GALLERY, 0), "Town Shooting Gallery", "Clock Town East -> Town Shooting Gallery", "Town Shooting Gallery -> Clock Town East" },
+    { ENTRANCE(TREASURE_CHEST_SHOP, 0), "Treasure Shop", "Clock Town East -> Treasure Shop", "Treasure Shop -> Clock Town East" },
+    { ENTRANCE(STOCK_POT_INN, 0), "Inn (East Clock Town:9)", "Clock Town East -> Inn", "Inn -> Clock Town East" },
+    { ENTRANCE(STOCK_POT_INN, 1), "Inn (East Clock Town:10)", "Clock Town East -> Inn #2", "Inn -> Clock Town East #2" },
+    { ENTRANCE(DEKU_SCRUB_PLAYGROUND, 0), "Town Deku Playground", "Clock Town North -> Town Deku Playground", "Town Deku Playground -> Clock Town North" },
+    { ENTRANCE(TOURIST_INFORMATION, 0), "Tourist Information", "Southern Swamp North -> Tourist Information", "Tourist Information -> Southern Swamp North" },
+    { ENTRANCE(MAGIC_HAGS_POTION_SHOP, 0), "Magic Hags Potion Shop", "Southern Swamp Near Woods -> Magic Hags Potion Shop", "Magic Hags Potion Shop -> Southern Swamp Near Woods" },
+    { ENTRANCE(SWAMP_SHOOTING_GALLERY, 0), "Swamp Shooting Gallery", "Road To Southern Swamp -> Swamp Shooting Gallery", "Swamp Shooting Gallery -> Road To Southern Swamp" },
+    { ENTRANCE(MOUNTAIN_SMITHY, 0), "Mountain Smithy", "Mountain Village -> Mountain Smithy", "Mountain Smithy -> Mountain Village" },
+    { ENTRANCE(RANCH_HOUSE, 0), "Ranch Barn", "Romani Ranch -> Ranch Barn", "Ranch Barn -> Romani Ranch" },
+    { ENTRANCE(RANCH_HOUSE, 1), "Ranch House", "Romani Ranch -> Ranch House", "Ranch House -> Romani Ranch" },
+    { ENTRANCE(CUCCO_SHACK, 0), "Cucco Shack", "Romani Ranch -> Cucco Shack", "Cucco Shack -> Romani Ranch" },
+    { ENTRANCE(DOGGY_RACETRACK, 0), "Doggy Racetrack", "Romani Ranch -> Doggy Racetrack", "Doggy Racetrack -> Romani Ranch" },
+    { ENTRANCE(MARINE_RESEARCH_LAB, 0), "Marine Research Lab", "Great Bay Coast Marine Lab Exterior -> Marine Research Lab", "Marine Research Lab -> Great Bay Coast Marine Lab Exterior" },
+    { ENTRANCE(FISHERMANS_HUT, 0), "Fishermans Hut", "Great Bay Coast -> Fishermans Hut", "Fishermans Hut -> Great Bay Coast" },
+    { ENTRANCE(ZORA_HALL_ROOMS, 5), "Zora Hall Shop", "Zora Hall -> Zora Hall Shop", "Zora Hall Shop -> Zora Hall" },
+    { ENTRANCE(ZORA_HALL_ROOMS, 2), "Zora Hall Lulus Room", "Zora Hall -> Zora Hall Lulus Room", "Zora Hall Lulus Room -> Zora Hall" },
+    { ENTRANCE(ZORA_HALL_ROOMS, 3), "Zora Hall Evans Room", "Zora Hall -> Zora Hall Evans Room", "Zora Hall Evans Room -> Zora Hall" },
+    { ENTRANCE(ZORA_HALL_ROOMS, 1), "Zora Hall Japas Room", "Zora Hall -> Zora Hall Japas Room", "Zora Hall Japas Room -> Zora Hall" },
+    { ENTRANCE(ZORA_HALL_ROOMS, 0), "Zora Hall Mikaus Room", "Zora Hall -> Zora Hall Mikaus Room", "Zora Hall Mikaus Room -> Zora Hall" },
+    { ENTRANCE(MUSIC_BOX_HOUSE, 0), "Music Box House", "Ikana Canyon Upper -> Music Box House", "Music Box House -> Ikana Canyon Upper" },
+    { ENTRANCE(GHOST_HUT, 0), "Ghost Hut", "Ikana Canyon Upper -> Ghost Hut", "Ghost Hut -> Ikana Canyon Upper" },
+    { ENTRANCE(EAST_CLOCK_TOWN, 1), "East Clock Town 1", "Clock Town South -> Clock Town East #2", "" },
+    { ENTRANCE(SOUTH_CLOCK_TOWN, 7), "South Clock Town 7", "Clock Town East -> Clock Town South", "" },
+    { ENTRANCE(EAST_CLOCK_TOWN, 3), "East Clock Town 3", "Clock Town South -> Clock Town East", "" },
+    { ENTRANCE(SOUTH_CLOCK_TOWN, 2), "South Clock Town 2", "Clock Town East -> Clock Town South #2", "" },
+    { ENTRANCE(EAST_CLOCK_TOWN, 5), "East Clock Town 5", "Clock Town North -> Clock Town East", "" },
+    { ENTRANCE(NORTH_CLOCK_TOWN, 1), "North Clock Town 1", "Clock Town East -> Clock Town North", "" },
+    { ENTRANCE(NORTH_CLOCK_TOWN, 2), "North Clock Town 2", "Clock Town South -> Clock Town North", "" },
+    { ENTRANCE(SOUTH_CLOCK_TOWN, 4), "South Clock Town 4", "Clock Town North -> Clock Town South", "" },
+    { ENTRANCE(WEST_CLOCK_TOWN, 2), "West Clock Town 2", "Clock Town South -> Clock Town West", "" },
+    { ENTRANCE(SOUTH_CLOCK_TOWN, 3), "South Clock Town 3", "Clock Town West -> Clock Town South #2", "" },
+    { ENTRANCE(WEST_CLOCK_TOWN, 1), "West Clock Town 1", "Clock Town South -> Clock Town West #2", "" },
+    { ENTRANCE(SOUTH_CLOCK_TOWN, 5), "South Clock Town 5", "Clock Town West -> Clock Town South", "" },
+    { ENTRANCE(LAUNDRY_POOL, 0), "Laundry Pool 0", "Clock Town South -> Clock Town Laundry", "" },
+    { ENTRANCE(SOUTH_CLOCK_TOWN, 6), "South Clock Town 6", "Clock Town Laundry -> Clock Town South", "" },
+    { ENTRANCE(SOUTH_CLOCK_TOWN, 1), "South Clock Town 1", "Termina Field -> Clock Town South", "" },
+    { ENTRANCE(TERMINA_FIELD, 6), "Termina Field 6", "Clock Town South -> Termina Field", "" },
+    { ENTRANCE(EAST_CLOCK_TOWN, 0), "East Clock Town 0", "Termina Field -> Clock Town East", "" },
+    { ENTRANCE(TERMINA_FIELD, 7), "Termina Field 7", "Clock Town East -> Termina Field", "" },
+    { ENTRANCE(NORTH_CLOCK_TOWN, 0), "North Clock Town 0", "Termina Field -> Clock Town North", "" },
+    { ENTRANCE(TERMINA_FIELD, 8), "Termina Field 8", "Clock Town North -> Termina Field", "" },
+    { ENTRANCE(WEST_CLOCK_TOWN, 0), "West Clock Town 0", "Termina Field -> Clock Town West", "" },
+    { ENTRANCE(TERMINA_FIELD, 0), "Termina Field 0", "Clock Town West -> Termina Field", "" },
+    { ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0), "Road To Southern Swamp 0", "Termina Field -> Road To Southern Swamp", "" },
+    { ENTRANCE(TERMINA_FIELD, 1), "Termina Field 1", "Road To Southern Swamp -> Termina Field", "" },
+    { ENTRANCE(ROAD_TO_IKANA, 0), "Road To Ikana 0", "Termina Field -> Road To Ikana Field Side", "" },
+    { ENTRANCE(TERMINA_FIELD, 4), "Termina Field 4", "Road To Ikana Field Side -> Termina Field", "" },
+    { ENTRANCE(MILK_ROAD, 0), "Milk Road 0", "Termina Field -> Milk Road", "" },
+    { ENTRANCE(TERMINA_FIELD, 5), "Termina Field 5", "Milk Road -> Termina Field", "" },
+    { ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 0), "Path To Mountain Village 0", "Termina Field Before Path To Mountain Village -> Path To Mountain Village Lower", "" },
+    { ENTRANCE(TERMINA_FIELD, 3), "Termina Field 3", "Path To Mountain Village Lower -> Termina Field Before Path To Mountain Village", "" },
+    { ENTRANCE(GREAT_BAY_COAST, 0), "Great Bay Coast 0", "Termina Field Before Great Bay Coast -> Great Bay Coast", "" },
+    { ENTRANCE(TERMINA_FIELD, 2), "Termina Field 2", "Great Bay Coast -> Termina Field Before Great Bay Coast", "" },
+    { ENTRANCE(SOUTHERN_SWAMP_POISONED, 0), "Southern Swamp Poisoned 0", "Road To Southern Swamp -> Southern Swamp North", "" },
+    { ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 1), "Road To Southern Swamp 1", "Southern Swamp North -> Road To Southern Swamp", "" },
+    { ENTRANCE(WOODS_OF_MYSTERY, 0), "Woods Of Mystery 0", "Southern Swamp Near Woods -> Woods Of Mystery", "" },
+    { ENTRANCE(SOUTHERN_SWAMP_POISONED, 7), "Southern Swamp Poisoned 7", "Woods Of Mystery -> Southern Swamp Near Woods", "" },
+    { ENTRANCE(DEKU_PALACE, 0), "Deku Palace 0", "Southern Swamp South -> Deku Palace Outside", "" },
+    { ENTRANCE(SOUTHERN_SWAMP_POISONED, 3), "Southern Swamp Poisoned 3", "Deku Palace Outside -> Southern Swamp South", "" },
+    { ENTRANCE(DEKU_PALACE, 5), "Deku Palace 5", "Southern Swamp South Upper -> Deku Palace Outside", "" },
+    { ENTRANCE(SOUTHERN_SWAMP_POISONED, 4), "Southern Swamp Poisoned 4", "Deku Palace Outside -> Southern Swamp South Upper", "" },
+    { ENTRANCE(WOODFALL, 0), "Woodfall 0", "Southern Swamp South Upper -> Woodfall", "" },
+    { ENTRANCE(SOUTHERN_SWAMP_POISONED, 2), "Southern Swamp Poisoned 2", "Woodfall -> Southern Swamp South Upper", "" },
+    { ENTRANCE(ROMANI_RANCH, 0), "Romani Ranch 0", "Milk Road -> Romani Ranch", "" },
+    { ENTRANCE(MILK_ROAD, 1), "Milk Road 1", "Romani Ranch -> Milk Road", "" },
+    { ENTRANCE(GORMAN_TRACK, 0), "Gorman Track 0", "Milk Road -> Gorman Track Front", "" },
+    { ENTRANCE(MILK_ROAD, 3), "Milk Road 3", "Gorman Track Front -> Milk Road", "" },
+    { ENTRANCE(GORMAN_TRACK, 3), "Gorman Track 3", "Milk Road Behind Fence -> Gorman Track Back", "" },
+    { ENTRANCE(MILK_ROAD, 2), "Milk Road 2", "Gorman Track Back -> Milk Road Behind Fence", "" },
+    { ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 6), "Mountain Village Winter 6", "Path To Mountain Village Upper -> Mountain Village", "" },
+    { ENTRANCE(PATH_TO_MOUNTAIN_VILLAGE, 1), "Path To Mountain Village 1", "Mountain Village -> Path To Mountain Village Upper", "" },
+    { ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), "Path To Goron Village Winter 0", "Mountain Village -> Path To Goron Village", "" },
+    { ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 2), "Mountain Village Winter 2", "Path To Goron Village -> Mountain Village", "" },
+    { ENTRANCE(PATH_TO_SNOWHEAD, 0), "Path To Snowhead 0", "Mountain Village -> Path To Snowhead Lower", "" },
+    { ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 4), "Mountain Village Winter 4", "Path To Snowhead Lower -> Mountain Village", "" },
+    { ENTRANCE(SNOWHEAD, 0), "Snowhead 0", "Path To Snowhead Upper -> Snowhead Near Path", "" },
+    { ENTRANCE(PATH_TO_SNOWHEAD, 1), "Path To Snowhead 1", "Snowhead Near Path -> Path To Snowhead Upper", "" },
+    { ENTRANCE(GORON_VILLAGE_WINTER, 0), "Goron Village Winter 0", "Path To Goron Village -> Goron Village", "" },
+    { ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 1), "Path To Goron Village Winter 1", "Goron Village -> Path To Goron Village", "" },
+    { ENTRANCE(GORON_RACETRACK, 0), "Goron Racetrack 0", "Path To Goron Village -> Goron Racetrack", "" },
+    { ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 2), "Path To Goron Village Winter 2", "Goron Racetrack -> Path To Goron Village", "" },
+    { ENTRANCE(ZORA_CAPE, 0), "Zora Cape 0", "Great Bay Coast -> Zora Cape", "" },
+    { ENTRANCE(GREAT_BAY_COAST, 1), "Great Bay Coast 1", "Zora Cape -> Great Bay Coast", "" },
+    { ENTRANCE(IKANA_CANYON, 0), "Ikana Canyon 0", "Road To Ikana Above Ledge -> Ikana Canyon Lower", "" },
+    { ENTRANCE(ROAD_TO_IKANA, 1), "Road To Ikana 1", "Ikana Canyon Lower -> Road To Ikana Above Ledge", "" },
+    { ENTRANCE(IKANA_GRAVEYARD, 0), "Ikana Graveyard 0", "Road To Ikana Below Ledge -> Ikana Graveyard Lower", "" },
+    { ENTRANCE(ROAD_TO_IKANA, 2), "Road To Ikana 2", "Ikana Graveyard Lower -> Road To Ikana Below Ledge", "" },
+    { ENTRANCE(STONE_TOWER, 0), "Stone Tower 0", "Ikana Canyon Upper -> Stone Tower Bottom", "" },
+    { ENTRANCE(IKANA_CANYON, 3), "Ikana Canyon 3", "Stone Tower Bottom -> Ikana Canyon Upper", "" },
+    { ENTRANCE(ASTRAL_OBSERVATORY, 0), "Astral Observatory 0", "Clock Town East -> Astral Observatory Passage", "" },
+    { ENTRANCE(EAST_CLOCK_TOWN, 2), "East Clock Town 2", "Astral Observatory Passage -> Clock Town East", "" },
+    { ENTRANCE(ASTRAL_OBSERVATORY, 1), "Astral Observatory 1", "Astral Observatory Outside -> Astral Observatory", "" },
+    { ENTRANCE(TERMINA_FIELD, 9), "Termina Field 9", "Astral Observatory -> Astral Observatory Outside", "" },
+    { ENTRANCE(PIRATES_FORTRESS_EXTERIOR, 0), "Pirates Fortress Exterior 0", "Great Bay Coast -> Pirates Fortress Moat Lower", "" },
+    { ENTRANCE(GREAT_BAY_COAST, 5), "Great Bay Coast 5", "Pirates Fortress Moat Lower -> Great Bay Coast", "" },
+    { ENTRANCE(ZORA_HALL, 0), "Zora Hall 0", "Zora Cape -> Zora Hall", "" },
+    { ENTRANCE(ZORA_CAPE, 1), "Zora Cape 1", "Zora Hall -> Zora Cape", "" },
+    { ENTRANCE(FAIRY_FOUNTAIN, 0), "Clock Town Great Fairy Fountain", "Clock Town North -> Clock Town Great Fairy Fountain", "Clock Town Great Fairy Fountain -> Clock Town North" },
+    { ENTRANCE(FAIRY_FOUNTAIN, 1), "Woodfall Great Fairy Fountain", "Woodfall -> Woodfall Great Fairy Fountain", "Woodfall Great Fairy Fountain -> Woodfall" },
+    { ENTRANCE(FAIRY_FOUNTAIN, 2), "Snowhead Great Fairy Fountain", "Snowhead Outside Fountain -> Snowhead Great Fairy Fountain", "Snowhead Great Fairy Fountain -> Snowhead Outside Fountain" },
+    { ENTRANCE(FAIRY_FOUNTAIN, 3), "Great Bay Great Fairy Fountain", "Zora Cape Outside Fairy Fountain -> Great Bay Great Fairy Fountain", "Great Bay Great Fairy Fountain -> Zora Cape Outside Fairy Fountain" },
+    { ENTRANCE(FAIRY_FOUNTAIN, 4), "Ikana Great Fairy Fountain", "Ikana Canyon Upper -> Ikana Great Fairy Fountain", "Ikana Great Fairy Fountain -> Ikana Canyon Upper" },
+    { ENTRANCE(GORON_SHOP, 0), "Goron Shop", "Goron Shrine -> Goron Shop", "Goron Shop -> Goron Shrine" },
+    { ENTRANCE(GORON_GRAVERYARD, 0), "Goron Graveyard", "Mountain Village -> Goron Graveyard", "Goron Graveyard -> Mountain Village" },
+    { ENTRANCE(DEKU_KINGS_CHAMBER, 0), "Deku Kings Chamber", "Deku Palace Inside Lower -> Deku Kings Chamber", "Deku Kings Chamber -> Deku Palace Inside Lower" },
+    { ENTRANCE(DEKU_KINGS_CHAMBER, 1), "Deku Kings Chamber Holding Cell", "Deku Palace Inside Upper Cell Side Ledge -> Deku Kings Chamber Holding Cell", "Deku Kings Chamber Holding Cell -> Deku Palace Inside Upper Cell Side Ledge" },
+    { ENTRANCE(SWAMP_SPIDER_HOUSE, 0), "Swamp Spider House", "Southern Swamp South -> Swamp Spider House Entrance", "Swamp Spider House Entrance -> Southern Swamp South" },
+    { ENTRANCE(OCEANSIDE_SPIDER_HOUSE, 0), "Oceanside Spider House", "Great Bay Coast -> Ocean Spider House Entrance Upper", "Ocean Spider House Entrance Upper -> Great Bay Coast" },
+    { ENTRANCE(BENEATH_THE_WELL, 0), "Beneath The Well", "Ikana Canyon Upper -> Beneath The Well Entrance", "Beneath The Well Entrance -> Ikana Canyon Upper" },
+    { ENTRANCE(IKANA_CASTLE, 1), "Ikana Castle", "Ikana Canyon Upper -> Ikana Castle Front Entrance", "Ikana Castle Front Entrance -> Ikana Canyon Upper" },
+    { ENTRANCE(SECRET_SHRINE, 0), "Secret Shrine", "Ikana Canyon Lower -> Secret Shrine Entrance", "Secret Shrine Entrance -> Ikana Canyon Lower" },
+    { ENTRANCE(DEKU_SHRINE, 0), "Deku Shrine", "Deku Palace Outside -> Deku Shrine Entrance", "Deku Shrine Entrance -> Deku Palace Outside" },
+    { ENTRANCE(STONE_TOWER_TEMPLE_INVERTED, 0), "Stone Tower Temple Inverted", "Stone Tower Inverted Near Temple -> Stone Tower Temple Inverted Entrance", "Stone Tower Temple Inverted Entrance -> Stone Tower Inverted Near Temple" },
+};
 // clang-format on
 
 // Read from the rules of each door's vanilla way (Logic/Regions), items and songs only; see EntranceShuffle.h.
@@ -517,6 +681,41 @@ static size_t DoorForInside(size_t inside) {
     return inside;
 }
 
+// ---- Entrance tracker: discoveries ----
+
+static constexpr size_t MAX_DISCOVERED = 8 * sizeof(RandoSaveInfo::entrancesDiscovered);
+
+static u8* Discovered() {
+    return gSaveContext.save.shipSaveInfo.rando.entrancesDiscovered;
+}
+
+bool IsDiscovered(size_t endpoint) {
+    return endpoint < MAX_DISCOVERED && (Discovered()[endpoint / 8] & (1 << (endpoint % 8))) != 0;
+}
+
+// Marks both sides of a pairing taken by the redirect deciding it, never by a respawn: 0 is a scene exit, -2 an exit
+// that recorded itself as void-out point (z_player.c:6510), 4 a grotto's way back to its hole (z_player.c:6497). Void
+// outs, deaths, songs and warps (1, -1, -3, -6, ...) reload a place already reached; loading a save never sets up a
+// transition (z_play.c:626 is the hook's only caller).
+// Rows of a mixed pool belong to the mixed pairing only: a door redirect that leaves them alone (e.g. during a
+// cutscene, when RedirectMixed declines) must not mark them as their own pair.
+static void Discover(size_t first, size_t second, bool mixed = false) {
+    s32 flag = gSaveContext.respawnFlag;
+    if ((flag != 0 && flag != -2 && flag != 4) || (!mixed && (IsMixedRow(first / 2) || IsMixedRow(second / 2)))) {
+        return;
+    }
+    for (size_t endpoint : { first, second }) {
+        if (endpoint < MAX_DISCOVERED) {
+            Discovered()[endpoint / 8] |= (u8)(1 << (endpoint % 8));
+        }
+    }
+}
+
+// A door pool's pairing: door A and the area X behind it (A's door side, X's inside side).
+static void DiscoverDoor(size_t door, size_t inside) {
+    Discover(2 * door, 2 * inside + 1);
+}
+
 void SetPairs(const std::vector<std::pair<int32_t, int32_t>>& pairs,
               const std::vector<std::pair<int32_t, int32_t>>& mixedPairs) {
     std::fill(SavedPairs(), SavedPairs() + MAX_ROWS, (u16)0);
@@ -661,6 +860,7 @@ static bool RedirectGrotto(PlayState* play) {
             return false;
         }
         size_t inside = InsideBehind(hole);
+        DiscoverDoor(hole, inside);
         if (inside == hole) {
             return true;
         }
@@ -694,6 +894,7 @@ static bool RedirectGrotto(PlayState* play) {
         return true;
     }
     size_t hole = DoorForInside(inside);
+    DiscoverDoor(hole, inside);
     if (hole == inside) {
         return true;
     }
@@ -727,6 +928,7 @@ static bool RedirectInterior(PlayState* play) {
         // scene, not the entrance), so the entrance alone names the door.
         if (scene != shuffleEntrances[row].insideScene && SameDoor(next, shuffleEntrances[row].into)) {
             size_t inside = InsideBehind(row);
+            DiscoverDoor(row, inside);
             if (inside != row) {
                 play->nextEntrance = shuffleEntrances[inside].into;
                 // A cutscene layer chosen for A's building (z_play.c:632) must not play in X.
@@ -736,6 +938,7 @@ static bool RedirectInterior(PlayState* play) {
             }
         } else if (scene == shuffleEntrances[row].insideScene && SameDoor(next, shuffleEntrances[row].outOf)) {
             size_t door = DoorForInside(row);
+            DiscoverDoor(door, row);
             if (door != row) {
                 play->nextEntrance = shuffleEntrances[door].outOf;
             }
@@ -755,6 +958,17 @@ static bool RedirectInterior(PlayState* play) {
 
 static bool IsOverworldRow(size_t row) {
     return shuffleEntrances[row].option == RO_SHUFFLE_OVERWORLD;
+}
+
+// The overworld row of the same transition taken the other way (its "into" is this row's "outOf"; the generator checks
+// that every overworld row has one).
+static size_t OverworldOpposite(size_t row) {
+    for (size_t other = 0; other < shuffleEntrances.size() && other < MAX_ROWS; other++) {
+        if (IsOverworldRow(other) && shuffleEntrances[other].into == shuffleEntrances[row].outOf) {
+            return other;
+        }
+    }
+    return NO_ROW;
 }
 
 // The place an entrance leads to, without its variant: the spring and cleared entrance groups have the spawns of the
@@ -825,6 +1039,9 @@ static bool RedirectOverworld(PlayState* play) {
             continue;
         }
         size_t target = InsideBehind(row);
+        // Coupled: the way back is the exit opposite the target's, which arrives opposite this exit.
+        size_t back = OverworldOpposite(target);
+        Discover(2 * row, 2 * (back == NO_ROW ? target : back));
         if (target == row) {
             return true;
         }
@@ -873,9 +1090,11 @@ static bool RedirectSpecialArea(PlayState* play) {
         if (scene == entry.outsideScene && place == entry.into) {
             other = InsideBehind(row);
             target = shuffleEntrances[other].into;
+            DiscoverDoor(row, other);
         } else if (scene == entry.insideScene && place == entry.outOf) {
             other = DoorForInside(row);
             target = shuffleEntrances[other].outOf;
+            DiscoverDoor(other, row);
         } else {
             continue;
         }
@@ -923,6 +1142,9 @@ static bool RedirectMixed(PlayState* play) {
             return false;
         }
         size_t partner = MixedPartner(endpoint);
+        if (partner != endpoint) {
+            Discover(endpoint, partner, true);
+        }
         if (partner == endpoint || EndpointArrival(partner) == place) {
             return true;
         }
@@ -960,16 +1182,22 @@ void OnBeforeTransitionSetup() {
             continue;
         }
         size_t inside = InsideBehind(door);
+        const ShuffleEntrance& insideRow = shuffleEntrances[inside];
+        bool through = scene == doorRow.outsideScene && next == doorRow.into;
+        // A boss room's way out is its blue warp (below), which marks nothing.
+        bool back = doorRow.templeExit == 0 && scene == insideRow.insideScene && next == insideRow.outOf;
+        if (through || back) {
+            DiscoverDoor(door, inside);
+        }
         if (inside == door) {
             continue;
         }
-        const ShuffleEntrance& insideRow = shuffleEntrances[inside];
 
-        if (scene == doorRow.outsideScene && next == doorRow.into) {
+        if (through) {
             play->nextEntrance = insideRow.into;
             return;
         }
-        if (doorRow.templeExit == 0 && scene == insideRow.insideScene && next == insideRow.outOf) {
+        if (back) {
             play->nextEntrance = doorRow.outOf;
             return;
         }
@@ -1035,6 +1263,98 @@ void OnBeforeTransitionSetup() {
             }
         }
     }
+}
+
+// ---- Entrance tracker: lines ----
+
+// A row of an active, unmixed pool that some other row may take the place of (rows kept at their own door, like
+// INTERIOR_OWN_HOURS, entranceMixFixed or the inverted temple outside the mixed pool, never move).
+static bool Movable(size_t row) {
+    if (RANDO_SAVE_OPTIONS[shuffleEntrances[row].option] == RO_GENERIC_OFF || IsMixedRow(row)) {
+        return false;
+    }
+    for (size_t other = 0; other < shuffleEntrances.size() && other < MAX_ROWS; other++) {
+        if (other != row && CanPair(row, other)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static s16 SideScene(size_t endpoint) {
+    const ShuffleEntrance& row = shuffleEntrances[endpoint / 2];
+    return endpoint % 2 == 0 ? row.outsideScene : row.insideScene;
+}
+
+std::vector<TrackedEntrance> TrackedEntrances() {
+    std::vector<TrackedEntrance> lines;
+    size_t rows = std::min(shuffleEntrances.size(), MAX_ROWS);
+    for (size_t row = 0; row < rows; row++) {
+        if (!Movable(row)) {
+            continue;
+        }
+        if (IsOverworldRow(row)) {
+            lines.push_back(
+                { 2 * row, 2 * InsideBehind(row), shuffleEntrances[row].option, false, false, SideScene(2 * row) });
+        } else {
+            lines.push_back(
+                { 2 * row, 2 * InsideBehind(row) + 1, shuffleEntrances[row].option, false, true, SideScene(2 * row) });
+        }
+    }
+    for (size_t endpoint = 0; endpoint < 2 * rows; endpoint++) {
+        if (!IsMixedEndpoint(endpoint)) {
+            continue;
+        }
+        size_t partner = MixedPartner(endpoint);
+        if (partner != endpoint) {
+            lines.push_back(
+                { endpoint, partner, shuffleEntrances[endpoint / 2].option, true, false, SideScene(endpoint) });
+        }
+    }
+    return lines;
+}
+
+static const EntranceName* NamesOf(size_t row) {
+    for (const EntranceName& names : entranceNames) {
+        if (names.into == shuffleEntrances[row].into) {
+            return &names;
+        }
+    }
+    return nullptr;
+}
+
+static std::string ExitName(size_t endpoint) {
+    const EntranceName* names = NamesOf(endpoint / 2);
+    return names == nullptr ? "?" : (endpoint % 2 == 0 ? names->doorExit : names->insideExit);
+}
+
+static std::string RowName(size_t row) {
+    const EntranceName* names = NamesOf(row);
+    return names == nullptr ? "?" : names->name;
+}
+
+// The spoiler log's entrance column: a door pool's door, "Region -> Place" for an overworld exit (__init__.py
+// connect_entrances), the Archipelago exit for a mixed endpoint.
+std::string FromName(const TrackedEntrance& line) {
+    if (line.mixed) {
+        return ExitName(line.from);
+    }
+    if (line.twoWay) {
+        return RowName(line.from / 2);
+    }
+    std::string exit = ExitName(line.from);
+    return exit.substr(0, exit.find(" -> ")) + " -> " + RowName(line.from / 2);
+}
+
+std::string ToName(const TrackedEntrance& line) {
+    return line.mixed ? ExitName(line.to) : RowName(line.to / 2);
+}
+
+size_t CurrentGrottoRow() {
+    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_GROTTOS] == RO_GENERIC_OFF) {
+        return NO_ROW;
+    }
+    return GrottoRowFor(gSaveContext.save.entrance, gSaveContext.respawn[RESPAWN_MODE_UNK_3].data);
 }
 
 } // namespace EntranceShuffle

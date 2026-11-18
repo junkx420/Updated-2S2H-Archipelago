@@ -63,6 +63,7 @@ inline void to_json(json& j, const RandoSaveInfo& rando) {
         { "apItemsReceived", rando.apItemsReceived },
         { "entrancePairs", rando.entrancePairs },
         { "mixedEntrancePairs", rando.mixedEntrancePairs },
+        { "entrancesDiscovered", rando.entrancesDiscovered },
     };
 }
 
@@ -90,6 +91,8 @@ inline void from_json(const json& j, RandoSaveInfo& rando) {
     // Added with the entrance shuffle (apworld 0.3); older saves have every door unshuffled
     GetGrownArray(j.value("entrancePairs", json::array()), rando.entrancePairs);
     GetGrownArray(j.value("mixedEntrancePairs", json::array()), rando.mixedEntrancePairs);
+    // Added with the entrance tracker (apworld 0.11.1); older saves load without discoveries
+    GetGrownArray(j.value("entrancesDiscovered", json::array()), rando.entrancesDiscovered);
 }
 
 inline void to_json(json& j, const Vec3f& vec) {

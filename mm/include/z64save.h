@@ -395,6 +395,9 @@ typedef struct RandoSaveInfo {
     // door; 0 = the door's own inside (unshuffled). u8[32] before apworld 0.6, now sized for every exit of the logic
     u16 entrancePairs[512];
     u16 mixedEntrancePairs[1024]; // two endpoints per entrance row; partner + 1, or zero
+    // Entrance tracker (apworld 0.11.1): bit per endpoint (2 * row = door side, 2 * row + 1 = inside side), set when
+    // Link goes through either side of its pairing
+    u8 entrancesDiscovered[128];
 } RandoSaveInfo;
 
 // These are values added by 2S2H that we need to be persisted to the save file
