@@ -40,6 +40,9 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   parent's soul: Romani's balloon) and `npcSoulDynaActors` (DynaPoly collision is switched off while hidden: OBJ_UM).
   The new souls are a second block of `RI_SOUL_NPC_*` and `RANDO_INF_OBTAINED_SOUL_OF_NPC_*` (`Souls.h`). Souls
   without checks or events are `useful` and the first to move to the start inventory when the pool is too full.
+  How a soul looks is client-only: `Rando/DrawNpcSouls.cpp` draws the NPC's model in a blue light (stage 8c); a new
+  soul needs a row there too, otherwise it shows only the blue flame. Door keys show Anju's room key, riding Epona
+  Gorman's horse (`DrawItem.cpp`).
 - **Dungeon entrance shuffle** (`shuffle_dungeon_entrances`, apworld 0.3): the doors of the four temples lead into a
   random one of them, coupled (the temple's exit and its boss's blue warp lead back out of the door used). The table
   `shuffleEntrances` in `Rando/MiscBehavior/EntranceShuffle.cpp` has one row per door (option, way in, way out,

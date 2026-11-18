@@ -1185,3 +1185,48 @@ and `all` (2, 35 more souls, 65 in all). Plan, inventory and the code evidence f
   to Snowhead, the Bombers' hideout guard.
 - Value 1: exactly the old 30 NPCs are hidden, nothing else; hidden NPCs no longer cast a shadow.
 - Boss souls: a boss without its soul casts no shadow.
+
+### Stage 8c – models for the own items (client only, apworld unchanged)
+
+No ids, options or logic changed, so no version changed. Plan with the code evidence per NPC:
+`docs/plan-stufe8c-modelle.md` in the project folder (not in git).
+
+- **NPC souls** (`Rando/DrawNpcSouls.cpp`): each soul draws its NPC's skeleton with an animation of that actor, shrunk,
+  in the blue light of before. The table names per soul skeleton, animation, the segments the actor's draw function
+  sets (textures stay textures, `Gfx_EnvColor` stays a color display list, end-only lists stay `D_801AEFA0`) and the
+  limbs its override always hides or replaces. Group souls show one member (Romani, Lulu, the marine researcher,
+  Shikashi, the Trading Post part-timer, the purple pirate, the cursed Spider House man, …). Playground and business
+  scrubs share a model, and so do Gorons and the Goron shopkeeper. Goron racers are a rolled-up Goron, Kafei is the
+  get-item model of Kafei's Mask (his own model is the player skeleton), the lottery is its kiosk.
+- **Safety:** before `SkelAnime_Init`, skeleton and animation are loaded by name and checked (resource present, at most
+  64 limbs, frame count > 0). If that fails the model stays off and only the blue flame is drawn. Each soul has one
+  state, created on first use and reused (no allocation, like the enemy souls' `SETUP_DRAW`); the animation advances
+  once per frame however many copies are on screen.
+- **Size:** every model is scaled to the height the pirate enemy soul shows and moved down by 45 % of its height, from
+  the actor scale and a rough world height per NPC. These are estimates.
+- **Door keys:** Anju's room key (`GID_ROOM_KEY`) instead of the small key. **Riding Epona:** Gorman's horse
+  (`gHorseBanditSkel`, idle animation), the land title deed if it cannot be drawn. **Planting beans:** the magic bean,
+  as before.
+- **Quick look:** Save Editor → "Queue Randomizer Item Gives" (`DeveloperTools/SaveEditor.cpp`), filter "Soul of": each
+  button plays the get-item animation with the model above Link's head. It really gives the item, so use a test save.
+
+#### Verification
+
+- Windows x64 Release client built locally (client commit `6083c5e94`), no errors, no warnings in
+  `DrawNpcSouls.cpp`. Every skeleton, animation, texture and display list name of the table resolved at compile
+  time against the asset headers of 5.0.1.
+- clang-format clean for `DrawNpcSouls.cpp`, `DrawNpcSouls.h` and `DrawItem.cpp`.
+- `pytest test/general worlds/mm_2s2h/test -q`: 832 passed, 0 failed (apworld unchanged).
+- Nothing of this was run in the game: size, position, eyes and the fallback are unchecked.
+
+#### In-game checklist — not tested in game
+
+Every model below is not tested in game.
+- Each of the 65 souls once via "Queue Randomizer Item Gives" with a test save: the NPC (or kiosk, mask, rolled-up
+  Goron) appears above Link's head in a blue light, with eyes (no garbage textures), without missing head, and about
+  the size of an enemy soul. Note every soul that shows only the flame, crashes or looks wrong.
+- A shop with a soul (also several souls side by side): nothing reaches through the shelf or into the next item,
+  no stutter.
+- A soul as an item on the ground (e.g. a freestanding check): it stands above the floor, not in it, nothing reaches
+  through a wall.
+- A door key and the riding ability: room key and horse, on the ground and in the get-item animation.
