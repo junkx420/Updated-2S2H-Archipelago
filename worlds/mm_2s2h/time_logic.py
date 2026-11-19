@@ -103,3 +103,15 @@ class TimeContext:
 
     def clock(self, i: int) -> bool:  # CLOCK_DAY1() .. CLOCK_NIGHT3()
         return self.owns_mode[i]
+
+    def extra_check_available(self, half_days: int, layout: str, *,
+                              snowhead_cleared: bool, great_bay_cleared: bool) -> bool:
+        """Whether a placement exists in an available half-day of the specified scene layout."""
+        if layout == "SNOWHEAD_SPRING" and not snowhead_cleared:
+            return False
+        if layout == "GREAT_BAY_BASE" and great_bay_cleared:
+            return False
+        return half_days == 0x3F or any(
+            half_days & (1 << i) and owns and self.mask & half_day_mask(i)
+            for i, owns in enumerate(self.owns_mode)
+        )

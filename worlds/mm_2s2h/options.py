@@ -126,6 +126,7 @@ ShufflePots = _shuffle("ShufflePots", "RO_SHUFFLE_POT_DROPS", "Pot Drops", "Brea
 ShuffleCrates = _shuffle("ShuffleCrates", "RO_SHUFFLE_CRATE_DROPS", "Crate Drops", "Breaking each crate is a check.")
 ShuffleBarrels = _shuffle("ShuffleBarrels", "RO_SHUFFLE_BARREL_DROPS", "Barrel Drops", "Breaking each barrel is a check.")
 ShuffleSnowballs = _shuffle("ShuffleSnowballs", "RO_SHUFFLE_SNOWBALL_DROPS", "Snowball Drops", "Breaking each large snowball is a check.")
+ShuffleRocks = _shuffle("ShuffleRocks", "RO_SHUFFLE_ROCKS", "Shuffle Rocks", "Lifting or breaking each rock in the shuffle is a check.")
 ShuffleGrass = _shuffle("ShuffleGrass", "RO_SHUFFLE_GRASS_DROPS", "Grass Drops", "Cutting each clump of grass is a check.")
 ShuffleTrees = _shuffle("ShuffleTrees", "RO_SHUFFLE_TREE_DROPS", "Tree Drops", "Bonking each shaking tree is a check.")
 ShuffleHives = _shuffle("ShuffleHives", "RO_SHUFFLE_HIVE_DROPS", "Beehive Drops", "Knocking down each beehive is a check.")
@@ -341,6 +342,7 @@ class MM2S2HOptions(PerGameCommonOptions):
     shuffle_crates: ShuffleCrates
     shuffle_barrels: ShuffleBarrels
     shuffle_snowballs: ShuffleSnowballs
+    shuffle_rocks: ShuffleRocks
     shuffle_grass: ShuffleGrass
     shuffle_trees: ShuffleTrees
     shuffle_hives: ShuffleHives

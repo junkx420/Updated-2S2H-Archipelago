@@ -1275,3 +1275,98 @@ and in a non-randomized save. Use nearby unshuffled or collected objects and sha
 
 For CSMC colors, compare examples of major, minor, health, boss key, mask, token, small key, stray fairy and filler
 with the corresponding pots. Check pots, crates, barrels, grass and the original Wonder Item sparkles as well.
+
+### Stage 9 – Shuffle Rocks (apworld 0.13.0)
+
+`shuffle_rocks` defaults to off. The 122 named locations in `Rocks` comprise 56 small rocks, 20 blast boulders,
+seven bronze boulders, 24 stones from three rock rings and 15 rolling boulders. The inventory covered 299 rooms and
+414 headers of the NTSC-U 1.0 ROM. All 392 nonempty actor lists matched the extracted archive. The client uses the
+same scene, room and actor-list-index identification as 2S2H's pots and grass, with layer aliases and ring child
+indices where needed. There is no ROM-version distinction, as with pots and grass. GameCube data had no separate audit.
+
+| Placements left out | Reason |
+|---|---|
+| 9 silver boulders, Great Bay Coast | Lifting requires Goron form. They sit 175–442 units underwater, below wading depth. `z_en_ishi.c` offers the lift and `z_player.c` restricts the form and water state. |
+| 30 small rocks at Great Bay Coast and 2 at Pinnacle Rock | The water boxes and floor geometry put the rocks in deep water. A repeatable route to break each rock and collect its drop is unverified. The shallow coastal rocks are included. |
+| Powder Keg barriers at Milk Road and the Goron Racetrack (winter/spring) | `Obj_Hugebombiwa` opens the ranch or racetrack and participates in the Powder Keg test and its cutscene. |
+| 2 submerged boulders below Deku Palace lily pads | Both sit under the lily pads with shared switch parameters. The lily-pad route and collection underwater need game testing. |
+| 1 boulder in the Swamp Spider House monument room | It shares its position with the bean and reward actors. The puzzle uses the original actors and switches. |
+| 12 cliff rocks in Termina Field and 5 in Ikana Graveyard | The levitation flag selects the special collectible path and cutscene state in `En_Ishi`. Some of the fixed Termina Field drops are already Wonder Item checks. |
+| 1 Termina Field boulder exclusive to cutscene layer 2 | It has no regular gameplay placement. |
+| 12 rolling snowballs, 1 indestructible rock in Deku Shrine, boss debris, tombstones and temple scenery | These use snowball, hazard, puzzle or cutscene behavior. Only the breakable rolling-rock model of `En_Goroiwa` is included. |
+
+Normal boulders covering grotto entrances or the Zora Cape fairy fountain and the boulders near the Lone Peak Shrine
+chest can be checks. The original switches, collision, animations, exits and chests still run.
+
+#### Access rules and placement windows
+
+- `Rando/Logic/ExtraChecks.inc` is the shared table for names, checks, regions, access conditions, half-days and
+  layouts. The generator validates the rows and appends them to `REGIONS`, retaining the original region files and
+  `Logic.h`. The same table can take future check types. AP's regular check-type filter omits rocks when disabled.
+- `z_actor.c` decodes the half-day bits from the room ActorList. The ordinary placements cover all six playable
+  half-days (`0x3F` in table order D1/N1/D2/N2/D3/N3). The two rolling Road to Ikana rocks have raw mask `0x2AA`,
+  which becomes `0x15` (D1/D2/D3). The generated rule passes the table mask via `ExtraCheckAvailable` to
+  `time_logic.py`. Its filter intersects the placement window with the available time slices and clock mode.
+- `z_play.c` selects spring scenes after clearing Snowhead. The 13 spring-only rows require
+  `RE_CLEARED_SNOWHEAD_TEMPLE`. Five Zora Cape rocks have a base-layout placement only. The placement test
+  excludes them in the cleared layout. AP reachability includes opportunities across cycles, so those five
+  checks remain available in a fresh cycle after beating Gyorg. Aliases for the same physical stone share an ID.
+- Land lifts use `CAN_BE_HUMAN || CAN_BE_GORON || CAN_BE_ZORA`. AP creates the file as Human Link, and the
+  rooms entered in another form have solid ground to change form at the stone. The coast's deeper wading
+  placement needs Goron or Zora form. The two high spring Mountain Village rocks use the Lens and magic,
+  as does the waterfall chest. Bronze and rolling rocks use `CAN_BE_GORON`. Blast boulders use the explosive
+  macro, with the Powder Keg as a Goron for the explosive-only type. The other blast type also accepts a
+  Goron punch or pound.
+
+#### Drop and save behavior
+
+`Rocks.cpp` binds the check to the actor before it can change rooms while held. The lift or confirmed break
+sets a pending bit and drops a `CustomItem` at ground level. A rolling boulder struck over a ledge can use Link's
+position if the ground at the impact is too far below. The small rock's first throw suppresses its random drop
+when the lift used the check. Picking up the check queues the same `eligible` flag as a pot. A pending drop can
+be restored at the original placement when the room is reloaded, including boulders hidden by a switch. Retry
+checks the live item list and the eligibility and obtained flags before spawning. A ring uses the spawner's
+placement and child slot, and a rolling boulder uses its placed actor index. Newly created instances repeat the
+same lookup and an obtained check never binds or spawns again. Older saves load the expanded check array and
+default to no pending rock drops. The existing `ObjectMarker::AttachTint` colors open checks.
+
+#### Verification
+
+- Cross-checked all 149 client placement rows with the extracted ActorLists and all 122 generated windows with
+  the placements. There are 102 unrestricted checks, 13 spring-only, five base-layout-only and two daytime-only.
+  The generator reports 2,763 locations and zero untranslated rules.
+- A C++ harness using the drop code with mocked actor spawning passed 122 lifecycles, including all 24 ring
+  children and 15 rolling boulders. It exercised a failed spawn and retry, duplicate suppression while a drop
+  is live, recovery after leaving, collection, and a new actor after collection. The save codec preserved 2,642
+  pre-existing check records and defaulted all 122 appended records. The pending field also round-tripped.
+- The Windows x64 Release build completed. The first sandboxed attempt stalled at MSBuild startup. CMake reported
+  `curl: (6) Could not resolve host: raw.githubusercontent.com`; the build used the pinned, SHA-256-checked
+  `stb_image.h` from an existing cache and ran MSBuild outside the sandbox.
+- The rebuilt parity harness matched **1,200/1,200** cases with the fork options off. clang-format passed for
+  21 complete files and the changed line in the save header.
+- `pytest test/general worlds/mm_2s2h/test -q --disable-warnings` passed **861 tests and 159,978 subtests**.
+  The existing seed fingerprints matched **78/78**. The rocks tests cover off, reachability, No Logic, Universal
+  Tracker and the combination of all fork options. The availability test checks all 122 rocks against six
+  half-days and both Snowhead and Great Bay layouts, for 2,928 combinations.
+- `random_seeds.py` generated **100/100** with rocks as the only forced-on fork option, and **100/100** with rocks
+  and all fork options enabled, including all NPC souls and random mixes of entrance pools.
+- The first pytest run reported 78 Golden fingerprint mismatches (first: `fe9b6df368153389 != 8793db5584e70b89`)
+  and five `OptionError: mix_entrance_pools needs at least two pools` failures in the new test. The seed driver now
+  has an independent roll for rocks, the old fingerprints skip the added off-valued slot option, and the test
+  passes the list of active pools.
+
+#### In-game checklist — not tested in game
+
+- Lift a small rock, then throw it. Confirm one check drop at the original position, one award on pickup and
+  ordinary behavior when the rock respawns. Check a stone that spawns bugs, and a Goron or explosive hit on a
+  small stone. Try picking up a small rock as Deku, then change to a form that can lift it.
+- Leave the item on the ground, exit the room, and reenter. Collect the recreated item, then reload the scene and
+  reset the cycle. Confirm it pays only once. Repeat for a switch boulder and a drop left uncollected across a save load.
+- Break two neighboring ring children, leave their spawn radius, and return. Confirm each child gets only its
+  own check. Repeat in the other graveyard header. Break and revisit a rolling boulder with a drop near a ledge.
+- Check the Road to Ikana rollers during day and night, the mountain placements before and after Snowhead,
+  and the five base-layout rocks at Zora Cape before Gyorg, after Gyorg and in the next cycle.
+- With CSMC on and off, confirm an open check is marked and the marker disappears after pickup, including on
+  a held rock or a respawned child. Check with the option off and in a vanilla save.
+- Break both types of blast boulders and a bronze boulder with the supported hit types. Confirm that the
+  grottos, Lone Peak Shrine chest, fairy fountain, ranch, racetrack and the spider-house bean puzzle still work.

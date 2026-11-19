@@ -5,7 +5,7 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 ## Downloads
 
 The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages NPC souls,
-temple entrances and boss entrances with a matching client. The current source is **apworld 0.12.0**.
+temple entrances and boss entrances with a matching client. The current source is **apworld 0.13.0**.
 The new mechanics are **not tested in game**. Platform builds and preview publication run on GitHub Actions.
 See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago#choose-your-download),
 [changelog](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/main/CHANGELOG.md) and
@@ -28,6 +28,12 @@ Use the client and apworld from the same release; the release manifest records t
 ## Additions that are not in 2S2H
 
 The generator has to run on the **client fork** (branch `client`), not on upstream 2S2H, because these live there:
+
+- **Shuffle Rocks** (`shuffle_rocks`, apworld 0.13.0, default off) adds 122 checks to the `Rocks` location group.
+  Lift a small rock or break a boulder to find its item at the rock's position. Open checks use the object marker.
+  The client binds each rock by scene, room and actor-list index, with aliases for alternate room headers and one
+  check for each stone in a ring. `Rando/Logic/ExtraChecks.inc` supplies the name, region, access rule and availability
+  for the client and apworld. See [the exclusions and in-game checklist](docs/testing.md#stage-9--shuffle-rocks-apworld-0130).
 
 - **NPC souls** (`shuffle_npc_souls`, apworld 0.2): 30 items `RI_SOUL_NPC_*`, appended to the enums so no existing
   id moves. The table `npcSouls` in `Rando/ActorBehavior/Souls.cpp` names, per soul, the actors it brings to life and

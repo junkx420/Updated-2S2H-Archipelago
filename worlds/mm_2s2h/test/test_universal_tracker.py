@@ -40,3 +40,7 @@ class UTRegenTest(MM2S2HTestBase):
 class UTRegenNpcSoulsAll(UTRegenTest):
     """The same with all NPC souls (apworld 0.12)."""
     options = {"shuffle_npc_souls": "all", "shuffle_shops": True, "shuffle_frogs": True}
+
+
+class UTRegenRocks(UTRegenTest):
+    options = {"shuffle_rocks": True, "clock_shuffle": True}

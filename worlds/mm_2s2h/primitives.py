@@ -335,6 +335,16 @@ def IS_DAY3(s): return s.time.is_day3()
 def IS_NIGHT3(s): return s.time.is_night3()
 def IS_DAY(s): return s.time.is_day()
 def IS_NIGHT(s): return s.time.is_night()
+
+
+def ExtraCheckAvailable(s, half_days, layout):
+    # AP reachability includes fresh cycles. A cleared Great Bay layout never removes the base layout
+    # from the set of layouts Link can visit. Snowhead's spring layout requires being able to clear it.
+    return s.time.extra_check_available(half_days, layout,
+                                        snowhead_cleared=bool(s.ev("RE_CLEARED_SNOWHEAD_TEMPLE")),
+                                        great_bay_cleared=False)
+
+
 def FIRST_DAY(s): return s.time.first_day()
 def SECOND_DAY(s): return s.time.second_day()
 def FINAL_DAY(s): return s.time.final_day()
