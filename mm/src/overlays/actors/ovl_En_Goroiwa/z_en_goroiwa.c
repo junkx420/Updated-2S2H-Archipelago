@@ -10,6 +10,7 @@
 #include "objects/gameplay_keep/gameplay_keep.h"
 
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_MINIMAP_ICON_ENABLED)
 
@@ -1101,6 +1102,10 @@ s32 func_8094156C(EnGoroiwa* this, PlayState* play) {
             func_80941060(this, play);
             this->unk_1E7 = 10;
         }
+    }
+
+    if (phi_s0_2 && params == ENGOROIWA_C000_1) {
+        GameInteractor_Should(VB_ROCK_INTERACT, true, &this->actor);
     }
 
     if (params == ENGOROIWA_C000_2) {

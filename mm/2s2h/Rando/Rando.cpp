@@ -5,12 +5,16 @@
 #include "Rando/MiscBehavior/ClockShuffle.h"
 #include "Rando/Spoiler/Spoiler.h"
 #include "Rando/CheckTracker/CheckTracker.h"
+#include "Rando/Logic/ExtraChecks.h"
 #include "2s2h/ShipInit.hpp"
 #include <ship/window/FileDropMgr.h>
 #include <ship/Context.h>
 
 // When a save is loaded, we want to unregister all hooks and re-register them if it's a rando save
 void OnSaveLoadHandler(s16 fileNum) {
+    if (IS_RANDO) {
+        Rando::Logic::RegisterExtraChecks();
+    }
     Rando::MiscBehavior::OnFileLoad();
     Rando::ActorBehavior::OnFileLoad();
     Rando::CheckTracker::OnFileLoad();
@@ -25,6 +29,7 @@ void Rando::Init() {
     Rando::Spoiler::RefreshOptions();
     Rando::MiscBehavior::Init();
     Rando::ActorBehavior::Init();
+    Rando::Logic::RegisterExtraChecks();
     Rando::CheckTracker::Init();
     Ship::Context::GetRawInstance()->GetFileDropMgr()->RegisterDropHandler(Rando::Spoiler::HandleFileDropped);
 

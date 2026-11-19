@@ -13,6 +13,7 @@
 #include "overlays/actors/ovl_En_Insect/z_en_insect.h"
 
 #include "2s2h/ShipUtils.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_THROW_ONLY)
 
@@ -320,7 +321,8 @@ void EnIshi_SpawnDustBoulder(Actor* thisx, PlayState* play) {
 
 void EnIshi_DropItem(EnIshi* this, PlayState* play) {
     if ((ENISHI_GET_SIZE_FLAG(&this->actor) == ISHI_SIZE_SMALL_ROCK) &&
-        !ENISHI_GET_IGNORE_DROP_TABLE_FLAG(&this->actor)) {
+        !ENISHI_GET_IGNORE_DROP_TABLE_FLAG(&this->actor) &&
+        GameInteractor_Should(VB_ROCK_DROP_VANILLA, true, &this->actor)) {
         Item_DropCollectibleRandom(play, NULL, &this->actor.world.pos, ENISHI_GET_DROP_TABLE(&this->actor) * 0x10);
     }
 }
@@ -503,6 +505,7 @@ void EnIshi_Idle(EnIshi* this, PlayState* play) {
     }
 
     if (Actor_HasParent(&this->actor, play)) { // has been picked up by player
+        GameInteractor_Should(VB_ROCK_INTERACT, true, &this->actor);
         EnIshi_SetupHeldByPlayer(this);
         SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 20, sIshiPullRockSfx[rockSize]);
         if (ENISHI_GET_SPAWN_BUGS_FLAG(&this->actor)) {
@@ -519,6 +522,7 @@ void EnIshi_Idle(EnIshi* this, PlayState* play) {
             EnIshi_SetupCutsceneExplode(this);
             return;
         }
+        GameInteractor_Should(VB_ROCK_INTERACT, true, &this->actor);
         EnIshi_DropItem(this, play);
         SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, sCutsceneSfxDuration[rockSize],
                                            sCutsceneSfxId[rockSize]);

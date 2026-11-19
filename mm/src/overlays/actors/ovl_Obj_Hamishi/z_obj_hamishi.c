@@ -8,6 +8,7 @@
 #include "objects/gameplay_field_keep/gameplay_field_keep.h"
 
 #include "2s2h/ShipUtils.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_UPDATE_CULLING_DISABLED)
 
@@ -230,6 +231,7 @@ void ObjHamishi_Update(Actor* thisx, PlayState* play) {
                 this->unk_190 = 2.0f;
                 this->unk_194 = 400.0f;
             } else {
+                GameInteractor_Should(VB_ROCK_INTERACT, true, &this->actor);
                 func_809A10F4(this, play);
                 SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 40, NA_SE_EV_WALL_BROKEN);
                 Flags_SetSwitch(play, OBJHAMISHI_GET_SWITCH_FLAG(&this->actor));

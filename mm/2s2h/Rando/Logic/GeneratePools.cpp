@@ -1,4 +1,5 @@
 #include "Logic.h"
+#include "ExtraChecks.h"
 #include "Rando/MiscBehavior/ClockShuffle.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 
@@ -12,6 +13,7 @@ namespace Rando {
 namespace Logic {
 
 void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool, std::vector<RandoItemId>& itemPool) {
+    RegisterExtraChecks();
     std::vector<RandoItemId> startingItems = Rando::GetStartingItemsFromSave(saveInfo);
     std::vector<RandoItemId> computedStartingItems = Rando::GetComputedStartingItems(saveInfo);
     startingItems.insert(startingItems.end(), computedStartingItems.begin(), computedStartingItems.end());
@@ -118,6 +120,11 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
 
             if (randoStaticCheck.randoCheckType == RCTYPE_SNOWBALL &&
                 saveInfo.randoSaveOptions[RO_SHUFFLE_SNOWBALL_DROPS] == RO_GENERIC_NO) {
+                continue;
+            }
+
+            if (randoStaticCheck.randoCheckType == RCTYPE_ROCK &&
+                saveInfo.randoSaveOptions[RO_SHUFFLE_ROCKS] == RO_GENERIC_NO) {
                 continue;
             }
 

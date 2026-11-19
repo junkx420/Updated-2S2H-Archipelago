@@ -2568,6 +2568,11 @@ typedef enum {
     // true
     // ```
     VB_PLANT_MAGIC_BEAN,
+
+    // An eligible rock has been lifted or broken. Args: Actor*.
+    VB_ROCK_INTERACT,
+    // Whether to spawn the small rock's normal random drop. Args: Actor*.
+    VB_ROCK_DROP_VANILLA,
 } GIVanillaBehavior;
 
 #endif

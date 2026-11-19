@@ -8,6 +8,7 @@
 #include "objects/object_bombiwa/object_bombiwa.h"
 
 #include "2s2h/ShipUtils.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS 0x00000000
 
@@ -342,6 +343,7 @@ void func_80939EF4(ObjBombiwa* this, PlayState* play) {
     }
 
     if (sp28->unk_0C(&this->actor)) {
+        GameInteractor_Should(VB_ROCK_INTERACT, true, &this->actor);
         Flags_SetSwitch(play, OBJBOMBIWA_GET_SWITCH_FLAG(&this->actor));
         SoundSource_PlaySfxAtFixedWorldPos(play, &this->actor.world.pos, 80, NA_SE_EV_WALL_BROKEN);
         if (OBJBOMBIWA_GET_8000(&this->actor)) {

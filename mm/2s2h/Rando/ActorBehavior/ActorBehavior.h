@@ -100,6 +100,7 @@ void InitObjKibakoBehavior();
 void InitObjGrassBehavior();
 void InitObjMoonStoneBehavior();
 void InitObjSnowballBehavior();
+void InitRockBehavior();
 void InitObjTaruBehavior();
 void InitObjTreeBehavior();
 void InitObjTsuboBehavior();

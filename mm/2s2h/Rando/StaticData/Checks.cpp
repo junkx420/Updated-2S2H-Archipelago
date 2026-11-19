@@ -2683,6 +2683,9 @@ std::map<RandoCheckId, RandoStaticCheck> Checks = {
     RC(RC_TERMINA_FIELD_GOSSIP_STONE_GROTTO_3_BEEHIVE,                   RCTYPE_BEEHIVE,          SCENE_KAKUSIANA,                FLAG_NONE,                   0x0,                                                                 RI_NONE),
     RC(RC_WOODFALL_TEMPLE_ENTRANCE_BEEHIVE,                              RCTYPE_BEEHIVE,          SCENE_MITURIN,                  FLAG_CYCL_SCENE_COLLECTIBLE, 0x20,                                                                RI_RUPEE_BLUE),
     RC(RC_WOODFALL_TEMPLE_MAZE_ROOM_BEEHIVE,                             RCTYPE_BEEHIVE,          SCENE_MITURIN,                  FLAG_NONE,                   0x0,                                                                 RI_NONE),
+#define EXTRA_CHECK(id, type, scene, name, region, mask, layout, condition) RC(id, type, scene, FLAG_NONE, 0, RI_NONE),
+#include "2s2h/Rando/Logic/ExtraChecks.inc"
+#undef EXTRA_CHECK
 };
 // clang-format on
 
@@ -2722,6 +2725,9 @@ void PopulateCheckNames() {
     for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
         CheckNames[randoCheckId] = convertEnumToReadableName(randoStaticCheck.name);
     }
+#define EXTRA_CHECK(id, type, scene, name, region, mask, layout, condition) CheckNames[id] = name;
+#include "2s2h/Rando/Logic/ExtraChecks.inc"
+#undef EXTRA_CHECK
 }
 
 static std::set<SceneId> scenesToCheckParent = {

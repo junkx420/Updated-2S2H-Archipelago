@@ -36,6 +36,9 @@ inline void to_json(json& j, const RandoSaveCheck& randoSaveCheck) {
         { "skipped", randoSaveCheck.skipped },
         { "price", randoSaveCheck.price },
     };
+    if (randoSaveCheck.rockDropPending) {
+        j["rockDropPending"] = true;
+    }
 }
 
 inline void from_json(const json& j, RandoSaveCheck& randoSaveCheck) {
@@ -46,6 +49,7 @@ inline void from_json(const json& j, RandoSaveCheck& randoSaveCheck) {
     j.at("shuffled").get_to(randoSaveCheck.shuffled);
     j.at("skipped").get_to(randoSaveCheck.skipped);
     j.at("price").get_to(randoSaveCheck.price);
+    randoSaveCheck.rockDropPending = j.value("rockDropPending", false);
 }
 
 inline void to_json(json& j, const RandoSaveInfo& rando) {
@@ -78,7 +82,7 @@ template <typename T, size_t N> inline void GetGrownArray(const json& j, T (&arr
 inline void from_json(const json& j, RandoSaveInfo& rando) {
     GetGrownArray(j.at("randoInf"), rando.randoInf);
     j.at("randoEvents").get_to(rando.randoEvents);
-    j.at("randoSaveChecks").get_to(rando.randoSaveChecks);
+    GetGrownArray(j.at("randoSaveChecks"), rando.randoSaveChecks);
     j.at("finalSeed").get_to(rando.finalSeed);
     GetGrownArray(j.at("randoSaveOptions"), rando.randoSaveOptions);
     j.at("randoStartingItems").get_to(rando.randoStartingItems);
