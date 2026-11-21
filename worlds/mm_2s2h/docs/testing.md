@@ -1370,3 +1370,23 @@ default to no pending rock drops. The existing `ObjectMarker::AttachTint` colors
   a held rock or a respawned child. Check with the option off and in a vanilla save.
 - Break both types of blast boulders and a bronze boulder with the supported hit types. Confirm that the
   grottos, Lone Peak Shrine chest, fairy fountain, ranch, racetrack and the spider-house bean puzzle still work.
+
+### Clock Shuffle startup
+
+On the first load of a new Archipelago save with Clock Shuffle, file select waits for the initial server inventory.
+The client grants clocks in their server order before the normal cycle-start check. The save keeps an item index so
+the usual gameplay receipt can catch up without granting a progressive clock again. An empty clock inventory uses
+the configured Final Hours start. Press B to exit the wait and return to file select.
+
+The client C++ harness passed 12 startup cases covering all six half-days, delayed inventory, both progressive
+orders, save reload during receipt, an empty clock inventory, older saves and the disabled option. The Windows
+x64 Release build and clang-format for the changed lines passed. The AP suite passed 861 tests and 159,982 subtests.
+
+#### In-game checklist — not tested in game
+
+- Create a new AP save with `clock_shuffle` and a starting clock. Confirm that gameplay opens in the starting
+  clock's half-day. Repeat with a night clock and a slot that already received an earlier clock from another player.
+- Repeat with a progressive clock. Confirm that it unlocks one half-day on the initial grant and stays at one
+  after the AP item receipt catches up. Save, reload and verify the number of owned half-days.
+- With a test slot that has no clocks, verify the configured Final Hours start. Open an older AP save, a native
+  rando save and a fresh AP save without Clock Shuffle to check their usual load behavior.

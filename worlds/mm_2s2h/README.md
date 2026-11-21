@@ -29,6 +29,9 @@ Use the client and apworld from the same release; the release manifest records t
 
 The generator has to run on the **client fork** (branch `client`), not on upstream 2S2H, because these live there:
 
+- **Clock Shuffle startup** for a newly created Archipelago save selects the earliest half-day owned from the
+  initial server inventory. The AP world version stays at 0.13.0. [In-game checklist](docs/testing.md#clock-shuffle-startup).
+
 - **Shuffle Rocks** (`shuffle_rocks`, apworld 0.13.0, default off) adds 122 checks to the `Rocks` location group.
   Lift a small rock or break a boulder to find its item at the rock's position. Open checks use the object marker.
   The client binds each rock by scene, room and actor-list index, with aliases for alternate room headers and one
