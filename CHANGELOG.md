@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.13.0 — Regular release (new mechanics experimental)
+
+Client and **apworld 0.13.0**. Generate new seeds with the bundled world. The client accepts apworld 0.1 to 0.13.
+
+- **Shuffle Rocks** (`shuffle_rocks`, off by default) adds 122 checks across small rocks, blast boulders, bronze
+  boulders, rock rings and rolling boulders.
+  [Rock placement exceptions and reasons](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/apworld/worlds/mm_2s2h/docs/testing.md#stage-9--shuffle-rocks-apworld-0130)
+- **Open check markers** tint snowballs, trees, beehives, the Swordsman's School gong and owl statues yellow or by
+  item class with CSMC. The music wall and Song of Soaring engraving sparkle. Once collected, the objects return
+  to their usual appearance.
+- **Clock Shuffle** starts a new AP save in the earliest owned half-day. File select waits for the server's
+  initial items. Press **B** to go back. Existing saves in the Final Hours stay there on load.
+- **Validation:** 861 tests passed, parity 1200/1200, and 100/100 seeds generated with Shuffle Rocks alone and
+  100/100 with it plus all fork options. The changes are **not tested in game**.
+
+[Release notes and downloads](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.13.0)
+
 ## 0.12.0 — Regular release (new mechanics experimental)
 
 Client and **apworld 0.12.0**. Every automated check passes and new options are off by default; nothing new has been

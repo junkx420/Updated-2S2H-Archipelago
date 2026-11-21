@@ -4,12 +4,12 @@
 send yours back — with 2S2H's check pools and options, plus a full entrance randomizer, door keys, souls for every NPC
 and shuffled abilities.
 
-[![Latest release](https://img.shields.io/badge/release-0.12.0-2ea44f)](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.12.0)
+[![Latest release](https://img.shields.io/badge/release-0.13.0-2ea44f)](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.13.0)
 [![Status](https://img.shields.io/badge/new_features-experimental-orange)](#how-stable-is-it)
 [![Game port](https://img.shields.io/badge/2S2H-5.0.1-blue)](https://github.com/HarbourMasters/2ship2harkinian)
 [![Archipelago](https://img.shields.io/badge/Archipelago-0.6.6%2B-6c5ce7)](https://archipelago.gg)
 
-**[Download 0.12.0](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.12.0)** ·
+**[Download 0.13.0](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.13.0)** ·
 [Get started](PLAYING.md) · [Changelog](CHANGELOG.md) ·
 [Report a problem](https://github.com/junkx420/Updated-2S2H-Archipelago/issues)
 
@@ -18,9 +18,8 @@ and shuffled abilities.
 
 ## How stable is it?
 
-0.12.0 is a **regular release**: every automated check passes, and all new options are **off by default**, so a
-seed without them plays like the established feature set. The new mechanics have **not been played in game yet**,
-so treat them as **experimental** — use a separate save, keep backups, and report what you find.
+0.13.0 is a **regular release**. Automated checks passed and Shuffle Rocks is **off by default**. The new
+mechanics and the Clock Shuffle fix are **not tested in game**.
 
 Each release includes **Windows, Linux and macOS clients**, `mm_2s2h.apworld`, an example YAML and a manifest with
 exact commits and SHA-256 checksums. Always use client and apworld from the **same release**.
@@ -33,6 +32,7 @@ exact commits and SHA-256 checksums. Always use client and apworld from the **sa
 |---|---|
 | **Items & hints** | Send and receive items with names and owners. Exact-location in-game hints become Archipelago hints. Other worlds' items look gray (filler), colored (useful) or colored with an arrow (progression/trap). |
 | **Check pools** | Songs, shops, owl statues, cows, fairies, tokens, enemy drops, grass, pots, crates, barrels, trees and more. |
+| **Open check markers** | Snowballs, trees, beehives, the Swordsman's School gong and owl statues are tinted yellow or by item class with CSMC. The music wall and Song of Soaring engraving sparkle. Markers disappear when the checks are collected. |
 | **Items & time** | Boss/enemy souls, ocarina buttons, swim, extra songs, clocks, Triforce Hunt, traps and plentiful items. |
 | **Dungeon items & logic** | Keys and fairies anywhere, in their own dungeon or at start; Glitchless, No Logic or Nearly No Logic. |
 | **Tracking** | Universal Tracker, item/location groups, starting inventory, DeathLink. |
@@ -41,6 +41,7 @@ exact commits and SHA-256 checksums. Always use client and apworld from the **sa
 
 | Feature | Option | What it does |
 |---|---|---|
+| **Shuffle Rocks** | `shuffle_rocks` | Adds 122 checks to small rocks, blast boulders, bronze boulders, rock rings and rolling boulders. Off by default. |
 | **NPC souls** | `shuffle_npc_souls` | `all`: 65 souls, every NPC from carpenters and Gorons to shopkeepers. Without its soul an NPC is not in the world at all. `classic`: the 30 souls of 0.11. A found soul shows the NPC's model. |
 | **Temple entrances** | `shuffle_dungeon_entrances` | The four temple entrances lead to other temples, coupled. |
 | **Boss rooms** | `shuffle_boss_entrances` | Odolwa, Goht, Gyorg and Twinmold sit behind other boss doors. Blue warps return outside the temple you entered. |
@@ -68,17 +69,20 @@ cutscenes stay vanilla. [Every fixed exit and why](https://github.com/junkx420/U
 
 [Full setup instructions](PLAYING.md)
 
-The 0.12 client accepts seeds from apworld 0.1 to 0.12 and loads older saves. Older clients cannot play 0.12 seeds.
+The 0.13 client accepts seeds from apworld 0.1 to 0.13 and loads older saves. Generate new seeds with apworld 0.13.0.
 MMRecompRando (`mm_recomp`) seeds use a different world and are not compatible.
+
+With Clock Shuffle, a new AP save waits for its initial server items and starts in the earliest owned half-day.
+Press **B** to return to file select while it waits.
 
 ## What has been checked?
 
 | Check | Result |
 |---|---|
-| Automated tests | **832 passed**, 0 failed |
+| Automated tests | **861 passed**, 0 failed |
 | Original-logic parity (all new options off) | **1200 / 1200** scenarios identical to 2S2H |
-| Random seeds | **100 / 100** for every new option, with all NPC souls, and with all options combined |
-| Native client test bench | real redirect code for every entrance pairing, including warps, respawns and old saves |
+| Random seeds | **100 / 100** with Shuffle Rocks, **100 / 100** with Shuffle Rocks plus all fork options |
+| Native client test bench | 122 rock drop lifecycles and 12 Clock Shuffle startup cases |
 | In-game play | **not yet** for the new mechanics; Linux/macOS untested in game |
 
 The in-game *check* tracker does not evaluate shuffled entrances or extra area rules; use Universal Tracker or the
@@ -89,7 +93,7 @@ spoiler log for logic. [Detailed results and play-test checklist](https://github
 | Branch | Contents |
 |---|---|
 | [`client`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/client) | 2S2H 5.0.1 with the AP client and new mechanics; platform builds run in GitHub Actions. |
-| [`apworld`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/apworld/worlds/mm_2s2h) | Archipelago world 0.12.0, generated logic, options and validation tools. |
+| [`apworld`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/apworld/worlds/mm_2s2h) | Archipelago world 0.13.0, generated logic, options and validation tools. |
 | [`main`](https://github.com/junkx420/Updated-2S2H-Archipelago/tree/main) | Project overview, setup, changelog and release packaging workflow. |
 
 The world's logic is generated from the fork's C++ sources: enums, checks, items, regions and the feature tables
