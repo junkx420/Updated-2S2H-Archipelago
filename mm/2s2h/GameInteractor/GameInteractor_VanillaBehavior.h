@@ -2573,6 +2573,9 @@ typedef enum {
     VB_ROCK_INTERACT,
     // Whether to spawn the small rock's normal random drop. Args: Actor*.
     VB_ROCK_DROP_VANILLA,
+
+    // Whether the opened file is ready to start gameplay. Args: int firstAttempt.
+    VB_FILE_SELECT_START_GAME,
 } GIVanillaBehavior;
 
 #endif

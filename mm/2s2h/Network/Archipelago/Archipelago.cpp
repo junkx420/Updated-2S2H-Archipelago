@@ -94,6 +94,7 @@ bool ArchipelagoClient::StartClient() {
 
     // Server greeted us — now authenticate against the slot.
     apClient->set_room_info_handler([&]() {
+        pendingItems.clear(); // The next handshake includes the whole received-item list for this slot.
         std::list<std::string> tags;
         // DeathLink etc. get added here in later steps.
         apClient->ConnectSlot(CVarGetString(CVAR_ARCHIPELAGO("SlotName"), ""), password,
@@ -151,11 +152,9 @@ bool ArchipelagoClient::StartClient() {
         const auto checked = apClient->get_checked_locations();
         std::list<int64_t> locations(missing.begin(), missing.end());
         locations.insert(locations.end(), checked.begin(), checked.end());
-        if (!locations.empty()) {
-            apClient->LocationScouts(locations);
-        } else {
-            scoutsReady = true;
-        }
+        // Connected and the full ReceivedItems list share a server reply (omitted when empty).
+        // The later LocationInfo reply marks the end of that handshake, even for an empty scout.
+        apClient->LocationScouts(locations);
     });
 
     // DeathLink deaths arrive as Bounced packets tagged "DeathLink".

@@ -32,6 +32,7 @@
 #include "2s2h/BenGui/Notification.h"
 #include "2s2h/Rando/Rando.h"
 #include "2s2h/Rando/StaticData/StaticData.h"
+#include "2s2h/Rando/MiscBehavior/ClockShuffle.h"
 #include "2s2h/Rando/MiscBehavior/EntranceShuffle.h"
 
 extern "C" {
@@ -41,6 +42,8 @@ extern PlayState* gPlayState;
 }
 
 namespace {
+
+constexpr uint32_t StartingClocksPending = UINT32_MAX;
 
 // AP location ids already reported this session (cleared on reconnect).
 std::unordered_set<int64_t> sentLocations;
@@ -181,6 +184,36 @@ void SendNewlyObtainedChecks(ArchipelagoClient& client) {
     }
 }
 
+bool ApplyStartingClocks() {
+    auto& save = gSaveContext.save.shipSaveInfo.rando;
+    if (!IS_RANDO || !RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE] || save.apStartingClockItemLimit != StartingClocksPending) {
+        return true;
+    }
+
+    auto& client = ArchipelagoClient::GetInstance();
+    if (!client.IsConnected() || !client.ScoutsReady() || client.GetSlotOptions().randomSeed != save.finalSeed) {
+        return false;
+    }
+
+    auto& received = client.GetPendingItems();
+    std::sort(received.begin(), received.end(), [](const auto& a, const auto& b) { return a.index < b.index; });
+    if (!received.empty() && (received.front().index != 0 || received.back().index != (int32_t)received.size() - 1)) {
+        return false; // Wait for a complete sequence before granting progressive clocks.
+    }
+
+    // Clock grants only set save flags, so they can run before the scene is initialized.
+    // The receipt cursor still processes every entry, granting the other items in gameplay.
+    save.apStartingClockItemLimit = 0;
+    for (const auto& item : received) {
+        RandoItemId id = ApMapping::GetItemFromApItem(item.itemId);
+        if (Rando::ClockItems::IsClockItem(id)) {
+            Rando::GiveItem(Rando::ConvertItem(id));
+            save.apStartingClockItemLimit = item.index + 1;
+        }
+    }
+    return true;
+}
+
 // Applies at most one pending item per frame so a reconnect burst trickles in
 // visibly instead of dumping silently.
 void ApplyNextPendingItem(ArchipelagoClient& client) {
@@ -189,7 +222,8 @@ void ApplyNextPendingItem(ArchipelagoClient& client) {
     // a save loaded with a lower counter (reloaded without saving, another file of this
     // slot) gets the items it is missing again without waiting for a reconnect.
     auto& received = client.GetPendingItems();
-    const uint32_t nextIndex = gSaveContext.save.shipSaveInfo.rando.apItemsReceived;
+    auto& save = gSaveContext.save.shipSaveInfo.rando;
+    const uint32_t nextIndex = save.apItemsReceived;
     auto next = std::find_if(received.begin(), received.end(),
                              [nextIndex](const auto& item) { return (uint32_t)item.index == nextIndex; });
     if (next == received.end()) {
@@ -197,10 +231,12 @@ void ApplyNextPendingItem(ArchipelagoClient& client) {
     }
 
     RandoItemId randoItemId = ApMapping::GetItemFromApItem(next->itemId);
+    bool clockAlreadyGranted = save.apStartingClockItemLimit != StartingClocksPending &&
+                               nextIndex < save.apStartingClockItemLimit && Rando::ClockItems::IsClockItem(randoItemId);
     if (randoItemId == RI_UNKNOWN) {
         ArchipelagoConsole_SendMessage("[ERROR] No 2S2H item mapped for AP item %lld (index %d) — skipped.",
                                        (long long)next->itemId, next->index);
-    } else {
+    } else if (!clockAlreadyGranted) {
         RandoItemId converted = Rando::ConvertItem(randoItemId);
         Rando::GiveItem(converted);
         Notification::Emit({
@@ -213,7 +249,10 @@ void ApplyNextPendingItem(ArchipelagoClient& client) {
                                        next->fromPlayer.c_str());
     }
 
-    gSaveContext.save.shipSaveInfo.rando.apItemsReceived = nextIndex + 1;
+    save.apItemsReceived = nextIndex + 1;
+    if (save.apItemsReceived == save.apStartingClockItemLimit) {
+        save.apStartingClockItemLimit = 0;
+    }
 }
 
 // DeathLink: watch for the game over sequence. Health alone is not enough: it also
@@ -330,14 +369,16 @@ void OnApFileCreate(s16 fileNum) {
     const auto& options = client.GetSlotOptions();
     ApplySlotOptions(options);
     gSaveContext.save.shipSaveInfo.rando.finalSeed = options.randomSeed;
+    if (fileNum >= 0 && fileNum < FILE_NUM_OWL_SAVE_OFFSET && RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE]) {
+        gSaveContext.save.shipSaveInfo.rando.apStartingClockItemLimit = StartingClocksPending;
+    }
 
     // Like GeneratePools: every check starts out holding its vanilla item, unshuffled.
     for (auto& [randoCheckId, randoStaticCheck] : Rando::StaticData::Checks) {
         RANDO_SAVE_CHECKS[randoCheckId].randoItemId = randoStaticCheck.randoItemId;
     }
 
-    // The non-item parts of Rando::GrantStartingItems. Starting *items* arrive from
-    // the server as AP start inventory (items_handling bit 2), so they are not given here.
+    // The non-item parts of Rando::GrantStartingItems. The server supplies the starting items.
     if (RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] != 3) {
         gSaveContext.save.saveInfo.playerData.healthCapacity = gSaveContext.save.saveInfo.playerData.health =
             RANDO_SAVE_OPTIONS[RO_STARTING_HEALTH] * 0x10;
@@ -373,6 +414,13 @@ void RegisterArchipelagoGameplay() {
 
     // AP file-select flow: a file created while connected becomes an AP save.
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnSaveInit>(OnApFileCreate);
+    REGISTER_VB_SHOULD(VB_FILE_SELECT_START_GAME, {
+        bool firstAttempt = va_arg(args, int) != 0;
+        *should = ApplyStartingClocks();
+        if (!*should && firstAttempt) {
+            Notification::Emit({ .message = "Waiting for Archipelago items", .suffix = "B: Return to file select" });
+        }
+    });
 
     // Fires from Majora's defeat (z_boss_07.c) and from alternate completion
     // paths like triforce hunt (GiveItem.cpp).

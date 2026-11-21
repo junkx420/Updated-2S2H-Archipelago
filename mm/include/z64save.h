@@ -399,6 +399,8 @@ typedef struct RandoSaveInfo {
     // Entrance tracker (apworld 0.11.1): bit per endpoint (2 * row = door side, 2 * row + 1 = inside side), set when
     // Link goes through either side of its pairing
     u8 entrancesDiscovered[128];
+    // Archipelago: exclusive item index for clocks granted before gameplay. UINT32_MAX means awaiting the first load.
+    u32 apStartingClockItemLimit;
 } RandoSaveInfo;
 
 // These are values added by 2S2H that we need to be persisted to the save file

@@ -69,6 +69,9 @@ inline void to_json(json& j, const RandoSaveInfo& rando) {
         { "mixedEntrancePairs", rando.mixedEntrancePairs },
         { "entrancesDiscovered", rando.entrancesDiscovered },
     };
+    if (rando.apStartingClockItemLimit != 0) {
+        j["apStartingClockItemLimit"] = rando.apStartingClockItemLimit;
+    }
 }
 
 // For arrays sized by an enum that has grown since the save was written: takes the entries the save has and
@@ -92,6 +95,7 @@ inline void from_json(const json& j, RandoSaveInfo& rando) {
     j.at("sariaPriorityItems").get_to(rando.sariaPriorityItems);
     // Added after save version 7; tolerate older saves without a migration
     rando.apItemsReceived = j.value("apItemsReceived", 0u);
+    rando.apStartingClockItemLimit = j.value("apStartingClockItemLimit", 0u);
     // Added with the entrance shuffle (apworld 0.3); older saves have every door unshuffled
     GetGrownArray(j.value("entrancePairs", json::array()), rando.entrancePairs);
     GetGrownArray(j.value("mixedEntrancePairs", json::array()), rando.mixedEntrancePairs);

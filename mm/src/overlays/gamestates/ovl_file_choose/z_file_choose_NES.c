@@ -2231,14 +2231,27 @@ void FileSelect_FadeOut(GameState* thisx) {
 
 /**
  * Load the save for the appropriate file and start the game.
- * Update function for `SM_LOAD_GAME`
+ * Update function for `SM_LOAD_GAME` and `SM_WAIT_TO_START_GAME`.
  */
 void FileSelect_LoadGame(GameState* thisx) {
     FileSelectState* this = (FileSelectState*)thisx;
     u16 i;
 
-    gSaveContext.fileNum = this->buttonIndex;
-    Sram_OpenSave(this, &this->sramCtx);
+    bool firstAttempt = this->selectMode == SM_LOAD_GAME;
+    if (firstAttempt) {
+        gSaveContext.fileNum = this->buttonIndex;
+        Sram_OpenSave(this, &this->sramCtx);
+    } else if (CHECK_BTN_ALL(CONTROLLER1(&this->state)->press.button, BTN_B)) {
+        Audio_PlaySfx(NA_SE_SY_FSEL_CLOSE);
+        this->screenFillAlpha = 0;
+        this->selectMode = SM_FADE_OUT_FILE_INFO;
+        return;
+    }
+
+    if (!GameInteractor_Should(VB_FILE_SELECT_START_GAME, true, (int)firstAttempt)) {
+        this->selectMode = SM_WAIT_TO_START_GAME;
+        return;
+    }
 
     gSaveContext.gameMode = GAMEMODE_NORMAL;
 
@@ -2302,6 +2315,7 @@ void (*sSelectModeUpdateFuncs[])(GameState*) = {
     FileSelect_MoveSelectedFileToSlot, // SM_MOVE_FILE_TO_SLOT
     FileSelect_FadeOut,                // SM_FADE_OUT
     FileSelect_LoadGame,               // SM_LOAD_GAME
+    FileSelect_LoadGame,               // SM_WAIT_TO_START_GAME
 };
 
 void FileSelect_SelectModeUpdate(GameState* thisx) {

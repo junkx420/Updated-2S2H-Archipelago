@@ -93,7 +93,8 @@ typedef enum {
     /* 4 */ SM_FADE_OUT_FILE_INFO,
     /* 5 */ SM_MOVE_FILE_TO_SLOT,
     /* 6 */ SM_FADE_OUT,
-    /* 7 */ SM_LOAD_GAME
+    /* 7 */ SM_LOAD_GAME,
+    /* 8 */ SM_WAIT_TO_START_GAME
 } SelectMode;
 
 typedef enum {
