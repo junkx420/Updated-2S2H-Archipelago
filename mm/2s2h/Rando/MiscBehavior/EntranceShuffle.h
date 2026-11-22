@@ -79,7 +79,12 @@ size_t MixedPartner(size_t endpoint);
 u16 EndpointArrival(size_t endpoint);
 std::optional<size_t> DirectedTarget(size_t source);
 void SetDirectedTargets(const std::vector<std::pair<int32_t, int32_t>>& targets);
-std::optional<u16> ShuffledBossExterior(size_t boss);
+struct BossExterior {
+    u16 entrance;
+    std::optional<size_t> endpoint;
+};
+std::optional<BossExterior> ShuffledBossExterior(size_t boss);
+void ApplyGiantsChamberGrottoReturn();
 
 // How the game enters the area of a grotto row (option RO_SHUFFLE_GROTTOS).
 enum GrottoKind : u8 {

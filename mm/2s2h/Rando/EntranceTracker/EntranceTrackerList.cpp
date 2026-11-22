@@ -77,7 +77,9 @@ std::vector<Row> BuildRows(const std::vector<EntranceShuffle::TrackedEntrance>& 
             std::string toArea = options.sceneName ? options.sceneName(toScene) : std::to_string(toScene);
             row.tooltip += ", to " + toArea;
         }
-        row.current = InScene(line.fromScene, options.currentScene);
+        const bool grottoInside = line.from < 2 * table.size() && line.from % 2 && line.pool == RO_SHUFFLE_GROTTOS;
+        row.current = InScene(line.fromScene, options.currentScene) &&
+                      (!grottoInside || line.from / 2 == options.currentGrottoRow);
         // Standing in the area a door pool's line leads to tells only what is already known once visible. Grottos
         // share one scene, so only the current grotto's line counts.
         if (!row.current && visible && line.twoWay &&

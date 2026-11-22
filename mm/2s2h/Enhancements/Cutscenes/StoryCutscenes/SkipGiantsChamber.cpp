@@ -2,6 +2,7 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/CustomItem/CustomItem.h"
+#include "2s2h/Rando/MiscBehavior/EntranceShuffle.h"
 #include "2s2h/Rando/Rando.h"
 #include "2s2h/ShipInit.hpp"
 
@@ -143,6 +144,7 @@ void RegisterSkipGiantsChamber() {
                 gSaveContext.save.cutsceneIndex = transition.cutsceneIndex;
                 GameInteractor::Instance->events.erase(it);
                 handleGiantsCheck((SceneId)transition.transitionType);
+                Rando::EntranceShuffle::ApplyGiantsChamberGrottoReturn();
             }
         } else if (gSaveContext.save.entrance == ENTRANCE(WOODFALL, 0) && gSaveContext.save.cutsceneIndex == 0xFFF0) {
             // Odolwa's Lair repeat warps go straight to the Woodfall clear cutscene. Skip that too.

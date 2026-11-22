@@ -107,7 +107,10 @@ TrackerExits BuildTrackerExits() {
         }
         const auto exterior = ShuffledBossExterior(i);
         if (exterior) {
-            const auto target = Logic::GetRegionIdFromLogicEntrance(*exterior);
+            const auto target =
+                exterior->endpoint && shuffleEntrances[*exterior->endpoint / 2].option == RO_SHUFFLE_GROTTOS
+                    ? regions[*exterior->endpoint / 2].outside
+                    : Logic::GetRegionIdFromLogicEntrance(exterior->entrance);
             for (const auto& [id, region] : Logic::Regions) {
                 if (region.sceneId != row.bossScene) {
                     continue;

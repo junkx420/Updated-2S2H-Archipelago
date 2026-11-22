@@ -249,15 +249,24 @@ static const EntranceMixPool entranceMixPools[] = {
     { "interiors", RO_SHUFFLE_INTERIORS, 2 },
     { "overworld", RO_SHUFFLE_OVERWORLD, 4 },
     { "special_areas", RO_SHUFFLE_SPECIAL_AREAS, 8 },
+    { "grottos", RO_SHUFFLE_GROTTOS, 16 },
 };
 
 // Keep these edges vanilla when their pool is mixed. The first two doors have short closures and the ranch
-// opens on day 3 or after breaking the boulder. Keep both ends of that overworld transition together.
+// opens on day 3 or after breaking the boulder. The grotto rows have special exits or no safe static landing.
 static const std::vector<u16> entranceMixFixed = {
     ENTRANCE(TRADING_POST, 0),
     ENTRANCE(SWORDMANS_SCHOOL, 0),
     ENTRANCE(ROMANI_RANCH, 0),
     ENTRANCE(MILK_ROAD, 1),
+    ENTRANCE(GROTTOS, 5),  // Ice can occupy the return point in winter.
+    ENTRANCE(GROTTOS, 12), // Deku Palace scene exit.
+    ENTRANCE(GROTTOS, 16), // Lone Peak Shrine scene exit and Lens ledge.
+    ENTRANCE(GROTTOS, 22), // Woods of Mystery, day 2 only.
+    ENTRANCE(GROTTOS, 23), // Mountain Village, spring only.
+    ENTRANCE(GROTTOS, 27), // Great Bay cliffside without an unconditional exit.
+    ENTRANCE(GROTTOS, 28), // Bombable boulder at the return point.
+    ENTRANCE(GROTTOS, 31), // Bronze boulder at the return point.
 };
 
 static constexpr u16 mixedOnlyEntrance = ENTRANCE(STONE_TOWER_TEMPLE_INVERTED, 0);
@@ -351,6 +360,38 @@ const std::vector<GrottoEntrance> grottoEntrances = {
     { ENTRANCE(GROTTOS, 29), ENTRANCE(GROTTOS, 4),  0xB4, GROTTO_HOLE },       // Ikana Canyon
     { ENTRANCE(GROTTOS, 30), ENTRANCE(GROTTOS, 4),  0xB8, GROTTO_HOLE },       // Ikana Graveyard
     { ENTRANCE(GROTTOS, 31), ENTRANCE(GROTTOS, 4),  0x96, GROTTO_HOLE },       // Road to Ikana
+};
+
+struct GrottoReturnPoint {
+    u16 into;
+    u16 entrance;
+    u8 room;
+    Vec3s pos;
+    s16 yaw;
+};
+
+// Positions from BetterMapSelect, checked against DoorAna and collision data in the NTSC-U mm.o2r.
+// Use a real spawn in the landing room where the scene has multiple rooms. The room and position
+// below are applied before the scene selects its first room and initializes Link.
+static constexpr GrottoReturnPoint grottoReturnPoints[] = {
+    { ENTRANCE(GROTTOS, 0), ENTRANCE(TERMINA_FIELD, 0), 0, { -2782, 48, -1654 }, -5644 },
+    { ENTRANCE(GROTTOS, 1), ENTRANCE(TERMINA_FIELD, 0), 0, { -1592, -222, 4622 }, -21118 },
+    { ENTRANCE(GROTTOS, 2), ENTRANCE(TERMINA_FIELD, 0), 0, { 4450, 254, 925 }, -27125 },
+    { ENTRANCE(GROTTOS, 3), ENTRANCE(TERMINA_FIELD, 0), 0, { 192, 48, -3138 }, -11287 },
+    { ENTRANCE(GROTTOS, 7), ENTRANCE(TERMINA_FIELD, 0), 0, { -2425, -281, -3291 }, 10558 },
+    { ENTRANCE(GROTTOS, 9), ENTRANCE(TERMINA_FIELD, 0), 0, { 3223, 219, 1417 }, -19479 },
+    { ENTRANCE(GROTTOS, 11), ENTRANCE(TERMINA_FIELD, 0), 0, { -5159, -281, -571 }, 0 },
+    { ENTRANCE(GROTTOS, 13), ENTRANCE(TERMINA_FIELD, 0), 0, { -2317, -221, 3418 }, 21663 },
+    { ENTRANCE(GROTTOS, 17), ENTRANCE(TERMINA_FIELD, 0), 0, { -375, -222, 3976 }, -32768 },
+    { ENTRANCE(GROTTOS, 18), ENTRANCE(TERMINA_FIELD, 0), 0, { 2367, 315, -192 }, 0 },
+    { ENTRANCE(GROTTOS, 19), ENTRANCE(TERMINA_FIELD, 0), 0, { 1012, -221, 3642 }, -22028 },
+    { ENTRANCE(GROTTOS, 20), ENTRANCE(ROAD_TO_SOUTHERN_SWAMP, 0), 0, { 104, -182, 2202 }, 4187 },
+    { ENTRANCE(GROTTOS, 21), ENTRANCE(SOUTHERN_SWAMP_POISONED, 3), 1, { -1700, 38, 1800 }, -5462 },
+    { ENTRANCE(GROTTOS, 24), ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0), 0, { -1309, 320, 143 }, 12379 },
+    { ENTRANCE(GROTTOS, 25), ENTRANCE(PATH_TO_SNOWHEAD, 1), 0, { -987, 360, -2339 }, -19479 },
+    { ENTRANCE(GROTTOS, 26), ENTRANCE(GREAT_BAY_COAST, 0), 0, { 1359, 80, 5018 }, -11287 },
+    { ENTRANCE(GROTTOS, 29), ENTRANCE(IKANA_CANYON, 12), 2, { -2475, -505, 2475 }, -28217 },
+    { ENTRANCE(GROTTOS, 30), ENTRANCE(IKANA_GRAVEYARD, 4), 1, { 106, 314, -1777 }, -28217 },
 };
 
 // Spoiler-log names of every shuffleEntrances row, in row order (see EntranceShuffle.h). Append a row's names with
@@ -636,6 +677,10 @@ static bool IsCycleSpawnRoute(size_t row) {
     return spawn && (shuffleEntrances[row].into == spawn->entrance || shuffleEntrances[row].into == spawn->exitToSouth);
 }
 
+static bool IsGrottoRow(size_t row) {
+    return shuffleEntrances[row].option == RO_SHUFFLE_GROTTOS;
+}
+
 static bool IsMixedRow(size_t row) {
     return MixSelected(shuffleEntrances[row].option) && !FixedWhenMixed(row) && !IsWaterRow(row) &&
            !IsCycleSpawnRoute(row) && (!IsInteriorRow(row) || HoursOf(row) == INTERIOR_ALWAYS_OPEN);
@@ -754,14 +799,19 @@ static bool IsDirectedEndpoint(size_t endpoint) {
         (row.into == mixedOnlyEntrance && !IsMixedRow(index))) {
         return false;
     }
+    const bool mixed = IsMixedRow(index);
+    const size_t partner = mixed ? MixedPartner(endpoint) : endpoint;
+    if (mixed && (partner == endpoint || IsGrottoRow(partner / 2))) {
+        return false;
+    }
     if (!IsOverworldRow(index)) {
-        return !IsMixedRow(index) || MixedPartner(endpoint) != endpoint;
+        return true;
     }
     if (endpoint % 2 != 0 || IsTownGate(row)) {
         return false;
     }
-    const size_t partner = IsMixedRow(index) ? MixedPartner(endpoint) : 2 * OverworldOpposite(InsideBehind(index));
-    return partner / 2 < shuffleEntrances.size() && !IsTownGate(shuffleEntrances[partner / 2]);
+    const size_t landPartner = mixed ? partner : 2 * OverworldOpposite(InsideBehind(index));
+    return landPartner / 2 < shuffleEntrances.size() && !IsTownGate(shuffleEntrances[landPartner / 2]);
 }
 
 static bool CanDirect(size_t source, size_t target) {
@@ -813,9 +863,10 @@ void SetDirectedTargets(const std::vector<std::pair<int32_t, int32_t>>& targets)
 }
 
 // Compose the two inverse pairings, preserving the vanilla warp for fixed points.
-std::optional<u16> ShuffledBossExterior(size_t boss) {
+std::optional<BossExterior> ShuffledBossExterior(size_t boss) {
     const size_t bossDoor = DoorForInside(boss);
     u16 exterior = shuffleEntrances[bossDoor].templeExit;
+    std::optional<size_t> exteriorEndpoint;
     bool moved = bossDoor != boss;
     for (size_t temple = 0; temple < shuffleEntrances.size() && temple < MAX_ROWS; temple++) {
         if (shuffleEntrances[temple].option != RO_SHUFFLE_DUNGEON_ENTRANCES ||
@@ -828,6 +879,7 @@ std::optional<u16> ShuffledBossExterior(size_t boss) {
             for (size_t source = 0; source < 2 * shuffleEntrances.size(); ++source) {
                 if (DirectedTarget(source) == endpoint) {
                     exterior = EndpointArrival(source);
+                    exteriorEndpoint = source;
                     moved |= source != 2 * temple;
                     break;
                 }
@@ -837,6 +889,7 @@ std::optional<u16> ShuffledBossExterior(size_t boss) {
         size_t partner = MixedPartner(endpoint);
         if (partner != endpoint) {
             exterior = EndpointArrival(partner);
+            exteriorEndpoint = partner;
             moved |= partner != 2 * temple;
         } else {
             size_t templeDoor = DoorForInside(temple);
@@ -845,7 +898,7 @@ std::optional<u16> ShuffledBossExterior(size_t boss) {
         }
         break;
     }
-    return moved ? std::optional{ exterior } : std::nullopt;
+    return moved ? std::optional{ BossExterior{ exterior, exteriorEndpoint } } : std::nullopt;
 }
 
 size_t OwlWarpTarget(size_t source) {
@@ -1000,12 +1053,57 @@ static void MarkCleared(s16 bossScene) {
     }
 }
 
-static bool pendingWarpRespawn = false;
-static u16 warpRespawnEntrance = 0;
+static std::optional<u16> pendingExteriorRespawn;
+static std::optional<size_t> pendingGiantsGrotto;
 static std::optional<size_t> pendingOwlWarp;
 static u16 PlaceOf(u16 entrance);
 
+static const GrottoReturnPoint* GrottoReturnFor(size_t row) {
+    const u16 into = shuffleEntrances[row].into;
+    const auto point = std::find_if(std::begin(grottoReturnPoints), std::end(grottoReturnPoints),
+                                    [into](const auto& point) { return point.into == into; });
+    return point == std::end(grottoReturnPoints) ? nullptr : point;
+}
+
+static void SetGrottoReturn(const GrottoReturnPoint& point) {
+    auto& respawn = gSaveContext.respawn[RESPAWN_MODE_UNK_3];
+    respawn = {};
+    respawn.pos = { (f32)point.pos.x, (f32)point.pos.y, (f32)point.pos.z };
+    respawn.yaw = point.yaw;
+    respawn.playerParams = PLAYER_PARAMS(0xFF, PLAYER_START_MODE_GROTTO);
+    respawn.roomIndex = point.room;
+    respawn.entrance = point.entrance;
+    // The Giants skip replaces the entrance after Play_Init's usual season conversion.
+    if (point.entrance == ENTRANCE(PATH_TO_GORON_VILLAGE_WINTER, 0) &&
+        CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
+        respawn.entrance = ENTRANCE(PATH_TO_GORON_VILLAGE_SPRING, 0);
+    } else if (point.entrance == ENTRANCE(SOUTHERN_SWAMP_POISONED, 3) &&
+               CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
+        respawn.entrance = ENTRANCE(SOUTHERN_SWAMP_CLEARED, 3);
+    }
+}
+
+static u16 PrepareGrottoLanding(const GrottoReturnPoint& point) {
+    SetGrottoReturn(point);
+    gSaveContext.respawnFlag = 4;
+    const u16 entrance = gSaveContext.respawn[RESPAWN_MODE_UNK_3].entrance;
+    pendingExteriorRespawn = entrance;
+    return entrance;
+}
+
+void ApplyGiantsChamberGrottoReturn() {
+    if (!pendingGiantsGrotto) {
+        return;
+    }
+    const size_t endpoint = *pendingGiantsGrotto;
+    pendingGiantsGrotto.reset();
+    if (gSaveContext.save.entrance == EndpointArrival(endpoint)) {
+        gSaveContext.save.entrance = PrepareGrottoLanding(*GrottoReturnFor(endpoint / 2));
+    }
+}
+
 void OnSceneInit(s16 sceneId, s8 spawnNum) {
+    pendingGiantsGrotto.reset();
     if (pendingCycleSpawnArrival) {
         pendingCycleSpawnArrival = false;
         const auto* spawn = SelectedCycleSpawn();
@@ -1021,26 +1119,20 @@ void OnSceneInit(s16 sceneId, s8 spawnNum) {
             gSaveContext.save.shipSaveInfo.rando.owlWarpsDiscovered[source / 8] |= 1 << (source % 8);
         }
     }
-    if (!pendingWarpRespawn) {
-        return;
-    }
-    pendingWarpRespawn = false;
-    // SkipGiantsChamber resolves the first warp before actors spawn. Use the exterior's position, room and flags,
-    // never the boss room's old position. The normal Player_Init does this too; enforce it for both return modes.
-    if (gSaveContext.save.entrance == warpRespawnEntrance) {
+    const auto exterior = pendingExteriorRespawn;
+    pendingExteriorRespawn.reset();
+    // The game uses the old DOWN position when loading a grotto return. Replace both records with the
+    // actual exterior position, room, and flags after the player and the room have initialized.
+    if (exterior && gSaveContext.save.entrance == *exterior) {
         Play_SetupRespawnPoint(gPlayState, RESPAWN_MODE_DOWN, PLAYER_PARAMS(0xFF, PLAYER_START_MODE_D));
         // Play_SetRespawnData normalizes the spawn index to zero. Keep the resolved exterior entrance as well.
-        gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = warpRespawnEntrance;
+        gSaveContext.respawn[RESPAWN_MODE_DOWN].entrance = *exterior;
         gSaveContext.respawn[RESPAWN_MODE_DOWN].data = 1;
         gSaveContext.respawn[RESPAWN_MODE_TOP] = gSaveContext.respawn[RESPAWN_MODE_DOWN];
     }
 }
 
 // ---- Grottos ----
-
-static bool IsGrottoRow(size_t row) {
-    return shuffleEntrances[row].option == RO_SHUFFLE_GROTTOS;
-}
 
 static const GrottoEntrance* GrottoOf(size_t row) {
     for (const GrottoEntrance& grotto : grottoEntrances) {
@@ -1346,6 +1438,60 @@ static s16 MixedScene(s16 scene) {
     return (scene == SCENE_INISIE_R || scene == SCENE_F41) ? scene : Play_GetOriginalSceneId(scene);
 }
 
+static void RedirectMixedGrotto(PlayState* play, size_t source, size_t partner) {
+    gSaveContext.respawnFlag = 0;
+    if (IsGrottoRow(partner / 2)) {
+        if (partner % 2) {
+            if (IsGrottoRow(source / 2)) {
+                SetGrottoReturn(*GrottoReturnFor(source / 2));
+            } else {
+                gSaveContext.respawn[RESPAWN_MODE_UNK_3] = {};
+                gSaveContext.respawn[RESPAWN_MODE_UNK_3].entrance = EndpointArrival(source);
+            }
+            const auto& grotto = *GrottoOf(partner / 2);
+            gSaveContext.respawn[RESPAWN_MODE_UNK_3].data = (s8)grotto.data;
+            play->nextEntrance = grotto.gameEntrance;
+        } else {
+            play->nextEntrance = PrepareGrottoLanding(*GrottoReturnFor(partner / 2));
+            // The return points use the base room layout of the resolved seasonal scene.
+            gSaveContext.nextCutsceneIndex = 0;
+        }
+    } else {
+        play->nextEntrance = EndpointArrival(partner);
+    }
+    if (gSaveContext.nextCutsceneIndex >= 0xFFF0) {
+        gSaveContext.nextCutsceneIndex = 0xFFEF;
+    }
+    LeaveEponaAtExit(play);
+}
+
+static bool RedirectMixedGrottoExit(PlayState* play) {
+    if (play->sceneId != SCENE_KAKUSIANA || !MixSelected(RO_SHUFFLE_GROTTOS)) {
+        return false;
+    }
+    const auto& respawn = gSaveContext.respawn[RESPAWN_MODE_UNK_3];
+    const int flag = gSaveContext.respawnFlag;
+    const bool walkingOut = flag == 4 && play->nextEntrance == respawn.entrance;
+    if (!walkingOut && flag != 1 && flag != -1) {
+        return false;
+    }
+    const size_t row = GrottoRowFor(gSaveContext.save.entrance, respawn.data);
+    if (row == NO_ROW) {
+        return false;
+    }
+    const size_t source = 2 * row + 1;
+    const size_t partner = MixedPartner(source);
+    if (partner == source) {
+        return false;
+    }
+    if (walkingOut) {
+        Discover(source, partner, true);
+    }
+    // Void and death can still carry the previous room's DOWN/TOP. The pairing supplies a valid spawn.
+    RedirectMixedGrotto(play, source, partner);
+    return true;
+}
+
 static bool RedirectEndpoints(PlayState* play) {
     if ((!RANDO_SAVE_OPTIONS[RO_MIX_ENTRANCE_POOLS] && !RANDO_SAVE_OPTIONS[RO_DECOUPLE_ENTRANCES]) ||
         (gSaveContext.respawnFlag != 0 && gSaveContext.respawnFlag != -2)) {
@@ -1354,6 +1500,9 @@ static bool RedirectEndpoints(PlayState* play) {
     u16 next = play->nextEntrance;
     u16 place = PlaceOf(next);
     s16 scene = MixedScene(play->sceneId);
+    const size_t hole = MixSelected(RO_SHUFFLE_GROTTOS) && scene != SCENE_KAKUSIANA
+                            ? GrottoRowFor(place, gSaveContext.respawn[RESPAWN_MODE_UNK_3].data)
+                            : NO_ROW;
     for (size_t endpoint = 0; endpoint < 2 * shuffleEntrances.size(); endpoint++) {
         const auto directed = DirectedTarget(endpoint);
         if (!directed && SavedMixedPairs()[endpoint] == 0) {
@@ -1361,7 +1510,11 @@ static bool RedirectEndpoints(PlayState* play) {
         }
         const auto& row = shuffleEntrances[endpoint / 2];
         bool inner = endpoint % 2 != 0;
-        if (scene != (inner ? row.insideScene : row.outsideScene) || place != (inner ? row.outOf : row.into)) {
+        if (IsGrottoRow(endpoint / 2)) {
+            if (inner || hole != endpoint / 2 || scene != row.outsideScene) {
+                continue;
+            }
+        } else if (scene != (inner ? row.insideScene : row.outsideScene) || place != (inner ? row.outOf : row.into)) {
             continue;
         }
         // Great Bay's turtle can initiate its entrance transition during a cutscene.
@@ -1374,7 +1527,14 @@ static bool RedirectEndpoints(PlayState* play) {
         } else if (partner != endpoint) {
             Discover(endpoint, partner, true);
         }
-        if ((!directed && partner == endpoint) || EndpointArrival(partner) == place) {
+        if (!directed && partner == endpoint) {
+            return true;
+        }
+        if (IsGrottoRow(endpoint / 2) || IsGrottoRow(partner / 2)) {
+            RedirectMixedGrotto(play, endpoint, partner);
+            return true;
+        }
+        if (EndpointArrival(partner) == place) {
             return true;
         }
         play->nextEntrance = EndpointArrival(partner);
@@ -1395,8 +1555,8 @@ void OnBeforeTransitionSetup() {
     if (play == nullptr) {
         return;
     }
-    if (RedirectEndpoints(play) || RedirectGrotto(play) || RedirectInterior(play) || RedirectOverworld(play) ||
-        RedirectSpecialArea(play)) {
+    if (RedirectMixedGrottoExit(play) || RedirectEndpoints(play) || RedirectGrotto(play) || RedirectInterior(play) ||
+        RedirectOverworld(play) || RedirectSpecialArea(play)) {
         return;
     }
     u16 next = play->nextEntrance;
@@ -1444,7 +1604,9 @@ void OnBeforeTransitionSetup() {
         if (!shuffledExterior) {
             return; // Preserve vanilla warp destinations and cutscenes for fixed points.
         }
-        const u16 exterior = *shuffledExterior;
+        const u16 exterior = shuffledExterior->entrance;
+        const auto endpoint = shuffledExterior->endpoint;
+        const auto* point = endpoint && IsGrottoRow(*endpoint / 2) ? GrottoReturnFor(*endpoint / 2) : nullptr;
 
         // First warp: it heads for the Giants' Chamber, and SkipGiantsChamber swaps in the transition that
         // HandleGiantsCutsceneSkip queued (tagged with the boss scene). Point that one at the door instead.
@@ -1455,8 +1617,11 @@ void OnBeforeTransitionSetup() {
                         transition->entrance = exterior;
                         transition->cutsceneIndex = 0;
                         gSaveContext.respawnFlag = 0;
-                        pendingWarpRespawn = true;
-                        warpRespawnEntrance = exterior;
+                        if (point) {
+                            pendingGiantsGrotto = endpoint;
+                        } else {
+                            pendingExteriorRespawn = exterior;
+                        }
                         break;
                     }
                 }
@@ -1468,10 +1633,13 @@ void OnBeforeTransitionSetup() {
             if (next == warpTarget) {
                 MarkCleared(bossRow.insideScene);
                 play->nextEntrance = exterior;
-                gSaveContext.nextCutsceneIndex = 0xFFEF;
+                gSaveContext.nextCutsceneIndex = point ? 0 : 0xFFEF;
                 gSaveContext.respawnFlag = 0;
-                pendingWarpRespawn = true;
-                warpRespawnEntrance = exterior;
+                if (point) {
+                    play->nextEntrance = PrepareGrottoLanding(*point);
+                } else {
+                    pendingExteriorRespawn = exterior;
+                }
                 return;
             }
         }
