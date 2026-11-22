@@ -25,6 +25,7 @@ struct SlotData {
     std::vector<int32_t> vanillaSkulltulas;                 // RandoCheckId holding their vanilla token
     std::vector<std::pair<int32_t, int32_t>> entrancePairs; // shuffled doors: [door's "into", "into" behind it]
     std::vector<std::pair<int32_t, int32_t>> mixedEntrancePairs; // optional coupled endpoint IDs
+    std::vector<int32_t> owlWarpTargets;                         // one destination ID per owl in game order
     bool deathLink = false;
     uint32_t randomSeed = 0;
 

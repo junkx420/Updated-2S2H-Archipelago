@@ -44,7 +44,8 @@ const std::function<bool()>* ForeignAreaRule(u16 original, u16 arrival) {
 } // namespace
 
 bool HasActiveShuffle() {
-    return std::any_of(shuffleEntrances.begin(), shuffleEntrances.end(),
+    return RANDO_SAVE_OPTIONS[RO_SHUFFLE_OWL_WARPS] ||
+           std::any_of(shuffleEntrances.begin(), shuffleEntrances.end(),
                        [](const auto& row) { return RANDO_SAVE_OPTIONS[row.option] != RO_GENERIC_OFF; });
 }
 
@@ -52,6 +53,13 @@ TrackerExits BuildTrackerExits() {
     TrackerExits result;
     if (!HasActiveShuffle()) {
         return result;
+    }
+    for (const auto& owl : owlWarps) {
+        const size_t target = OwlWarpTarget(owl.id);
+        if (target != owl.id) {
+            const auto& arrival = owlWarps[target];
+            result[{ RR_MAX, owl.entrance }] = { arrival.region, &arrival.canLeave };
+        }
     }
     const auto& regions = LogicEndpointsByRow();
     for (size_t i = 0; i < shuffleEntrances.size(); i++) {

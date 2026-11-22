@@ -7,6 +7,7 @@
 #include "prevent_bss_reordering.h"
 #include "z_en_test7.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
+#include "2s2h/Rando/MiscBehavior/OwlWarpHooks.h"
 
 #define FLAGS                                                                                              \
     (ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_DRAW_CULLING_DISABLED | ACTOR_FLAG_FREEZE_EXCEPTION | \
@@ -663,8 +664,8 @@ void EnTest7_WarpCsWarp(EnTest7* this, PlayState* play) {
             PLAYER_PARAMS(gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams, PLAYER_START_MODE_OWL);
         gSaveContext.respawnFlag = -6;
     } else {
-        play->nextEntrance =
-            sOwlWarpEntrances[OWL_WARP_CS_GET_OCARINA_MODE(&this->actor) - OCARINA_MODE_WARP_TO_GREAT_BAY_COAST];
+        s32 owl = OWL_WARP_CS_GET_OCARINA_MODE(&this->actor) - OCARINA_MODE_WARP_TO_GREAT_BAY_COAST;
+        play->nextEntrance = Rando_ResolveOwlWarp(owl, sOwlWarpEntrances[owl]);
         if ((play->nextEntrance == ENTRANCE(SOUTHERN_SWAMP_POISONED, 10)) &&
             CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
             play->nextEntrance = ENTRANCE(SOUTHERN_SWAMP_CLEARED, 10);

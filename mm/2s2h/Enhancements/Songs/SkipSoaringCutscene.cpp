@@ -1,5 +1,6 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "2s2h/Rando/MiscBehavior/OwlWarpHooks.h"
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/ShipUtils.h"
 
@@ -27,7 +28,8 @@ static void SkipSoaringCutscene(Actor* actor, bool* should) {
             PLAYER_PARAMS(gSaveContext.respawn[RESPAWN_MODE_TOP].playerParams, PLAYER_START_MODE_OWL);
         gSaveContext.respawnFlag = -6;
     } else {
-        gPlayState->nextEntrance = sOwlWarpEntrancesForMods[ocarinaMode - OCARINA_MODE_WARP_TO_GREAT_BAY_COAST];
+        const s32 owl = ocarinaMode - OCARINA_MODE_WARP_TO_GREAT_BAY_COAST;
+        gPlayState->nextEntrance = Rando_ResolveOwlWarp(owl, sOwlWarpEntrancesForMods[owl]);
     }
 
     gPlayState->transitionTrigger = TRANS_TRIGGER_START;

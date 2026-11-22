@@ -26,6 +26,7 @@
 #include "2s2h/GameInteractor/GameInteractor.h"
 
 #include "2s2h/Enhancements/Songs/Songs.h"
+#include "2s2h/Rando/MiscBehavior/OwlWarpHooks.h"
 #include <libultraship/bridge/consolevariablebridge.h>
 
 #pragma increment_block_number "n64-us:128"
@@ -4041,9 +4042,13 @@ void KaleidoScope_Update(PlayState* play) {
                 play->msgCtx.ocarinaMode = OCARINA_MODE_END;
                 gSaveContext.prevHudVisibility = HUD_VISIBILITY_ALL;
             } else if (CHECK_BTN_ALL(input->press.button, BTN_A)) {
-                Audio_PlaySfx(NA_SE_SY_DECIDE);
-                Message_StartTextbox(play, 0x1B93, NULL);
-                pauseCtx->state = PAUSE_STATE_OWL_WARP_CONFIRM;
+                if (Rando_CanSelectOwlWarp(pauseCtx->cursorPoint[PAUSE_WORLD_MAP])) {
+                    Audio_PlaySfx(NA_SE_SY_DECIDE);
+                    Message_StartTextbox(play, 0x1B93, NULL);
+                    pauseCtx->state = PAUSE_STATE_OWL_WARP_CONFIRM;
+                } else {
+                    Audio_PlaySfx(NA_SE_SY_ERROR);
+                }
             } else {
                 KaleidoScope_UpdateOwlWarpNamePanel(play);
             }

@@ -30,6 +30,8 @@ const char* PoolName(RandoOptionId pool, bool mixed) {
             return "Overworld";
         case RO_SHUFFLE_SPECIAL_AREAS:
             return "Special Areas";
+        case RO_SHUFFLE_OWL_WARPS:
+            return "Owl Warps";
         default:
             return "Other";
     }
@@ -68,18 +70,17 @@ std::vector<Row> BuildRows(const std::vector<EntranceShuffle::TrackedEntrance>& 
         row.twoWay = line.twoWay;
         row.fromEndpoint = line.from;
         row.tooltip = std::string(PoolName(line.pool, line.mixed)) + ", from " + fromArea;
-        // Where the line arrives: the inside of a door pool's area, else the scene of the endpoint it leads to.
-        size_t toRow = line.to / 2;
-        s16 toScene = (line.twoWay || line.to % 2 != 0) ? table[toRow].insideScene : table[toRow].outsideScene;
         if (visible) {
+            s16 toScene = EntranceShuffle::TrackedArrivalScene(line);
             std::string toArea = options.sceneName ? options.sceneName(toScene) : std::to_string(toScene);
             row.tooltip += ", to " + toArea;
         }
         row.current = InScene(line.fromScene, options.currentScene);
         // Standing in the area a door pool's line leads to tells only what is already known once visible. Grottos
         // share one scene, so only the current grotto's line counts.
-        if (!row.current && visible && line.twoWay && InScene(table[toRow].insideScene, options.currentScene)) {
-            row.current = table[toRow].option != RO_SHUFFLE_GROTTOS || toRow == options.currentGrottoRow;
+        if (!row.current && visible && line.twoWay &&
+            InScene(EntranceShuffle::TrackedArrivalScene(line), options.currentScene)) {
+            row.current = table[line.to / 2].option != RO_SHUFFLE_GROTTOS || line.to / 2 == options.currentGrottoRow;
         }
         if (!search.empty() && Lower(row.group + " " + row.from + " " + row.to).find(search) == std::string::npos) {
             continue;

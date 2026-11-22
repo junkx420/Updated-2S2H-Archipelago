@@ -1,4 +1,5 @@
 #include "EntranceShuffle.h"
+#include "OwlWarpHooks.h"
 #include "Rando/Logic/Logic.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
 
@@ -16,6 +17,23 @@ namespace EntranceShuffle {
 
 // Time macros in shuffleAreaRules (AFTER, ...) live in Rando::Logic, like in the region files.
 using namespace Rando::Logic;
+
+// Song of Time resets the cycle even if the arrival has no walkable way out.
+// The other alternatives are the region's own way back to the mainland.
+// clang-format off
+const std::array<OwlWarp, 10> owlWarps = {{
+    { OWL_WARP_GREAT_BAY_COAST,   ENTRANCE(GREAT_BAY_COAST, 11),       "Great Bay Coast",  RR_GREAT_BAY_COAST_MARINE_LAB_EXTERIOR, [] { return CAN_PLAY_SONG(TIME) || CAN_USE_ABILITY(SWIM); } },
+    { OWL_WARP_ZORA_CAPE,         ENTRANCE(ZORA_CAPE, 6),             "Zora Cape",        RR_ZORA_CAPE_BEFORE_GREAT_BAY_TEMPLE,  [] { return CAN_PLAY_SONG(TIME) || CAN_BE_ZORA; } },
+    { OWL_WARP_SNOWHEAD,          ENTRANCE(SNOWHEAD, 3),              "Snowhead",         RR_SNOWHEAD_NEAR_PATH,                [] { return true; } },
+    { OWL_WARP_MOUNTAIN_VILLAGE,  ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8),"Mountain Village", RR_MOUNTAIN_VILLAGE,                  [] { return true; } },
+    { OWL_WARP_CLOCK_TOWN,        ENTRANCE(SOUTH_CLOCK_TOWN, 9),      "Clock Town",       RR_CLOCK_TOWN_SOUTH,                  [] { return true; } },
+    { OWL_WARP_MILK_ROAD,         ENTRANCE(MILK_ROAD, 4),             "Milk Road",        RR_MILK_ROAD,                         [] { return true; } },
+    { OWL_WARP_WOODFALL,          ENTRANCE(WOODFALL, 4),              "Woodfall",         RR_WOODFALL_OWL_STATUE_PLATFORM,       [] { return CAN_PLAY_SONG(TIME) || CAN_BE_DEKU; } },
+    { OWL_WARP_SOUTHERN_SWAMP,    ENTRANCE(SOUTHERN_SWAMP_POISONED, 10),"Southern Swamp",  RR_SOUTHERN_SWAMP_NORTH,              [] { return true; } },
+    { OWL_WARP_IKANA_CANYON,      ENTRANCE(IKANA_CANYON, 4),          "Ikana Canyon",     RR_IKANA_CANYON_UPPER,                [] { return true; } },
+    { OWL_WARP_STONE_TOWER,       ENTRANCE(STONE_TOWER, 3),           "Stone Tower",      RR_STONE_TOWER_TOP,                   [] { return CAN_PLAY_SONG(TIME) || HAS_ITEM(ITEM_HOOKSHOT); } },
+}};
+// clang-format on
 
 // clang-format off
 const std::vector<ShuffleEntrance> shuffleEntrances = {
@@ -706,6 +724,37 @@ std::optional<u16> ShuffledBossExterior(size_t boss) {
     return moved ? std::optional{ exterior } : std::nullopt;
 }
 
+size_t OwlWarpTarget(size_t source) {
+    if (source < owlWarps.size() && RANDO_SAVE_OPTIONS[RO_SHUFFLE_OWL_WARPS]) {
+        const auto value = gSaveContext.save.shipSaveInfo.rando.owlWarpTargets[source];
+        if (value != 0 && value <= owlWarps.size()) {
+            return value - 1;
+        }
+    }
+    return source;
+}
+
+void SetOwlWarpTargets(const std::vector<int32_t>& targets) {
+    auto& save = gSaveContext.save.shipSaveInfo.rando;
+    std::array<u8, sizeof(save.owlWarpTargets)> proposed{};
+    if (RANDO_SAVE_OPTIONS[RO_SHUFFLE_OWL_WARPS] && targets.size() == proposed.size()) {
+        std::array<bool, sizeof(save.owlWarpTargets)> seen{};
+        for (size_t source = 0; source < targets.size(); ++source) {
+            const int32_t target = targets[source];
+            if (target < 0 || target >= (int32_t)targets.size() || (size_t)target == source || seen[target]) {
+                proposed.fill(0);
+                break;
+            }
+            seen[target] = true;
+            proposed[source] = target + 1;
+        }
+    }
+    if (!std::equal(proposed.begin(), proposed.end(), save.owlWarpTargets)) {
+        std::copy(proposed.begin(), proposed.end(), save.owlWarpTargets);
+        std::fill_n(save.owlWarpsDiscovered, sizeof(save.owlWarpsDiscovered), 0);
+    }
+}
+
 // ---- Entrance tracker: discoveries ----
 
 static constexpr size_t MAX_DISCOVERED = 8 * sizeof(RandoSaveInfo::entrancesDiscovered);
@@ -715,6 +764,10 @@ static u8* Discovered() {
 }
 
 bool IsDiscovered(size_t endpoint) {
+    if (endpoint >= MAX_ENDPOINTS && endpoint - MAX_ENDPOINTS < owlWarps.size()) {
+        const size_t owl = endpoint - MAX_ENDPOINTS;
+        return (gSaveContext.save.shipSaveInfo.rando.owlWarpsDiscovered[owl / 8] & (1 << (owl % 8))) != 0;
+    }
     return endpoint < MAX_DISCOVERED && (Discovered()[endpoint / 8] & (1 << (endpoint % 8))) != 0;
 }
 
@@ -801,8 +854,18 @@ static void MarkCleared(s16 bossScene) {
 
 static bool pendingWarpRespawn = false;
 static u16 warpRespawnEntrance = 0;
+static std::optional<size_t> pendingOwlWarp;
+static u16 PlaceOf(u16 entrance);
 
 void OnSceneInit(s16 sceneId, s8 spawnNum) {
+    if (pendingOwlWarp) {
+        const size_t source = *pendingOwlWarp;
+        pendingOwlWarp.reset();
+        const size_t target = OwlWarpTarget(source);
+        if (target != source && PlaceOf(gSaveContext.save.entrance) == owlWarps[target].entrance) {
+            gSaveContext.save.shipSaveInfo.rando.owlWarpsDiscovered[source / 8] |= 1 << (source % 8);
+        }
+    }
     if (!pendingWarpRespawn) {
         return;
     }
@@ -1319,6 +1382,13 @@ std::vector<TrackedEntrance> TrackedEntrances() {
                 { endpoint, partner, shuffleEntrances[endpoint / 2].option, true, false, SideScene(endpoint) });
         }
     }
+    for (size_t owl = 0; owl < owlWarps.size(); ++owl) {
+        const size_t target = OwlWarpTarget(owl);
+        if (target != owl) {
+            lines.push_back({ MAX_ENDPOINTS + owl, MAX_ENDPOINTS + target, RO_SHUFFLE_OWL_WARPS, false, false,
+                              (s16)Entrance_GetSceneIdAbsolute(owlWarps[owl].entrance) });
+        }
+    }
     return lines;
 }
 
@@ -1344,6 +1414,9 @@ static std::string RowName(size_t row) {
 // The spoiler log's entrance column: a door pool's door, "Region -> Place" for an overworld exit (__init__.py
 // connect_entrances), the Archipelago exit for a mixed endpoint.
 std::string FromName(const TrackedEntrance& line) {
+    if (line.pool == RO_SHUFFLE_OWL_WARPS) {
+        return std::string("Song of Soaring: ") + owlWarps[line.from - MAX_ENDPOINTS].name;
+    }
     if (line.mixed) {
         return ExitName(line.from);
     }
@@ -1355,7 +1428,18 @@ std::string FromName(const TrackedEntrance& line) {
 }
 
 std::string ToName(const TrackedEntrance& line) {
+    if (line.pool == RO_SHUFFLE_OWL_WARPS) {
+        return owlWarps[line.to - MAX_ENDPOINTS].name;
+    }
     return line.mixed ? ExitName(line.to) : RowName(line.to / 2);
+}
+
+s16 TrackedArrivalScene(const TrackedEntrance& line) {
+    if (line.pool == RO_SHUFFLE_OWL_WARPS) {
+        return Entrance_GetSceneIdAbsolute(owlWarps[line.to - MAX_ENDPOINTS].entrance);
+    }
+    const auto& row = shuffleEntrances[line.to / 2];
+    return (line.twoWay || line.to % 2 != 0) ? row.insideScene : row.outsideScene;
 }
 
 size_t CurrentGrottoRow() {
@@ -1368,3 +1452,32 @@ size_t CurrentGrottoRow() {
 } // namespace EntranceShuffle
 
 } // namespace Rando
+
+extern "C" bool Rando_CanSelectOwlWarp(int32_t source) {
+    using namespace Rando::EntranceShuffle;
+    if (!IS_RANDO || source < 0) {
+        return true;
+    }
+    const size_t target = OwlWarpTarget(source);
+    return target == (size_t)source || owlWarps[target].canLeave();
+}
+
+extern "C" uint16_t Rando_ResolveOwlWarp(int32_t source, uint16_t vanillaEntrance) {
+    using namespace Rando::EntranceShuffle;
+    if (!IS_RANDO || source < 0) {
+        return vanillaEntrance;
+    }
+    const size_t target = OwlWarpTarget(source);
+    if (target == (size_t)source) {
+        return vanillaEntrance;
+    }
+    pendingOwlWarp = source;
+    const u16 entrance = owlWarps[target].entrance;
+    if (entrance == ENTRANCE(SOUTHERN_SWAMP_POISONED, 10) && CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
+        return ENTRANCE(SOUTHERN_SWAMP_CLEARED, 10);
+    }
+    if (entrance == ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8) && CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
+        return ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 8);
+    }
+    return entrance;
+}

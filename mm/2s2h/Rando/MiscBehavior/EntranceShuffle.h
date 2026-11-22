@@ -2,6 +2,7 @@
 #define RANDO_ENTRANCE_SHUFFLE_H
 
 #include "Rando/Rando.h"
+#include <array>
 #include <functional>
 #include <map>
 #include <optional>
@@ -40,6 +41,18 @@ struct ShuffleAreaRule {
 };
 
 extern const std::vector<ShuffleAreaRule> shuffleAreaRules;
+
+struct OwlWarp {
+    u8 id;
+    u16 entrance;
+    const char* name;
+    RandoRegionId region;
+    std::function<bool()> canLeave;
+};
+
+extern const std::array<OwlWarp, 10> owlWarps;
+size_t OwlWarpTarget(size_t source);
+void SetOwlWarpTargets(const std::vector<int32_t>& targets);
 
 struct TrackerExit {
     RandoRegionId target;
@@ -132,6 +145,7 @@ bool IsDiscovered(size_t endpoint);
 // Display names of a line, word for word the spoiler log's ("from" is the entrance column, "to" the exit column).
 std::string FromName(const TrackedEntrance& line);
 std::string ToName(const TrackedEntrance& line);
+s16 TrackedArrivalScene(const TrackedEntrance& line);
 // The grotto row of the current grotto (they all share SCENE_KAKUSIANA), or (size_t)-1.
 size_t CurrentGrottoRow();
 

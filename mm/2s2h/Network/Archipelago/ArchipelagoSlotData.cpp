@@ -46,6 +46,9 @@ std::vector<std::string> SlotData::Parse(const nlohmann::json& data) {
         if (data.contains("mixed_entrance_pairs")) {
             mixedEntrancePairs = data["mixed_entrance_pairs"].get<std::vector<std::pair<int32_t, int32_t>>>();
         }
+        if (data.contains("owl_warp_targets")) {
+            owlWarpTargets = data["owl_warp_targets"].get<std::vector<int32_t>>();
+        }
     } catch (const std::exception& e) { warnings.push_back(std::string("parse error: ") + e.what()); }
     valid = true;
     return warnings;

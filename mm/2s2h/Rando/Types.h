@@ -3664,6 +3664,7 @@ typedef enum {
     RO_SHUFFLE_BEAN_PLANTING,
     RO_SHUFFLE_ROCKS,
     RO_SHUFFLE_SIGNS,
+    RO_SHUFFLE_OWL_WARPS,
     RO_MAX,
 } RandoOptionId;
 

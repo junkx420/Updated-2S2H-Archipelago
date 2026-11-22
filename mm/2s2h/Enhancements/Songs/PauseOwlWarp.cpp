@@ -3,6 +3,7 @@
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/ShipUtils.h"
 #include "2s2h/Rando/Logic/Logic.h"
+#include "2s2h/Rando/MiscBehavior/OwlWarpHooks.h"
 
 extern "C" {
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
@@ -61,7 +62,8 @@ static void HandleConfirmingState(PauseContext* pauseCtx, Input* input) {
 
             Message_CloseTextbox(gPlayState);
 
-            gPlayState->nextEntrance = sOwlWarpEntrancesForMods[pauseCtx->cursorPoint[PAUSE_WORLD_MAP]];
+            const s32 owl = pauseCtx->cursorPoint[PAUSE_WORLD_MAP];
+            gPlayState->nextEntrance = Rando_ResolveOwlWarp(owl, sOwlWarpEntrancesForMods[owl]);
             gPlayState->transitionTrigger = TRANS_TRIGGER_START;
             gPlayState->transitionType = TRANS_TYPE_FADE_WHITE;
         } else { // No
@@ -235,6 +237,10 @@ static void HandlePauseOwlWarp(PauseContext* pauseCtx) {
 
             if (CHECK_BTN_ALL(input->press.button, BTN_A) && pauseCtx->cursorSpecialPos == 0 &&
                 pauseCtx->worldMapPoints[pauseCtx->cursorPoint[PAUSE_WORLD_MAP]]) {
+                if (!Rando_CanSelectOwlWarp(pauseCtx->cursorPoint[PAUSE_WORLD_MAP])) {
+                    Audio_PlaySfx(NA_SE_SY_ERROR);
+                    return;
+                }
                 pauseCtx->itemDescriptionOn = true;
                 Audio_PlaySfx(NA_SE_SY_DECIDE);
                 // Use Kaleido's open text variant that sets the dark black message box
