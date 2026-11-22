@@ -87,8 +87,9 @@ TrackerExits BuildTrackerExits() {
     }
 
     for (size_t end = 0; end < 2 * shuffleEntrances.size(); end++) {
-        const auto partner = MixedPartner(end);
-        if (partner == end) {
+        const auto directed = DirectedTarget(end);
+        const auto partner = directed ? *directed : MixedPartner(end);
+        if (!directed && partner == end) {
             continue;
         }
         const auto& row = shuffleEntrances[end / 2];

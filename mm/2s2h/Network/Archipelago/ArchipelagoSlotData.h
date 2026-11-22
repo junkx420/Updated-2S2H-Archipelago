@@ -27,6 +27,7 @@ struct SlotData {
     std::vector<std::pair<int32_t, int32_t>> mixedEntrancePairs; // optional coupled endpoint IDs
     std::vector<int32_t> owlWarpTargets;                         // one destination ID per owl in game order
     int32_t spawnTarget = -1;
+    std::vector<std::pair<int32_t, int32_t>> directedEntranceTargets;
     bool deathLink = false;
     uint32_t randomSeed = 0;
 

@@ -42,6 +42,9 @@ const std::array<CycleSpawn, 3> cycleSpawns = {{
     { ENTRANCE(WEST_CLOCK_TOWN, 1),  ENTRANCE(SOUTH_CLOCK_TOWN, 5), "West Clock Town",  RR_CLOCK_TOWN_WEST },
     { ENTRANCE(EAST_CLOCK_TOWN, 1),  ENTRANCE(SOUTH_CLOCK_TOWN, 7), "East Clock Town",  RR_CLOCK_TOWN_EAST },
 }};
+static constexpr RandoOptionId decouplePools[] = {
+    RO_SHUFFLE_DUNGEON_ENTRANCES, RO_SHUFFLE_INTERIORS, RO_SHUFFLE_OVERWORLD, RO_SHUFFLE_SPECIAL_AREAS,
+};
 // clang-format on
 
 // clang-format off
@@ -573,6 +576,8 @@ static constexpr size_t MAX_ROWS = sizeof(RandoSaveInfo::entrancePairs) / sizeof
 static constexpr size_t MAX_ENDPOINTS =
     sizeof(RandoSaveInfo::mixedEntrancePairs) / sizeof(RandoSaveInfo::mixedEntrancePairs[0]);
 
+static constexpr size_t NO_ROW = (size_t)-1;
+
 static u16* SavedPairs() {
     return gSaveContext.save.shipSaveInfo.rando.entrancePairs;
 }
@@ -722,6 +727,91 @@ size_t DoorForInside(size_t inside) {
     return inside;
 }
 
+static bool IsOverworldRow(size_t row) {
+    return shuffleEntrances[row].option == RO_SHUFFLE_OVERWORLD;
+}
+
+// Places in the overworld have one row for each direction.
+static size_t OverworldOpposite(size_t row) {
+    for (size_t other = 0; other < shuffleEntrances.size() && other < MAX_ROWS; other++) {
+        if (IsOverworldRow(other) && shuffleEntrances[other].into == shuffleEntrances[row].outOf) {
+            return other;
+        }
+    }
+    return NO_ROW;
+}
+
+static bool IsDirectedEndpoint(size_t endpoint) {
+    const size_t index = endpoint / 2;
+    if (endpoint >= MAX_ENDPOINTS || index >= shuffleEntrances.size()) {
+        return false;
+    }
+    const auto& row = shuffleEntrances[index];
+    if (!RANDO_SAVE_OPTIONS[row.option] ||
+        std::find(std::begin(decouplePools), std::end(decouplePools), row.option) == std::end(decouplePools) ||
+        IsWaterRow(index) || IsCycleSpawnRoute(index) || (MixSelected(row.option) && FixedWhenMixed(index)) ||
+        (IsInteriorRow(index) && HoursOf(index) == INTERIOR_OWN_HOURS) ||
+        (row.into == mixedOnlyEntrance && !IsMixedRow(index))) {
+        return false;
+    }
+    if (!IsOverworldRow(index)) {
+        return !IsMixedRow(index) || MixedPartner(endpoint) != endpoint;
+    }
+    if (endpoint % 2 != 0 || IsTownGate(row)) {
+        return false;
+    }
+    const size_t partner = IsMixedRow(index) ? MixedPartner(endpoint) : 2 * OverworldOpposite(InsideBehind(index));
+    return partner / 2 < shuffleEntrances.size() && !IsTownGate(shuffleEntrances[partner / 2]);
+}
+
+static bool CanDirect(size_t source, size_t target) {
+    if (!IsDirectedEndpoint(source) || !IsDirectedEndpoint(target)) {
+        return false;
+    }
+    const size_t a = source / 2;
+    const size_t b = target / 2;
+    if (IsMixedRow(a) || IsMixedRow(b)) {
+        return CanMix(source, target);
+    }
+    return shuffleEntrances[a].option == shuffleEntrances[b].option &&
+           (!IsInteriorRow(a) || HoursOf(a) == HoursOf(b)) && (IsOverworldRow(a) || (source % 2 != target % 2));
+}
+
+std::optional<size_t> DirectedTarget(size_t source) {
+    if (!RANDO_SAVE_OPTIONS[RO_DECOUPLE_ENTRANCES] || source >= MAX_ENDPOINTS) {
+        return std::nullopt;
+    }
+    const auto value = gSaveContext.save.shipSaveInfo.rando.directedEntranceTargets[source];
+    if (value == 0 || value > 2 * shuffleEntrances.size()) {
+        return std::nullopt;
+    }
+    return value - 1;
+}
+
+void SetDirectedTargets(const std::vector<std::pair<int32_t, int32_t>>& targets) {
+    auto& saved = gSaveContext.save.shipSaveInfo.rando.directedEntranceTargets;
+    static_assert(std::extent_v<decltype(RandoSaveInfo::directedEntranceTargets)> == MAX_ENDPOINTS);
+    std::fill_n(saved, MAX_ENDPOINTS, 0);
+    if (!RANDO_SAVE_OPTIONS[RO_DECOUPLE_ENTRANCES] || targets.empty()) {
+        return;
+    }
+    std::array<u16, MAX_ENDPOINTS> proposed{};
+    std::array<bool, MAX_ENDPOINTS> used{};
+    for (auto [source, target] : targets) {
+        if (source < 0 || target < 0 || !CanDirect(source, target) || proposed[source] || used[target]) {
+            return;
+        }
+        proposed[source] = target + 1;
+        used[target] = true;
+    }
+    for (size_t source = 0; source < 2 * shuffleEntrances.size(); ++source) {
+        if (IsDirectedEndpoint(source) != (proposed[source] != 0)) {
+            return;
+        }
+    }
+    std::copy(proposed.begin(), proposed.end(), saved);
+}
+
 // Compose the two inverse pairings, preserving the vanilla warp for fixed points.
 std::optional<u16> ShuffledBossExterior(size_t boss) {
     const size_t bossDoor = DoorForInside(boss);
@@ -733,6 +823,17 @@ std::optional<u16> ShuffledBossExterior(size_t boss) {
             continue;
         }
         size_t endpoint = 2 * temple + 1;
+        if (DirectedTarget(endpoint)) {
+            // Blue warps still follow the entrance into the temple, not its independently assigned exit.
+            for (size_t source = 0; source < 2 * shuffleEntrances.size(); ++source) {
+                if (DirectedTarget(source) == endpoint) {
+                    exterior = EndpointArrival(source);
+                    moved |= source != 2 * temple;
+                    break;
+                }
+            }
+            break;
+        }
         size_t partner = MixedPartner(endpoint);
         if (partner != endpoint) {
             exterior = EndpointArrival(partner);
@@ -823,7 +924,7 @@ bool IsDiscovered(size_t endpoint) {
 // outs, deaths, songs and warps (1, -1, -3, -6, ...) reload a place already reached; loading a save never sets up a
 // transition (z_play.c:626 is the hook's only caller).
 // Rows of a mixed pool belong to the mixed pairing only: a door redirect that leaves them alone (e.g. during a
-// cutscene, when RedirectMixed declines) must not mark them as their own pair.
+// cutscene, when RedirectEndpoints declines) must not mark them as their own pair.
 static void Discover(size_t first, size_t second, bool mixed = false) {
     s32 flag = gSaveContext.respawnFlag;
     if ((flag != 0 && flag != -2 && flag != 4) || (!mixed && (IsMixedRow(first / 2) || IsMixedRow(second / 2)))) {
@@ -936,8 +1037,6 @@ void OnSceneInit(s16 sceneId, s8 spawnNum) {
 }
 
 // ---- Grottos ----
-
-static constexpr size_t NO_ROW = (size_t)-1;
 
 static bool IsGrottoRow(size_t row) {
     return shuffleEntrances[row].option == RO_SHUFFLE_GROTTOS;
@@ -1098,21 +1197,6 @@ static bool RedirectInterior(PlayState* play) {
 
 // ---- Overworld ----
 
-static bool IsOverworldRow(size_t row) {
-    return shuffleEntrances[row].option == RO_SHUFFLE_OVERWORLD;
-}
-
-// The overworld row of the same transition taken the other way (its "into" is this row's "outOf"; the generator checks
-// that every overworld row has one).
-static size_t OverworldOpposite(size_t row) {
-    for (size_t other = 0; other < shuffleEntrances.size() && other < MAX_ROWS; other++) {
-        if (IsOverworldRow(other) && shuffleEntrances[other].into == shuffleEntrances[row].outOf) {
-            return other;
-        }
-    }
-    return NO_ROW;
-}
-
 // The place an entrance leads to, without its variant: the spring and cleared entrance groups have the spawns of the
 // winter and poisoned ones (Play_Init swaps only the scene and keeps spawn and layer, z_play.c:2264-2299), and the
 // layer bits (0-3) are chosen per arrival. Rows are written with these base entrances.
@@ -1262,8 +1346,8 @@ static s16 MixedScene(s16 scene) {
     return (scene == SCENE_INISIE_R || scene == SCENE_F41) ? scene : Play_GetOriginalSceneId(scene);
 }
 
-static bool RedirectMixed(PlayState* play) {
-    if (RANDO_SAVE_OPTIONS[RO_MIX_ENTRANCE_POOLS] == RO_GENERIC_OFF ||
+static bool RedirectEndpoints(PlayState* play) {
+    if ((!RANDO_SAVE_OPTIONS[RO_MIX_ENTRANCE_POOLS] && !RANDO_SAVE_OPTIONS[RO_DECOUPLE_ENTRANCES]) ||
         (gSaveContext.respawnFlag != 0 && gSaveContext.respawnFlag != -2)) {
         return false;
     }
@@ -1271,7 +1355,8 @@ static bool RedirectMixed(PlayState* play) {
     u16 place = PlaceOf(next);
     s16 scene = MixedScene(play->sceneId);
     for (size_t endpoint = 0; endpoint < 2 * shuffleEntrances.size(); endpoint++) {
-        if (SavedMixedPairs()[endpoint] == 0) {
+        const auto directed = DirectedTarget(endpoint);
+        if (!directed && SavedMixedPairs()[endpoint] == 0) {
             continue;
         }
         const auto& row = shuffleEntrances[endpoint / 2];
@@ -1283,11 +1368,13 @@ static bool RedirectMixed(PlayState* play) {
         if (play->csCtx.state != CS_STATE_IDLE && (inner || row.into != ENTRANCE(GREAT_BAY_TEMPLE, 0))) {
             return false;
         }
-        size_t partner = MixedPartner(endpoint);
-        if (partner != endpoint) {
+        size_t partner = directed ? *directed : MixedPartner(endpoint);
+        if (directed) {
+            Discovered()[endpoint / 8] |= 1 << (endpoint % 8);
+        } else if (partner != endpoint) {
             Discover(endpoint, partner, true);
         }
-        if (partner == endpoint || EndpointArrival(partner) == place) {
+        if ((!directed && partner == endpoint) || EndpointArrival(partner) == place) {
             return true;
         }
         play->nextEntrance = EndpointArrival(partner);
@@ -1308,7 +1395,7 @@ void OnBeforeTransitionSetup() {
     if (play == nullptr) {
         return;
     }
-    if (RedirectMixed(play) || RedirectGrotto(play) || RedirectInterior(play) || RedirectOverworld(play) ||
+    if (RedirectEndpoints(play) || RedirectGrotto(play) || RedirectInterior(play) || RedirectOverworld(play) ||
         RedirectSpecialArea(play)) {
         return;
     }
@@ -1325,9 +1412,10 @@ void OnBeforeTransitionSetup() {
         }
         size_t inside = InsideBehind(door);
         const ShuffleEntrance& insideRow = shuffleEntrances[inside];
-        bool through = scene == doorRow.outsideScene && next == doorRow.into;
+        bool through = scene == doorRow.outsideScene && next == doorRow.into && !DirectedTarget(2 * door);
         // A boss room's way out is its blue warp (below), which marks nothing.
-        bool back = doorRow.templeExit == 0 && scene == insideRow.insideScene && next == insideRow.outOf;
+        bool back = doorRow.templeExit == 0 && scene == insideRow.insideScene && next == insideRow.outOf &&
+                    !DirectedTarget(2 * inside + 1);
         if (through || back) {
             DiscoverDoor(door, inside);
         }
@@ -1418,6 +1506,9 @@ std::vector<TrackedEntrance> TrackedEntrances() {
         if (!Movable(row)) {
             continue;
         }
+        if (DirectedTarget(2 * row)) {
+            continue;
+        }
         if (IsOverworldRow(row)) {
             lines.push_back(
                 { 2 * row, 2 * InsideBehind(row), shuffleEntrances[row].option, false, false, SideScene(2 * row) });
@@ -1427,6 +1518,11 @@ std::vector<TrackedEntrance> TrackedEntrances() {
         }
     }
     for (size_t endpoint = 0; endpoint < 2 * rows; endpoint++) {
+        if (auto target = DirectedTarget(endpoint)) {
+            lines.push_back({ endpoint, *target, shuffleEntrances[endpoint / 2].option, IsMixedRow(endpoint / 2), false,
+                              SideScene(endpoint), true });
+            continue;
+        }
         if (!IsMixedEndpoint(endpoint)) {
             continue;
         }
@@ -1478,7 +1574,7 @@ std::string FromName(const TrackedEntrance& line) {
     if (line.pool == RO_SHUFFLE_OWL_WARPS) {
         return std::string("Song of Soaring: ") + owlWarps[line.from - MAX_ENDPOINTS].name;
     }
-    if (line.mixed) {
+    if (line.mixed || line.directed) {
         return ExitName(line.from);
     }
     if (line.twoWay) {
@@ -1496,7 +1592,7 @@ std::string ToName(const TrackedEntrance& line) {
     if (line.pool == RO_SHUFFLE_OWL_WARPS) {
         return owlWarps[line.to - MAX_ENDPOINTS].name;
     }
-    return line.mixed ? ExitName(line.to) : RowName(line.to / 2);
+    return (line.mixed || line.directed) ? ExitName(line.to) : RowName(line.to / 2);
 }
 
 s16 TrackedArrivalScene(const TrackedEntrance& line) {
