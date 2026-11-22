@@ -96,6 +96,16 @@ source_group("include" FILES ${Header_Files__include})
 # }}}
 
 file(GLOB_RECURSE ship__ RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "2s2h/*.c" "2s2h/*.cpp" "2s2h/*.h" "2s2h/*.hpp")
+
+# Keep the upstream region sources intact. The tracker scopes the ability tests
+# to its own evaluations, so native seed generation uses the original expressions.
+file(GLOB rando_regions "2s2h/Rando/Logic/Regions/*.cpp")
+set(tracker_ability_macros "${CMAKE_CURRENT_SOURCE_DIR}/2s2h/Rando/Logic/TrackerAbilityMacros.h")
+if (MSVC)
+    set_source_files_properties(${rando_regions} PROPERTIES COMPILE_OPTIONS "/FI${tracker_ability_macros}")
+else()
+    set_source_files_properties(${rando_regions} PROPERTIES COMPILE_OPTIONS "-include;${tracker_ability_macros}")
+endif()
 # Create source groups that match the real file directory paths
 foreach(source IN LISTS ship__)
     get_filename_component(source_path "${source}" PATH)

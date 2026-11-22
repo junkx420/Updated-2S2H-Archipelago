@@ -2,6 +2,9 @@
 #include "2s2h/ShipInit.hpp"
 
 #include "Logic.h"
+#include "TrackerLogic.h"
+#include "2s2h/Rando/MiscBehavior/Abilities.h"
+#include "2s2h/Rando/MiscBehavior/DoorKeys.h"
 
 namespace Rando {
 
@@ -169,6 +172,11 @@ void EnsureRegionTimeState(std::unordered_map<RandoRegionId, RegionTimeState>& r
 // Stop permanently if any timeStayRestrictions check fails
 void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& reachableRegions,
                           std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates) {
+    FindReachableRegions(currentRegion, reachableRegions, regionTimeStates, false);
+}
+
+void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& reachableRegions,
+                          std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates, bool useForkRules) {
     // Ensure current region has time state
     EnsureRegionTimeState(regionTimeStates, currentRegion);
 
@@ -187,7 +195,8 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
         // Set global time for check evaluation
         gCurrentRegionTime = currentTime;
 
-        if (condition.first()) {
+        if (useForkRules ? Abilities::EvaluateTrackerRule(currentRegion, connectedRegionId, condition.first)
+                         : condition.first()) {
             auto& targetRegion = Regions[connectedRegionId];
             RegionTimeState incomingState = { .timeSlices = currentTime,
                                               .canStayOverTime = targetRegion.canStayOverTime };
@@ -206,7 +215,7 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
                 regionTimeStates[connectedRegionId] = incomingState;
             }
 
-            FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates);
+            FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates, useForkRules);
         }
     }
 
@@ -216,7 +225,9 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
         gCurrentRegionTime = currentTime;
 
         RandoRegionId connectedRegionId = GetRegionIdFromEntrance(exitId);
-        if (regionExit.condition()) {
+        if (useForkRules ? !DoorKeys::IsEntranceLocked(exitId) &&
+                               Abilities::EvaluateTrackerRule(currentRegion, RR_MAX, regionExit.condition)
+                         : regionExit.condition()) {
             auto& targetRegion = Regions[connectedRegionId];
             RegionTimeState incomingState = { .timeSlices = currentTime,
                                               .canStayOverTime = targetRegion.canStayOverTime };
@@ -235,7 +246,7 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
                 regionTimeStates[connectedRegionId] = incomingState;
             }
 
-            FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates);
+            FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates, useForkRules);
         }
     }
 }

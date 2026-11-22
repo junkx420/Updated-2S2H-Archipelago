@@ -21,5 +21,7 @@
 extern bool HaveEnemySoul(ActorId enemyId);
 // False while Shuffle NPC Souls is on and the soul of this actor's NPC has not been found.
 extern bool HaveNpcSoul(Actor* actor);
+bool HaveNpcSoulsFor(RandoCheckId check);
+bool HaveNpcSoulsFor(RandoEvent event);
 
 #endif // SOULS_H

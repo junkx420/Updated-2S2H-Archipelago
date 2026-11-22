@@ -14,7 +14,7 @@ static constexpr Ability abilities[] = {
 };
 
 // The AP generator adds the ability to the matching 2S2H macros. Gate both bean macros because rain has its own path.
-[[maybe_unused]] static constexpr struct {
+static constexpr struct {
     RandoItemId item;
     const char* name;
 } abilityMacros[] = {
@@ -24,17 +24,18 @@ static constexpr Ability abilities[] = {
 };
 
 // Some regions test the song directly. Only gate these riding branches, preserving cows and the Night 2 escape.
-[[maybe_unused]] static constexpr struct {
+static constexpr struct {
     RandoItemId item;
     RandoRegionId from;
-    const char* target;
-    const char* branch;
+    int target;
+    bool isCheck;
+    std::string_view branch;
 } abilityRules[] = {
-    { RI_ABILITY_RIDE_EPONA, RR_TERMINA_FIELD, "RR_TERMINA_FIELD_BEFORE_GREAT_BAY_COAST", "CAN_PLAY_SONG(EPONA)" },
-    { RI_ABILITY_RIDE_EPONA, RR_TERMINA_FIELD_BEFORE_GREAT_BAY_COAST, "RR_TERMINA_FIELD", "CAN_PLAY_SONG(EPONA)" },
-    { RI_ABILITY_RIDE_EPONA, RR_GORMAN_TRACK_FRONT, "RC_GORMAN_TRACK_GARO_MASK", "CAN_PLAY_SONG(EPONA)" },
-    { RI_ABILITY_RIDE_EPONA, RR_GORMAN_TRACK, "RR_GORMAN_TRACK_FRONT", "CAN_PLAY_SONG(EPONA)" },
-    { RI_ABILITY_RIDE_EPONA, RR_GORMAN_TRACK, "RR_GORMAN_TRACK_BACK", "CAN_PLAY_SONG(EPONA)" },
+    { RI_ABILITY_RIDE_EPONA, RR_TERMINA_FIELD, RR_TERMINA_FIELD_BEFORE_GREAT_BAY_COAST, false, "CAN_PLAY_SONG(EPONA)" },
+    { RI_ABILITY_RIDE_EPONA, RR_TERMINA_FIELD_BEFORE_GREAT_BAY_COAST, RR_TERMINA_FIELD, false, "CAN_PLAY_SONG(EPONA)" },
+    { RI_ABILITY_RIDE_EPONA, RR_GORMAN_TRACK_FRONT, RC_GORMAN_TRACK_GARO_MASK, true, "CAN_PLAY_SONG(EPONA)" },
+    { RI_ABILITY_RIDE_EPONA, RR_GORMAN_TRACK, RR_GORMAN_TRACK_FRONT, false, "CAN_PLAY_SONG(EPONA)" },
+    { RI_ABILITY_RIDE_EPONA, RR_GORMAN_TRACK, RR_GORMAN_TRACK_BACK, false, "CAN_PLAY_SONG(EPONA)" },
 };
 
 const Ability* FindByItem(RandoItemId item) {
@@ -46,9 +47,65 @@ const Ability* FindByItem(RandoItemId item) {
     return nullptr;
 }
 
-static bool CanUse(RandoItemId item) {
+bool CanUse(RandoItemId item) {
     const auto* ability = FindByItem(item);
     return !RANDO_SAVE_OPTIONS[ability->option] || Flags_GetRandoInf(ability->flag);
+}
+
+namespace {
+
+struct TrackerRule {
+    RandoRegionId region;
+    int target;
+    bool isCheck;
+};
+
+// The region lambdas are shared with native seed generation. Requirements are
+// only visible while evaluating a tracker rule and never modify the inventory.
+thread_local const TrackerRule* currentTrackerRule = nullptr;
+
+bool Evaluate(TrackerRule context, const std::function<bool()>& rule) {
+    struct RestoreContext {
+        const TrackerRule* previous;
+        ~RestoreContext() {
+            currentTrackerRule = previous;
+        }
+    } restore{ currentTrackerRule };
+    currentTrackerRule = &context;
+    return rule();
+}
+
+} // namespace
+
+bool TrackerAllowsMacro(std::string_view name) {
+    if (currentTrackerRule) {
+        for (const auto& macro : abilityMacros) {
+            if (name == macro.name && !CanUse(macro.item)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool TrackerAllowsBranch(std::string_view name) {
+    if (currentTrackerRule) {
+        for (const auto& rule : abilityRules) {
+            if (rule.from == currentTrackerRule->region && rule.target == currentTrackerRule->target &&
+                rule.isCheck == currentTrackerRule->isCheck && rule.branch == name && !CanUse(rule.item)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool EvaluateTrackerRule(RandoRegionId region, RandoCheckId check, const std::function<bool()>& rule) {
+    return Evaluate({ region, check, true }, rule);
+}
+
+bool EvaluateTrackerRule(RandoRegionId region, RandoRegionId target, const std::function<bool()>& rule) {
+    return Evaluate({ region, target, false }, rule);
 }
 
 void RegisterHooks() {

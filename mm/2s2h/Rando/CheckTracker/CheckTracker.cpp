@@ -1,6 +1,6 @@
 
 #include "CheckTracker.h"
-#include "2s2h/Rando/Logic/Logic.h"
+#include "2s2h/Rando/Logic/TrackerLogic.h"
 #include "2s2h/ShipUtils.h"
 #include "2s2h/BenGui/UIWidgets.hpp"
 #include "2s2h/Rando/StaticData/StaticData.h"
@@ -269,7 +269,7 @@ bool CheckTrackerIsFiltered(RandoCheckId randoCheckId) {
     return filterCheck;
 }
 
-std::unordered_map<RandoCheckId, bool> checksInLogic;
+std::set<RandoCheckId> checksInLogic;
 static u32 lastFrame = 0;
 
 void RefreshChecksInLogic() {
@@ -278,67 +278,9 @@ void RefreshChecksInLogic() {
     }
 
     lastFrame = gGameState->frames;
-    checksInLogic.clear();
-
-    // Clear all events so they're re-evaluated fresh each refresh
-    for (int i = 0; i < RE_MAX; i++) {
-        RANDO_EVENTS[i] = 0;
-    }
-
-    std::set<RandoRegionId> reachableRegions = {
-        RR_MAX,
-        Rando::Logic::GetRegionIdFromEntrance(gSaveContext.save.entrance),
-    };
-    // Initialize time states using shared function
-    std::unordered_map<RandoRegionId, Rando::Logic::RegionTimeState> regionTimeStates =
-        Rando::Logic::InitializeRegionTimeStates(RR_MAX);
-
-    std::set<std::pair<RandoEvent, std::function<bool()>>*> appliedEvents;
-
-    // Iteratively explore until no new regions/events discovered
-    bool changed = true;
-    while (changed) {
-        changed = false;
-        auto prevSize = reachableRegions.size();
-
-        // Explore from all currently reachable regions
-        std::set<RandoRegionId> regionsToExplore = reachableRegions;
-        for (RandoRegionId regionId : regionsToExplore) {
-            Rando::Logic::FindReachableRegions(regionId, reachableRegions, regionTimeStates);
-        }
-
-        // Trigger events for newly discovered regions
-        for (RandoRegionId regionId : reachableRegions) {
-            auto& randoRegion = Rando::Logic::Regions[regionId];
-            Rando::Logic::SetCurrentRegionTime(regionTimeStates, regionId);
-
-            for (auto& event : randoRegion.events) {
-                if (!appliedEvents.contains(&event) && event.second()) {
-                    RANDO_EVENTS[event.first]++;
-                    appliedEvents.insert(&event);
-                    changed = true;
-                }
-            }
-        }
-
-        if (reachableRegions.size() != prevSize) {
-            changed = true;
-        }
-    }
-
-    // Evaluate checks for all reachable regions
-    for (RandoRegionId regionId : reachableRegions) {
-        auto& randoRegion = Rando::Logic::Regions[regionId];
-        Rando::Logic::SetCurrentRegionTime(regionTimeStates, regionId);
-
-        for (auto& [randoCheckId, accessLogicFunc] : randoRegion.checks) {
-            auto& randoStaticCheck = Rando::StaticData::Checks[randoCheckId];
-            auto& randoSaveCheck = RANDO_SAVE_CHECKS[randoCheckId];
-            if (randoSaveCheck.shuffled && !randoSaveCheck.obtained && accessLogicFunc.first()) {
-                checksInLogic.insert({ randoCheckId, true });
-            }
-        }
-    }
+    const auto currentRegion = Rando::Logic::GetRegionIdFromEntrance(gSaveContext.save.entrance);
+    checksInLogic =
+        Rando::Logic::EvaluateTrackerReachability(currentRegion, Rando::Logic::TrackerHasForkRules()).checks;
 }
 
 void CheckTrackerDrawNonLogicalList() {

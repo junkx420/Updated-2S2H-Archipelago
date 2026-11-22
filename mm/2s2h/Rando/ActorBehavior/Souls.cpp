@@ -192,6 +192,27 @@ const std::vector<NpcSoul> npcSouls = {
 
 // Never hidden, whatever soul their actor belongs to: (params & mask) == value. They open a way the logic treats as
 // open: the Goron Shrine gatekeeper opens the shrine (Regions/North.cpp, Goron Village exit to the shrine).
+template <typename Id>
+static bool HaveRequiredNpcSouls(Id id, std::vector<Id> NpcSoul::* requirements) {
+    int level = RANDO_SAVE_OPTIONS[RO_SHUFFLE_NPC_SOULS];
+    for (const auto& soul : npcSouls) {
+        const auto& entries = soul.*requirements;
+        if (soul.level <= level && std::find(entries.begin(), entries.end(), id) != entries.end() &&
+            !Flags_GetRandoInf(NPC_SOUL_RI_TO_RANDO_INF(soul.randoItemId))) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool HaveNpcSoulsFor(RandoCheckId check) {
+    return HaveRequiredNpcSouls(check, &NpcSoul::checks);
+}
+
+bool HaveNpcSoulsFor(RandoEvent event) {
+    return HaveRequiredNpcSouls(event, &NpcSoul::events);
+}
+
 struct NpcSoulException {
     int16_t actorId;
     int16_t paramsMask;
