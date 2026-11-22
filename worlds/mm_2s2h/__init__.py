@@ -17,7 +17,7 @@ from Fill import fill_restrictive
 from Options import OptionError
 from worlds.AutoWorld import LogicMixin, WebWorld, World
 
-from .enums_generated import (ABILITIES, DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_NAMES,
+from .enums_generated import (ABILITIES, CYCLE_SPAWNS, DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_NAMES,
                               ENTRANCE_SHUFFLE, NPC_SOULS,
                               OPTION_DEFAULTS, OWL_WARPS, RC_ID, RI_ID)
 from .items_generated import ITEMS
@@ -86,6 +86,7 @@ OW_GROUP = 1001
 MIX_DOOR_GROUP, MIX_INSIDE_GROUP = 1002, 1003
 MIX_OPTION = "RO_MIX_ENTRANCE_POOLS"
 OWL_WARP_OPTION = "RO_SHUFFLE_OWL_WARPS"
+SPAWN_OPTION = "RO_SHUFFLE_SPAWN"
 ENTRANCE_ROW_INDEX = {row["into"]: i for i, row in enumerate(ENTRANCE_SHUFFLE)}
 
 
@@ -203,6 +204,7 @@ class MM2S2HWorld(World):
         self.mixed_entrance_pairs: list[tuple[int, int]] = []
         self.owl_warp_targets: list[int] = []
         self.ut_owl_warp_targets: list[int] | None = None
+        self.spawn_target: int | None = None
         # The Zora Hall Rooms key exists since 0.7; the client keeps those doors open for older seeds (DoorKeys.cpp).
         self.door_keys = list(DOOR_KEYS)
 
@@ -220,6 +222,7 @@ class MM2S2HWorld(World):
             self.starting = [ri_by_id[int(i)] for i in passthrough["starting_items"]]
             self.ut_entrance_pairs = [tuple(pair) for pair in passthrough.get("entrance_pairs", [])]
             self.ut_owl_warp_targets = list(passthrough.get("owl_warp_targets", []))
+            self.spawn_target = passthrough.get("spawn_target")
             if version >= (0, 10):
                 self.ut_mixed_entrance_pairs = [tuple(pair) for pair in passthrough.get("mixed_entrance_pairs", [])]
             else:
@@ -614,7 +617,8 @@ class MM2S2HWorld(World):
     def _mixed_endpoints(self) -> dict[int, Entrance]:
         endpoints = {}
         for i, row in enumerate(ENTRANCE_SHUFFLE):
-            if not self._mix_selected(row["option"]) or row["into"] in ENTRANCE_MIX_FIXED or row["water"]:
+            if (not self._mix_selected(row["option"]) or row["into"] in ENTRANCE_MIX_FIXED
+                    or row["into"] in self.spawn_route or row["water"]):
                 continue
             if row["hours"] not in (None, "ALWAYS_OPEN"):
                 continue
@@ -678,6 +682,16 @@ class MM2S2HWorld(World):
         """Entrance shuffle (EntranceShuffle.cpp rows whose option is on): coupled, so a door's way back is the exit
         of the area behind it. An exit keeps its own rule, i.e. what it takes to use the door stays at the door."""
         self.entrance_pairs: list[tuple[int, int]] = []  # [door's "into", "into" of the area behind it] (slot data)
+        self.spawn_route: tuple[str, ...] = ()
+        if self.ro[SPAWN_OPTION]:
+            if self.ut_entrance_pairs is None:
+                self.spawn_target = self.random.randrange(len(CYCLE_SPAWNS))
+            if type(self.spawn_target) is not int or not 0 <= self.spawn_target < len(CYCLE_SPAWNS):
+                raise OptionError(f"{self.player_name}: invalid cycle start")
+            into, back, name, region = CYCLE_SPAWNS[self.spawn_target]
+            self.spawn_route = (into, back)
+            self._reconnect(self.exit_entrances["RR_MAX", "SOUTH_CLOCK_TOWN:0"], region)
+            self.multiworld.spoiler.set_entrance("Cycle Start", name, "entrance", self.player)
         if self.ro[OWL_WARP_OPTION]:
             self._connect_owl_warps()
         mixed = self._mixed_endpoints() if self.ro[MIX_OPTION] else {}
@@ -687,7 +701,8 @@ class MM2S2HWorld(World):
                 and not (self._mix_selected(row["option"]) and row["into"] in ENTRANCE_MIX_FIXED)]
         # Overworld rows are single exits, two per transition (EntranceShuffle.cpp): row k leads where row over_to[k]
         # arrives. The exit of row k is also the way back of its opposite row, so they are not doors with insides.
-        all_over = [row for row in ENTRANCE_SHUFFLE if self.ro.get(row["option"]) and row["option"] == OVERWORLD]
+        all_over = [row for row in ENTRANCE_SHUFFLE if self.ro.get(row["option"]) and row["option"] == OVERWORLD
+                    and row["into"] not in self.spawn_route]
         over = [row for row in all_over if row["water"] or not self._mix_selected(OVERWORLD)]
         if not rows and not over and not mixed:
             return
@@ -898,6 +913,8 @@ class MM2S2HWorld(World):
             del options["RO_SHUFFLE_SIGNS"]
         if not options[OWL_WARP_OPTION]:
             del options[OWL_WARP_OPTION]
+        if not options[SPAWN_OPTION]:
+            del options[SPAWN_OPTION]
         return {
             "version_2s2h": VERSION_2S2H,
             "apworld_version": self.world_version.as_simple_string(),
@@ -910,6 +927,7 @@ class MM2S2HWorld(World):
             **({"mixed_entrance_pairs": [list(pair) for pair in self.mixed_entrance_pairs]}
                if self.mixed_entrance_pairs else {}),
             **({"owl_warp_targets": self.owl_warp_targets} if self.owl_warp_targets else {}),
+            **({"spawn_target": self.spawn_target} if self.ro[SPAWN_OPTION] and self.spawn_target is not None else {}),
             "death_link": bool(self.options.death_link.value),
             "seed": self.random.getrandbits(32),
         }

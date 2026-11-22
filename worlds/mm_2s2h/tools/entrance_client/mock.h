@@ -26,12 +26,17 @@ struct SaveContext {
         struct Ship { RandoSaveInfo rando; } shipSaveInfo;
         u16 entrance = 0;
         u16 cutsceneIndex = 0;
+        bool isOwlSave = false;
+        u8 day = 0;
+        u16 time = 0;
+        u8 eventDayCount = 0;
         struct SaveInfo {
             HorseData horseData;
             struct { int rupees = 0; } playerData;
         } saveInfo;
     } save;
     u16 nextCutsceneIndex = 0;
+    int gameMode = 0;
     int respawnFlag = 0;
     RespawnData respawn[4];
     int sceneLayer = 0;
@@ -115,3 +120,4 @@ inline bool randoInf[RANDO_INF_MAX]{};
 inline int Flags_GetRandoInf(int flag) { return randoInf[flag]; }
 // Verbatim from the game (run.py copies them): z_scene.c Entrance_Create, z_play.c Play_GetOriginalSceneId.
 #include "game_functions.h"
+#include "clock_functions.h"

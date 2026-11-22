@@ -53,9 +53,10 @@ for name, source in (("doors.inc", "MiscBehavior/DoorKeys.cpp"), ("extra_cpp.inc
 entrances = (rando / "MiscBehavior" / "EntranceShuffle.cpp").read_text(encoding="utf-8")
 tables = entrances[entrances.index("// Time macros"):entrances.index("const std::vector<GrottoEntrance>")]
 pairing = entrances[entrances.index("const std::vector<ShuffleAreaRule>"):
-                    entrances.index("// ---- Entrance tracker: discoveries")]
+                    entrances.index("static bool pendingCycleSpawnLoad")]
 set_pairs = entrances[entrances.index("void SetPairs("):entrances.index("// The clear flags")]
-entrance_logic = "namespace Rando::EntranceShuffle {\n" + tables + pairing + set_pairs + "}\n"
+spawn_save = entrances[entrances.index("void SetCycleSpawn("):entrances.index("void QueueCycleSpawnOnLoad()")]
+entrance_logic = "namespace Rando::EntranceShuffle {\n" + tables + pairing + spawn_save + set_pairs + "}\n"
 (out / "entrances.inc").write_text(entrance_logic, encoding="utf-8")
 shutil.copy(rando / "Logic" / "ExtraChecks.inc", out / "ExtraChecks.inc")
 for f in (rando / "Logic" / "Regions").glob("*.cpp"):

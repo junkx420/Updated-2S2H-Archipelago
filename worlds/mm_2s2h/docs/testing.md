@@ -1603,3 +1603,43 @@ Woodfall owl platform region, which the upstream logic leaves unassigned. The of
   both a void and a death. Confirm the arrival is neither redirected again nor marked as a different discovery.
 - In a seed with empty starting items or shuffled buttons, try a blocked flight. Then acquire the appropriate
   escape item or the playable Song of Time and try again. Repeat in No Logic and with the option off.
+
+### Stage 11b – Shuffle Spawn
+
+`shuffle_spawn` defaults to off. The seed picks North Clock Town (`NORTH_CLOCK_TOWN:2`), lower West Clock
+Town (`WEST_CLOCK_TOWN:1`) or lower East Clock Town (`EAST_CLOCK_TOWN:1`). The selected district and South
+Clock Town keep their reciprocal, unconditional exits even when mixed with other pools. The generator verifies both
+directions. The apworld replaces the cycle-start edge from Menu, and the Universal Tracker restores the slot's
+`spawn_target`. The in-game Check Tracker follows the same edge. The Entrance Tracker reveals the district only
+after arrival. Older slots and saves use South Clock Town.
+
+AP file select queues the first spawn only after the usual starting-clock wait accepts the inventory. On the Song of
+Time path, the normal cycle reset and save run before the entrance and `0xFFF7` transition are replaced. The client
+uses the earliest owned half-day and invokes the normal Day Telop before spawning in the new district at dawn.
+With no owned clock, it uses the configured Final Hours time. The Clock Tower opens from the day and time when the
+player enters South Clock Town after midnight. The route requires no equipment or key. Saving at an owl, pause
+saves, void, death, the midnight festival transition and the moon crash keep their own entry paths.
+
+#### Verification
+
+- 907 pytest tests and 164,102 subtests passed. All 78 Golden fingerprints were unchanged.
+- Random generation passed 100/100 seeds with Shuffle Spawn enabled and 100/100 with all fork options enabled.
+- Parity matched 1,200/1,200. The tracker matched 400 exit graphs, 3,200 inventory snapshots and 29
+  targeted cases, including separate and mixed pools with both Shuffle Spawn and Shuffle Owl Warps.
+- The native harness passed 48 cases for file load, rewind, the six half-days and Final Hours, including
+  the midnight and 05:59 boundaries of the tower's open check. It also checked the reserved walks, a
+  legacy save and an owl load. Windows x64 Release and clang-format for the changed lines passed.
+- The first shim build reported `C2039: 'entrance': is not a member of MockSave` because it included the
+  file-select hook. The first native build reported `C2365: redefinition` from duplicate type declarations.
+  The shim now compiles only the spawn logic and save setter, and the native harness uses one source of types.
+
+#### In-game checklist — not tested in game
+
+- Start new files in each district with Clock Shuffle off, a day clock, a night clock and delayed starting items.
+  Check that cancelling the initial wait returns to file select and reopening applies the same district.
+- Play the Song of Time, save and reopen the cycle. Verify the district, time, player form and normal Day Telop.
+  Repeat after leaving South Clock Town and with the Clock Tower cutscene enhancement on and off.
+- With the shortest configured Final Hours window, take the direct exit to South Clock Town and check the previously
+  opened tower, the rooftop and the Moon. The remaining travel time depends on the chosen terminal time.
+- Save at an owl or using the pause menu, reload and die or void out. Verify that only the next cycle start uses
+  the shuffled district and that the tracker reveals it after actual arrival.

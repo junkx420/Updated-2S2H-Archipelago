@@ -153,6 +153,22 @@ functions = [re.search(r"u16 Entrance_Create\(s32 scene, s32 spawn, s32 layer\) 
              re.search(r"s16 Play_GetOriginalSceneId\(s16 sceneId\) \{.*?\n}\n", play_c, re.S).group(0)]
 (build / "game_functions.h").write_text("#pragma once\n" + "".join("inline " + f for f in functions), encoding="utf-8")
 
+clock_cpp = (root / "mm/2s2h/Rando/MiscBehavior/ClockShuffle.cpp").read_text(encoding="utf-8")
+clock_functions = ("int Rando::ClockItems::FindOwnedHalfDay", "void Rando::ClockShuffle::SetTimeToHalfDayStart")
+clock_code = [re.search(rf"^{name}\([^\n]*\).*?^}}", clock_cpp, re.M | re.S).group(0)
+              for name in clock_functions]
+clock_macro = re.search(r"^#define CLOCK_TIME\(hr, min\).*", (root / "mm/include/macros.h").read_text(encoding="utf-8"), re.M)
+tower = (root / "mm/src/overlays/actors/ovl_Obj_Tokeidai/z_obj_tokeidai.c").read_text(encoding="utf-8")
+tower_time = re.search(r"else if \((.*CURRENT_DAY == 3.*CURRENT_TIME < CLOCK_TIME\(6, 0\).*CURRENT_DAY >= 4.*)\) \{", tower)
+(build / "clock_functions.h").write_text(
+    "#pragma once\n#include \"Rando/MiscBehavior/ClockShuffle.h\"\n" + clock_macro.group(0) + "\n"
+    "inline u8 ownedClocks = 0;\n"
+    "namespace Rando::Logic { inline bool OwnsClockHalfDay(int i) { return ownedClocks & (1 << i); } }\n"
+    "inline constexpr u16 DAWN_TIME = CLOCK_TIME(6, 0), DUSK_TIME = CLOCK_TIME(18, 0);\n"
+    "inline constexpr int GAMEMODE_NORMAL = 0;\n" + "\n".join("inline " + code for code in clock_code) + "\n"
+    "inline bool TowerOpensAt(int CURRENT_DAY, u16 CURRENT_TIME) { return " + tower_time.group(1) + "; }\n",
+    encoding="utf-8")
+
 # Compile the actual action entry points against the mock state. Rename the C parameter `this` for C++.
 def game_functions(path, names):
     source = (root / "mm/src" / path).read_text(encoding="utf-8")
@@ -217,7 +233,7 @@ mixed_slots = [build_world(ALL_OWN | {"mix_entrance_pools": pools}, 610, fill=Fa
     'inline const char* mixedSlots[] = {\n' +
     "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in mixed_slots) + '\n};\n', encoding="utf-8")
 json_include = root / "build/x64/vcpkg/installed/x64-windows-static/include"
-for name in ("Rando/Rando.h", "Rando/Logic/Logic.h", "2s2h/Rando/Rando.h", "2s2h/Rando/Types.h",
+for name in ("Rando/Rando.h", "Rando/Types.h", "Rando/Logic/Logic.h", "2s2h/Rando/Rando.h", "2s2h/Rando/Types.h",
              "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h", "z64horse.h"):
     header = build / name
     header.parent.mkdir(parents=True, exist_ok=True)

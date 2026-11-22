@@ -5,7 +5,7 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 ## Downloads
 
 The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages NPC souls,
-temple entrances and boss entrances with a matching client. The current source is **apworld 0.15.0**.
+temple entrances and boss entrances with a matching client. The current source is **apworld 0.16.0**.
 The new mechanics are **not tested in game**. Platform builds and preview publication run on GitHub Actions.
 See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago#choose-your-download),
 [changelog](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/main/CHANGELOG.md) and
@@ -36,6 +36,10 @@ off, the current region remains an additional starting point. See the
 ## Additions that are not in 2S2H
 
 The generator has to run on the **client fork** (branch `client`), not on upstream 2S2H, because these live there:
+
+- **Shuffle Spawn** (`shuffle_spawn`, apworld 0.16.0, default off) starts each cycle in North, West or East Clock Town.
+  The seed fixes the district and preserves its direct link to South Clock Town. The Song of Time still resets and saves
+  the cycle before the rewind sequence is skipped. [Clock Shuffle and in-game checklist](docs/testing.md#stage-11b--shuffle-spawn).
 
 - **Shuffle Owl Warps** (`shuffle_owl_warps`, apworld 0.15.0, default off) sends each Song of Soaring selection to
   a different owl for the whole seed. Activations, owl checks and owl saves keep their original statues. Some

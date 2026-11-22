@@ -13,6 +13,7 @@
 #include "abilities.h"
 #include "tracker.h"
 #include "owl_warps.h"
+#include "cycle_spawn.h"
 
 using namespace Rando::EntranceShuffle;
 
@@ -187,4 +188,5 @@ int main(int argc, char** argv) {
     TestLegacy10();
     TestEntranceTracker();
     TestOwlWarps();
+    TestCycleSpawn();
 }

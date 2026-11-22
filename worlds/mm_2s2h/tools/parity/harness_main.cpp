@@ -169,6 +169,7 @@ int main() {
     RandoRegionId currentRegion = RR_MAX;
     std::vector<std::pair<int32_t, int32_t>> pairs, mixedPairs;
     std::vector<int32_t> owlTargets;
+    int32_t spawnTarget = -1;
     while (std::getline(std::cin, line)) {
         std::istringstream ss(line);
         std::string kw, a, b;
@@ -180,6 +181,7 @@ int main() {
             pairs.clear();
             mixedPairs.clear();
             owlTargets.clear();
+            spawnTarget = -1;
             gMock = MockState{};
             gSaveContext = MockSave{};
             for (int i = 0; i < RO_MAX; i++) {
@@ -203,6 +205,8 @@ int main() {
             mixedPairs.emplace_back(std::stoi(a), std::stoi(b));
         } else if (kw == "owl_target") {
             owlTargets.push_back(std::stoi(a));
+        } else if (kw == "spawn_target") {
+            spawnTarget = std::stoi(a);
         } else if (kw == "shuffled") {
             RANDO_SAVE_CHECKS[N(RCByName(), a)].shuffled = true;
         } else if (kw == "obtained") {
@@ -243,6 +247,7 @@ int main() {
             gMock.dungeonItems.insert({ C(a), C(b) });
         } else if (kw == "end") {
             if (tracker) {
+                Rando::EntranceShuffle::SetCycleSpawn(spawnTarget);
                 Rando::EntranceShuffle::SetPairs(pairs, mixedPairs);
                 Rando::EntranceShuffle::SetOwlWarpTargets(owlTargets);
                 const auto start = std::chrono::steady_clock::now();
