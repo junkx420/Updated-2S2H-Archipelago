@@ -44,3 +44,7 @@ class UTRegenNpcSoulsAll(UTRegenTest):
 
 class UTRegenRocks(UTRegenTest):
     options = {"shuffle_rocks": True, "clock_shuffle": True}
+
+
+class UTRegenSigns(UTRegenTest):
+    options = {"shuffle_signs": True, "clock_shuffle": True}

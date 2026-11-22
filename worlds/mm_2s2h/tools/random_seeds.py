@@ -50,6 +50,7 @@ def main():
     rng = random.Random(2026)
     ability_rng = random.Random(411)
     rock_rng = random.Random(913)
+    sign_rng = random.Random(1014)
     forced = dict(a.split("=", 1) for a in sys.argv[3:])
     mix = forced.pop("mix_entrance_pools", None)
     pools = runpy.run_path(str(pathlib.Path(__file__).resolve().parents[1] / "enums_generated.py"))["ENTRANCE_MIX_POOLS"] if mix else {}
@@ -58,7 +59,10 @@ def main():
     t0 = time.time()
     for i in range(n):
         abilities = {name: bool(ability_rng.getrandbits(1)) for name in ("shuffle_epona_riding", "shuffle_bean_planting")}
-        opts = roll(rng) | abilities | {"shuffle_rocks": bool(rock_rng.getrandbits(1))} | forced
+        opts = roll(rng) | abilities | {
+            "shuffle_rocks": bool(rock_rng.getrandbits(1)),
+            "shuffle_signs": bool(sign_rng.getrandbits(1)),
+        } | forced
         if mix:
             selected = (mix_rng.sample(list(pools), mix_rng.randint(2, len(pools))) if mix == "random" else
                         list(pools) if mix == "all" else json.loads(mix))

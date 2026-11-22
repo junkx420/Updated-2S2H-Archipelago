@@ -1456,3 +1456,106 @@ x64 Release build and clang-format for the changed lines passed. The AP suite pa
   after the AP item receipt catches up. Save, reload and verify the number of owned half-days.
 - With a test slot that has no clocks, verify the configured Final Hours start. Open an older AP save, a native
   rando save and a fresh AP save without Clock Shuffle to check their usual load behavior.
+
+### Stage 10 – Shuffle Signs (apworld 0.14.0)
+
+`shuffle_signs` defaults to off. The `Signs` group has 87 checks from 133 placements, including 56 wooden signs,
+27 wall signs and notices, and four epitaphs. The inventory covered 299 NTSC-U 1.0 rooms and 414 headers. The 392
+nonempty ActorLists matched the extracted archive in order and raw values. The client identifies them by scene,
+room and ActorList index, as 2S2H does for pots and grass and as Stage 9 does for rocks. Actor type, params and
+position verify the placement, including aliases for alternate headers and seasons. There is no ROM-version
+distinction or separate GameCube audit. See `Rando/ActorBehavior/SignPlacements.inc` and the scene-by-scene count
+in `docs/plan-stufe10-schilder.md` in the project folder.
+
+| Exclusion | Reason |
+|---|---|
+| Kafei's diary, Granny's diary and the Bomb Shop memo | Five `EN_TALK` placements contain private writings. Public posters, signs, schedules and the Trading Post display label are included. `z_en_talk.h:6`, text IDs `0x1C04`, `0x1C05`, `0x1C16`, `0x1C08`. |
+| Two Music Box House posters | `OBJ_MU_PICT` drives Pamela's spoken tour and moves her during the text. `z_obj_mu_pict.c:61,98,120,124,136`. |
+| Graves opened by Stalchildren and the invisible fight prompt | The 13 entries share the puzzle state, disappear when a grave switch is set, or cue the fight. Six `0xFFFF` entries represent two independent, readable soldier graves and are included. `z_obj_hakaisi.c:61,91,103,152,211`, `z_en_rail_skb.c:577`. |
+| Gossip Stones, owl statues, Tatl and NPC text, Song of Soaring engraving, Swordsman's School board | These retain their own hint, activation, reward or combat behavior. `actor_table.h:255,537`, `ActorBehavior/EnTimeTag.cpp:35`, `z_obj_kendo_kanban.c:471`. |
+
+#### Access and layout
+
+`Logic/ExtraChecks.inc` supplies the same rules and half-day masks to the client and apworld. Woods of Mystery has
+three exit signs on each day, in rooms 7, 3 and 5 respectively. The Gorman rear gate sign is present on day and
+night 3. The east Post Office schedule is present on the first five half-days, intersected with the usual opening
+hours. The west schedule uses all six. The Goron epitaph requires the Goron form to read the translated inscription
+(`z_obj_ghaka.c:77`). Mikau's grave uses the existing healing requirements plus the Indigo-Go's soul in All mode,
+just as the Mikau check does. The grave spawns after healing in the current cycle (`ActorBehavior/EnZog.cpp:8`,
+`z_en_sekihi.c:114`, `Regions/West.cpp:128`). The Deku Palace signs inherit the approach to the lower courtyard.
+
+| Shore placements | Region, condition and evidence |
+|---|---|
+| Great Bay Coast Fisherman's Hut, Pirates' Cove, Indigo-Go's, Great Bay Temple and Murky Water (`0x0321/22/25/26/27`) | `RR_GREAT_BAY_COAST`. Their floor triangles share the mainland component with the Termina Field entry and the route to Zora Cape, even when the collision analysis cuts connections below Y = −10. The Pirates' Cove **sign** attaches to that mainland. The underwater entrance to the fortress has its own rule. `Regions/West.cpp:128,147,151,158,220`. |
+| Marine Research Lab (`0x0323`) | `RR_GREAT_BAY_COAST_MARINE_LAB_EXTERIOR`. At (−3088, 240, 4011) it shares the island's Y = 240 floor with the lab entrance spawn and its exterior pots in both layouts. The coast-to-island link requires swimming. `Regions/West.cpp:157,161,172`. |
+| Fisherman's Jumping Game (`0x0312`) | `RR_GREAT_BAY_COAST` with the Gyorg clear event. The sign stands at (−2398, 15, 649) on the mainland component and appears only in room 0, layer 1. The separate timed minigame and its Hookshot access are on the platforms. `z_play.c:2290`, `Regions/West.cpp:184,193,209`. |
+| Zora Cape Fall Headwaters, Great Bay Temple and Zora Game Site (`0x0328/2A/2B`) | Fall Headwaters stands on the Y = 40 beaver bank with the two nearby pots. Its isolated bank uses the stricter swimming rule in `RR_ZORA_CAPE`. The temple sign shares the Y = 14 island floor with the owl and temple spawns, so it uses `RR_ZORA_CAPE_BEFORE_GREAT_BAY_TEMPLE`. The game-site sign shares the dry beach with the Great Bay Coast entry and uses `RR_ZORA_CAPE`. `Regions/West.cpp:286,299,340,346,357,363`. |
+| Ikana Canyon Secret Shrine (`0x0333`) | `RR_IKANA_CANYON_LOWER` with swimming. At (−2980, −505, 3087) the sign shares the isolated Y = −505 strip with spawn 12 at (−3068, −505, 2690), 15 units above the water. The canyon uses the same swimming condition to reach the shrine entrance. The internal Light Arrow gate belongs to the shrine's next region. `Regions/East.cpp:141,158,378,411`. |
+
+The five mainland Great Bay Coast signs listed together and the three Zora Cape signs use the pre-Gyorg layout.
+The logic also considers the next cycle, as for the rocks. No shore placements needed a further exclusion after the
+collision and spawn comparison.
+
+#### Text, hints and delivery
+
+`Message_StartTextbox` supplies the exact actor and initial text ID after the existing message hooks run.
+`ActorBehavior/Signs.cpp` marks the bound check eligible. The normal check queue waits for the original message
+to close and sets the check obtained on item delivery. A waiting item actor and incoming AP item application
+also wait during the sign conversation. The queued item can retry if its actor fails to spawn.
+
+The West Clock Town Bank sign `0x1C14` keeps the existing exact hint and its `ApMapping::HintCheck` call
+(`MiscBehavior/BankSignHint.cpp:20,42`). The soldier recruitment posters `0x1C06` in East and South Clock Town
+and the South Clock Town Bank sign `0x1C18` retain their multi-page Remains and Transformation hints
+(`ActorBehavior/EnTalk.cpp:55,130,141`). Those hints describe areas and already use the in-game text path.
+The sign award follows the final page of each hint. The Soaring engraving keeps its own check and hint.
+
+Chopping an open wooden sign leaves the original post readable with the standard text flow. Cutting still spawns
+pieces. The original sign returns to its normal target and read behavior after the check is obtained.
+Reloading the scene spawns a whole sign in layouts that include it. Vanilla also restores it when Link moves more
+than 500 units away. `z_en_kanban.c:166,217,232,256,416`. The marker uses tint for the models and a sparkle for wall
+text and cut wood. It disappears as soon as the check is obtained.
+
+#### Verification
+
+- The generator reports 2,850 locations and zero untranslated rules. All 133 client placement rows and 87
+  generated half-day masks match the ROM. All 2,764 existing check enum entries and 2,763 existing location records
+  retained their values. The existing 78 Golden fingerprints and their test code are unchanged.
+- The full local suite (`pytest test/general worlds/mm_2s2h/test`) passed **891 tests and 164,087 subtests**.
+  Sign coverage includes the disabled option, reachability, 1,044 half-day/layout combinations, No Logic,
+  Universal Tracker regeneration and all fork options together.
+- A C++ harness with mocked actor and save state exercised 133 placements, 100 fallbacks to the base header and 97
+  wooden-sign stump interactions. It checked the initial text ID, repeated eligibility, the obtained state,
+  target restoration for the spent stump and deferral of an item actor that has not started its give yet.
+- Parity passed **1,200/1,200**. The tracker matched AP in **400/400** snapshots and **50/50** exit graphs for
+  each entrance mode (separate and mixed). It also matched in **29/29** focused cases, including signs as the only
+  fork option, No Logic, missing form or soul, Gyorg, half-days, and an already obtained sign. Native comparison
+  output was identical for both ability settings.
+- Seed generation passed **100/100** with signs as the only enabled fork option and **100/100** with all fork
+  options enabled, including the mixed entrance pools and all NPC souls. The Windows x64 Release build passed.
+  clang-format passed for the changed ranges and new files across 21 client files.
+- The first pytest runs found an incorrect bank fixture name (`KeyError`), a missing `snowhead_cleared` argument
+  (`TypeError`), missing inventory in the Mikau fixture (`AssertionError: False is not true`), and an old test
+  that required every default option in slot data (`RO_SHUFFLE_SIGNS` was the only missing key). The final tests
+  cover the intentional omission when off and transmission when on. Older slots still default to off.
+- The first seed runs reported `PermissionError: [WinError 5] Access is denied` in the default sandbox temp
+  directory. Both runs passed with workspace-local `TEMP` and `TMP`. The initial client build stalled in the
+  sandbox. CMake also left an empty `stb_image.h`, producing `C2065: 'STBI_rgb_alpha': undeclared identifier`
+  and `C3861: 'stbi_load_from_memory': identifier not found`. The successful build used the pinned GitHub header
+  and ran MSBuild outside the sandbox. clang-format also flagged the standalone end comment of
+  `SignPlacements.inc` until it was formatted.
+
+#### In-game checklist — not tested in game
+
+- Read a wooden sign, wall sign and each kind of grave. Verify the original text or menu closes before exactly
+  one award, with and without Z-targeting. Read again, reload and reset the cycle. Try with `shuffle_signs` off.
+- Chop an open sign until only the stump remains. Read it with and without Z-targeting. Confirm the same text and
+  item flow, then the normal stump behavior after the award. Try reloading the scene or walking 500 units away
+  before reading. Confirm the pieces have no checks and never lose the original check.
+- With the West Bank hint enabled, read the sign, confirm that the bank reward hint reaches Archipelago, and
+  collect the separate sign check after the text. Repeat for every page of the Remains and Transformation hints
+  in Clock Town. Send an AP item during a page and during the sign award. Check repeated reading, an already
+  queued reward, and leaving or reloading the scene while a sign award is pending.
+- Verify that the marker vanishes on award in both CSMC modes. Check an intact and cut wooden sign, a wall notice
+  and a grave. Check the tracker before and after the award and while out of logic, including with mixed entrances.
+- Verify the Woods, Gorman and Post Office half-days, Swamp and mountain variants, both Great Bay layouts, the
+  swimming approaches to the beaver bank and Secret Shrine, Darmani in Goron form, and Mikau after healing.

@@ -14,11 +14,11 @@ from compare import (ALL_ON, HERE, CollectionState, MM2S2HWorld, RR_BY_REGION_NA
 from test.general import gen_steps
 from worlds.mm_2s2h import RI_BY_NAME
 from worlds.mm_2s2h.enums_generated import ENTRANCE_MIX_POOLS
-from worlds.mm_2s2h.primitives import BOTTLES
+from worlds.mm_2s2h.primitives import BOTTLES, CLOCKS
 
 
 FORK_OPTIONS = dict(ALL_ON, shuffle_npc_souls="all", shuffle_door_keys=True, shuffle_epona_riding=True,
-                    shuffle_bean_planting=True, shuffle_rocks=True)
+                    shuffle_bean_planting=True, shuffle_rocks=True, shuffle_signs=True)
 ENTRANCE_OPTIONS = dict(shuffle_dungeon_entrances=True, shuffle_boss_entrances=True, shuffle_interiors=True,
                         shuffle_grottos=True, shuffle_overworld=True, shuffle_special_areas=True)
 STEPS = ("generate_early", "create_regions", "connect_entrances")
@@ -111,6 +111,13 @@ def targeted_cases() -> tuple[int, list[str]]:
     doggy_chest = "RC_DOGGY_RACETRACK_CHEST"
     cow = "RC_TERMINA_FIELD_COW_FRONT"
     aliens = "RE_COWS_FROM_ALIENS"
+    bank_sign = "RC_WEST_CLOCK_TOWN_SIGN_BANK"
+    darmani_sign = "RC_GORON_GRAVEYARD_SIGN_DARMANIS_GRAVE"
+    mikau_sign = "RC_GREAT_BAY_COAST_SIGN_MIKAUS_GRAVE"
+    jumping_game_sign = "RC_GREAT_BAY_COAST_SIGN_FISHERMANS_JUMPING_GAME"
+    woods_sign = "RC_WOODS_OF_MYSTERY_SIGN_DAY_2_EXIT_1"
+    day_one_inventory = Counter({item: count for item, count in full.items() if not item.startswith("RI_TIME_")})
+    day_one_inventory[CLOCKS[0]] = 1
     missing_epona = full - Counter(RI_ABILITY_RIDE_EPONA=1)
     missing_beans = full - Counter(RI_ABILITY_PLANT_BEANS=1)
     missing_zora_key = full - Counter(RI_DOOR_KEY_ZORA_HALL_ROOMS=1)
@@ -132,6 +139,12 @@ def targeted_cases() -> tuple[int, list[str]]:
         Snapshot("rain_with_ability", rain_only, {doggy_chest: True}),
         Snapshot("rain_without_ability", rain_only - Counter(RI_ABILITY_PLANT_BEANS=1), {doggy_chest: False}),
         Snapshot("zora_without_ability", missing_beans - Counter(RI_HOOKSHOT=1), {doggy_chest: True}),
+        Snapshot("signs_full", full, {bank_sign: True, darmani_sign: True, mikau_sign: True,
+                                      jumping_game_sign: True, woods_sign: True}),
+        Snapshot("bank_sign_obtained", full, {bank_sign: False, banker: True}, obtained=(bank_sign,)),
+        Snapshot("darmani_without_goron", full - Counter(RI_MASK_GORON=1), {darmani_sign: False}),
+        Snapshot("mikau_without_soul", full - Counter(RI_SOUL_NPC_INDIGO_GOS=1), {mikau_sign: False}),
+        Snapshot("before_gyorg_clear", full - Counter(RI_GREAT_BAY_BOSS_KEY=1), {jumping_game_sign: False}),
     ]
     differences = compare_seed(mw, snapshots)
     count = len(snapshots)
@@ -149,9 +162,22 @@ def targeted_cases() -> tuple[int, list[str]]:
                                                       RI_TIME_PROGRESSIVE=6),
                      {rolling_rock: False}),
             Snapshot("rock_in_daylight", full, {rolling_rock: True}),
+            Snapshot("woods_sign_on_day_one", day_one_inventory, {woods_sign: False}),
+            Snapshot("woods_sign_on_day_two", day_one_inventory - Counter({CLOCKS[0]: 1}) + Counter({CLOCKS[2]: 1}),
+                     {woods_sign: True}),
         ]),
+        (dict(shuffle_signs=False), [Snapshot("signs_off", full, {bank_sign: False, woods_sign: False})]),
     ):
         mw = setup_multiworld(MM2S2HWorld, STEPS, seed=0, options=FORK_OPTIONS | opts)
+        differences.extend(compare_seed(mw, cases))
+        count += len(cases)
+
+    for logic, cases in (
+        ("glitchless", [Snapshot("signs_only", Counter(), {bank_sign: True, darmani_sign: False})]),
+        ("no_logic", [Snapshot("signs_only_no_logic", Counter(), {bank_sign: True, darmani_sign: True,
+                                                                 woods_sign: True})]),
+    ):
+        mw = setup_multiworld(MM2S2HWorld, STEPS, seed=0, options=dict(shuffle_signs=True, logic=logic))
         differences.extend(compare_seed(mw, cases))
         count += len(cases)
 

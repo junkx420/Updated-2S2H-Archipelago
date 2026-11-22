@@ -56,7 +56,7 @@ class RocksAvailability(MM2S2HTestBase):
         self.assertEqual(len(day_only), 2)
         self.assertEqual(len(spring), 13)
         self.assertLessEqual(day_only | great_bay_base, set(ROCKS))
-        self.assertEqual(set(EXTRA_CHECK_WINDOWS), set(ROCKS))
+        self.assertLessEqual(set(ROCKS), set(EXTRA_CHECK_WINDOWS))
         state = CollectionState(self.multiworld)
         available_items = Counter({ri: 1 for ri in RI_ID if not ri.startswith("RI_TIME_")})
         checks = {rc: self.multiworld.get_location(name, self.player) for rc, name in ROCKS.items()}

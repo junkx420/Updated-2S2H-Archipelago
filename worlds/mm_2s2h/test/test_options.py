@@ -13,9 +13,10 @@ class TestOptionDefaults(MM2S2HTestBase):
                 with self.subTest(option=field):
                     self.assertEqual(opt_cls.default, OPTION_DEFAULTS[ro], ro)
 
-    def test_slot_data_has_every_ro(self):
+    def test_slot_data_has_every_ro_except_disabled_signs(self):
         world: MM2S2HWorld = self.multiworld.worlds[self.player]
-        self.assertEqual(set(world.fill_slot_data()["options"]), set(OPTION_DEFAULTS))
+        expected = set(OPTION_DEFAULTS) - {"RO_SHUFFLE_SIGNS"}
+        self.assertEqual(set(world.fill_slot_data()["options"]), expected)
 
 
 class TestAllOn(MM2S2HTestBase):

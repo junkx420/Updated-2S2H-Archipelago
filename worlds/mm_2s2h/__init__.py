@@ -47,6 +47,7 @@ TYPE_OPTION = {
     "RCTYPE_BUTTERFLY": "RO_SHUFFLE_BUTTERFLIES", "RCTYPE_FREESTANDING": "RO_SHUFFLE_FREESTANDING_ITEMS",
     "RCTYPE_SNOWBALL": "RO_SHUFFLE_SNOWBALL_DROPS", "RCTYPE_FROG": "RO_SHUFFLE_FROGS",
     "RCTYPE_ROCK": "RO_SHUFFLE_ROCKS",
+    "RCTYPE_SIGN": "RO_SHUFFLE_SIGNS",
     "RCTYPE_REMAINS": "RO_SHUFFLE_BOSS_REMAINS", "RCTYPE_COW": "RO_SHUFFLE_COWS",
     "RCTYPE_ENEMY_DROP": "RO_SHUFFLE_ENEMY_DROPS", "RCTYPE_WONDER_ITEM": "RO_SHUFFLE_WONDER_ITEMS",
     "RCTYPE_TINGLE_SHOP": "RO_SHUFFLE_TINGLE_SHOPS", "RCTYPE_SKULL_TOKEN": "RO_SHUFFLE_GOLD_SKULLTULAS",
@@ -60,6 +61,7 @@ LOCATION_TYPE_GROUPS = {
     "RCTYPE_GRASS": "Grass", "RCTYPE_POT": "Pots", "RCTYPE_CRATE": "Crates", "RCTYPE_BARREL": "Barrels",
     "RCTYPE_SNOWBALL": "Snowballs", "RCTYPE_TREE": "Trees", "RCTYPE_BEEHIVE": "Beehives", "RCTYPE_CHEST": "Chests",
     "RCTYPE_ROCK": "Rocks",
+    "RCTYPE_SIGN": "Signs",
     "RCTYPE_FREESTANDING": "Freestanding Items", "RCTYPE_WONDER_ITEM": "Wonder Items", "RCTYPE_NPC": "NPC Rewards",
     "RCTYPE_SKULL_TOKEN": "Gold Skulltulas", "RCTYPE_ENEMY_DROP": "Enemy Drops", "RCTYPE_STRAY_FAIRY": "Stray Fairy Checks",
     "RCTYPE_SHOP": "Shops", "RCTYPE_HEART": "Heart Pieces and Containers", "RCTYPE_BUTTERFLY": "Butterflies",
@@ -864,11 +866,15 @@ class MM2S2HWorld(World):
         exit_.connect(self.regions_by_rr[rr])
 
     def fill_slot_data(self) -> dict[str, Any]:
+        options = dict(self.ro)
+        # Off is also the default when the option is absent from an older slot.
+        if not options["RO_SHUFFLE_SIGNS"]:
+            del options["RO_SHUFFLE_SIGNS"]
         return {
             "version_2s2h": VERSION_2S2H,
             "apworld_version": self.world_version.as_simple_string(),
             "base_id": BASE_ID,
-            "options": self.ro,  # RO_* -> value, written into randoSaveOptions by the client
+            "options": options,  # RO_* -> value, written into randoSaveOptions by the client
             "prices": {RC_ID[rc]: price for rc, price in self.prices.items()},
             "starting_items": [RI_ID[ri] for ri in self.starting],
             "vanilla_skulltulas": sorted(RC_ID[rc] for rc in self.vanilla_skulltulas),
