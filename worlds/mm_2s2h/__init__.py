@@ -670,7 +670,7 @@ class MM2S2HWorld(World):
                     or (a["option"] != OVERWORLD != b["option"] and first % 2 == second % 2)):
                 raise OptionError(f"{self.player_name}: incompatible mixed entrance endpoints {first}, {second}")
             used.update((first, second))
-        if pairs and used != endpoints.keys():
+        if used != endpoints.keys() and (pairs or self._mix_selected("RO_SHUFFLE_GROTTOS")):
             raise OptionError(f"{self.player_name}: incomplete mixed entrance pairing")
         self.mixed_entrance_pairs = sorted(tuple(sorted(pair)) for pair in pairs)
         for first, second in self.mixed_entrance_pairs:
@@ -710,6 +710,11 @@ class MM2S2HWorld(World):
             self._connect_owl_warps()
         mixed = self._mixed_endpoints() if self.ro[MIX_OPTION] else {}
         mixed_pairs: list[tuple[int, int]] = []
+        if self._mix_selected("RO_SHUFFLE_GROTTOS"):
+            for row in ENTRANCE_SHUFFLE:
+                if row["grotto"] and row["into"] in ENTRANCE_MIX_FIXED:
+                    # In particular, GREAT_BAY_COAST:0 is a shared spawn key for the cliffside return.
+                    self._reconnect(self.exit_entrances[row["inside_region"], row["out"]], row["door_region"])
         rows = [row for i, row in enumerate(ENTRANCE_SHUFFLE) if self.ro.get(row["option"]) and row["option"] != OVERWORLD
                 and row["into"] != ENTRANCE_MIX_ONLY and 2 * i not in mixed
                 and not (self._mix_selected(row["option"]) and row["into"] in ENTRANCE_MIX_FIXED)]
@@ -905,7 +910,8 @@ class MM2S2HWorld(World):
                 baseline.update({a: b, b: a})
                 groups[a], groups[b] = (option, row["hours"] or "", 0), (option, row["hours"] or "", 1)
         for a, b in self.mixed_entrance_pairs:
-            if any(self._town_gate(ENTRANCE_SHUFFLE[end // 2]) for end in (a, b)):
+            rows = (ENTRANCE_SHUFFLE[end // 2] for end in (a, b))
+            if any(row["option"] not in DECOUPLE_POOLS or self._town_gate(row) for row in rows):
                 continue
             baseline.update({a: b, b: a})
             # Keep two complementary sides. A land end may serve either side, as in the coupled placement.

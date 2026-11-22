@@ -12,8 +12,8 @@ from dataclasses import dataclass, field
 from compare import (ALL_ON, HERE, CollectionState, MM2S2HWorld, RR_BY_REGION_NAME, SaveView, parse_cpp, python_side,
                      random_inventory, scenario_text, setup_multiworld)
 from test.general import gen_steps
-from worlds.mm_2s2h import RI_BY_NAME
-from worlds.mm_2s2h.enums_generated import ENTRANCE_MIX_POOLS
+from worlds.mm_2s2h import ENTRANCE_ROW_INDEX, RI_BY_NAME
+from worlds.mm_2s2h.enums_generated import ENTRANCE_MIX_POOLS, ENTRANCE_SHUFFLE
 from worlds.mm_2s2h.primitives import BOTTLES, CLOCKS
 
 
@@ -191,7 +191,28 @@ def targeted_cases() -> tuple[int, list[str]]:
     world.create_regions()
     differences.extend(compare_seed(mw, [Snapshot("old_zora_hall", missing_zora_key, {evan: True})],
                                     zora_hall_key=False))
-    return count + 1, differences
+    count += 1
+
+    from worlds.mm_2s2h.test.test_special_areas import rebuilt_from
+
+    pools = ["dungeons", "grottos", "interiors"]
+    mw = setup_multiworld(MM2S2HWorld, gen_steps, seed=0,
+                          options=FORK_OPTIONS | ENTRANCE_OPTIONS | {"mix_entrance_pools": pools})
+    slot = mw.worlds[1].fill_slot_data()
+    partners = {end: end + 1 for pair in slot["mixed_entrance_pairs"] for end in pair if end % 2 == 0}
+    for first, second in (("WOODFALL_TEMPLE:0", "GROTTOS:25"), ("BOMB_SHOP:0", "GROTTOS:30")):
+        a, b = (2 * ENTRANCE_ROW_INDEX[key] for key in (first, second))
+        partners[a], partners[b] = partners[b], partners[a]
+    slot["mixed_entrance_pairs"] = list(partners.items())
+    rebuilt = rebuilt_from(slot, 0)
+    cases = [
+        Snapshot("grotto_boss_warp_to_upper_snowhead", full, current_region="RR_PATH_TO_SNOWHEAD_UPPER"),
+        Snapshot("shared_grotto_return_without_bomb_shop_key", full - Counter(RI_DOOR_KEY_BOMB_SHOP=1),
+                 current_region=ENTRANCE_SHUFFLE[ENTRANCE_ROW_INDEX["GROTTOS:30"]]["inside_region"]),
+        Snapshot("mixed_grotto_without_explosives", full - Counter(RI_PROGRESSIVE_BOMB_BAG=3, RI_MASK_BLAST=1)),
+    ]
+    differences.extend(compare_seed(rebuilt.multiworld, cases))
+    return count + len(cases), differences
 
 
 def native_check() -> list[str]:
@@ -221,15 +242,18 @@ def main() -> int:
     modes = [("vanilla entrances", {})]
     steps = STEPS
     if args.entrances:
+        legacy_pools = [name for name in ENTRANCE_MIX_POOLS if name != "grottos"]
         modes = [("separate", ENTRANCE_OPTIONS),
-                 ("mixed", ENTRANCE_OPTIONS | {"mix_entrance_pools": list(ENTRANCE_MIX_POOLS)})]
+                 ("mixed without grottos", ENTRANCE_OPTIONS | {"mix_entrance_pools": legacy_pools}),
+                 ("mixed with grottos", ENTRANCE_OPTIONS | {"mix_entrance_pools": list(ENTRANCE_MIX_POOLS)})]
         steps = gen_steps
+    entrance_modes = modes.copy()
     if args.owl_warps:
         modes += [(f"{mode} with owl warps", options | {"shuffle_owl_warps": True}) for mode, options in modes]
     if args.spawn:
         modes += [(f"{mode} with spawn", options | {"shuffle_spawn": True}) for mode, options in modes]
     if args.decouple:
-        for name, options in modes[:2]:
+        for name, options in entrance_modes:
             options = (options or ENTRANCE_OPTIONS) | {
                 "shuffle_owl_warps": True, "shuffle_spawn": True, "decouple_entrances": True,
             }

@@ -34,7 +34,7 @@ game: Majora's Mask (2 Ship 2 Harkinian)
 requires:
   version: 0.6.9 # Version of Archipelago required for this yaml to work as expected.
   game:
-    Majora's Mask (2 Ship 2 Harkinian): 0.17.0 # Version of the world required for this yaml to work as expected.
+    Majora's Mask (2 Ship 2 Harkinian): 0.18.0 # Version of the world required for this yaml to work as expected.
 
 Majora's Mask (2 Ship 2 Harkinian):
   ################
@@ -379,8 +379,8 @@ Majora's Mask (2 Ship 2 Harkinian):
     'true': 0
 
   shuffle_grottos:
-    # The holes into grottos lead into other grottos, coupled: you come back out at the hole you fell
-    # into. Grottos only mix among each other.
+    # Shuffle all 26 grottos as a coupled pool. Add grottos to mix_entrance_pools to share
+    # the 18 eligible holes with other pools and keep the eight other grottos fixed.
     'false': 50
     'true': 0
 
@@ -402,7 +402,7 @@ Majora's Mask (2 Ship 2 Harkinian):
     'true': 0
 
   decouple_entrances:
-    # Shuffle directions independently in the enabled entrance pools.
+    # Shuffle eligible directions independently. Pairs that touch a grotto remain coupled.
     false: 50
     true: 0
   shuffle_special_areas:
@@ -412,7 +412,7 @@ Majora's Mask (2 Ship 2 Harkinian):
     'true': 0
 
   mix_entrance_pools: []
-    # Choose at least two pools from dungeons, interiors, overworld, and special_areas.
+    # Choose at least two pools from dungeons, interiors, overworld, special_areas, and grottos.
     # Enable each selected pool's shuffle option. An empty list keeps the pools separate.
 
   # To mix everything eligible, replace the matching keys above with the settings below.
@@ -422,9 +422,9 @@ Majora's Mask (2 Ship 2 Harkinian):
   # shuffle_interiors: true
   # shuffle_overworld: true
   # shuffle_special_areas: true
-  # mix_entrance_pools: [dungeons, interiors, overworld, special_areas]
+  # mix_entrance_pools: [dungeons, interiors, overworld, special_areas, grottos]
   #
-  # Boss rooms and grottos each keep their own pool. Underwater paths mix only with underwater paths.
+  # Boss rooms keep their own pool. Underwater paths mix only with underwater paths.
   # Daytime interiors mix within their hours class. Interiors with unique hours, Trading Post and
   # Swordsman's School stay fixed. Milk Road stays connected to Romani Ranch, and Clock Town gates
   # still lead out of town via land exits. See "Exits that stay fixed (60)" in testing.md.

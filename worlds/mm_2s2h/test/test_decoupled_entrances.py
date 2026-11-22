@@ -42,6 +42,15 @@ def test_directed_map_escapes_and_universal_tracker(mixed, logic):
     assert any(targets[target] != source for source, target in targets.items())
     assert all(not world._town_gate(ENTRANCE_SHUFFLE[end // 2]) for end in targets)
     assert all(not ENTRANCE_SHUFFLE[end // 2]["water"] for end in targets)
+    grotto_pairs = [(a, b) for a, b in world.mixed_entrance_pairs
+                    if any(ENTRANCE_SHUFFLE[end // 2]["grotto"] for end in (a, b))]
+    if mixed:
+        assert grotto_pairs
+    for a, b in grotto_pairs:
+        assert a not in targets and b not in targets
+        for source, arrival in ((a, b), (b, a)):
+            rr, key, _ = world._endpoint(source)
+            assert original[rr, key] == region_name(world._endpoint(arrival)[0])
     for source, target in targets.items():
         source_rr, source_key, _ = world._endpoint(source)
         target_rr, _, _ = world._endpoint(target)

@@ -1703,3 +1703,86 @@ need a form, a song or the Hookshot. A count of coupled fallbacks is reported wi
   discovers a fresh exit. Save, reload offline and check the same directions.
 - Take the blue warp after a temple entered from a mixed pool. It should follow the door into the temple and set
   the defeated boss's own flags. Walk through a reserved town gate and try a grotto and the underwater ways.
+
+### Stage 12 – Mixed Grottos (apworld 0.18.0)
+
+`mix_entrance_pools` accepts `grottos` with `shuffle_grottos` enabled and at least one other
+enabled pool. The generator reads the pool bit, fixed exits and `grottoReturnPoints` from
+`EntranceShuffle.cpp`. It verifies that every eligible hole has exactly one return record,
+that each landing spawn is in its exterior scene, and that the physical transition selectors
+distinguish the shared grotto entrances. Existing entrance IDs, slot fields and save arrays
+are retained. The separate pool still contains all 26 grottos.
+
+The 18 holes can be mixed with dungeons, interiors, land exits and special areas. Both ends of
+every pair involving a grotto are reserved when Decouple Entrances is enabled. Source rules,
+keys and opening hours stay with their entrances. The AP graph, Universal Tracker and Check
+Tracker resolve the return to the exact exterior region. The spoiler and Entrance Tracker use
+the generated endpoint names, and the current-area marker distinguishes the shared grotto scene
+by its entrance and data. Blue warps to holes, including the first warp via the Giants' Chamber,
+use the stored exterior point and apply the beaten boss's flags.
+
+The NTSC-U 1.0 archive (`mm.o2r`, ROM identifier `5354631C`) was used to cross-check all 18
+return points through the entrance, spawn and room lists, the DoorAna actor and the static
+collision surface. The client loads the verified base room layout and resolves the cleared
+Swamp and spring mountain variants before loading. The native checks exercise data and routing.
+The actual landing and contacts with game actors are still on the in-game checklist.
+
+#### Grottos fixed when `grottos` is selected for mixing
+
+| Logical entrance | Grotto | Reason |
+|---|---|---|
+| `GROTTOS:5` | Path to Goron Village Hot Spring | In winter the meltable ice block occupies the return point. |
+| `GROTTOS:12` | Deku Palace Bean Salesman | Uses the regular scene exit `DEKU_PALACE:9` into the lower palace. |
+| `GROTTOS:16` | Lone Peak Shrine | Uses the regular scene exit onto a ledge. The way onward to the village needs Lens and magic. |
+| `GROTTOS:22` | Woods of Mystery | The return point belongs to room 2 on the day 2 route. |
+| `GROTTOS:23` | Mountain Village Tunnel | The return point is in the spring tunnel, which requires the Snowhead clear. |
+| `GROTTOS:27` | Great Bay Coast Cow | The cliffside has equipment requirements for leaving by land or water. Its fixed return resolves to the cliffside region. |
+| `GROTTOS:28` | Zora Cape | A bombable boulder occupies the return point. |
+| `GROTTOS:31` | Road to Ikana | A bronze boulder occupies the return point. |
+
+#### Verification
+
+The new tests cover all 26 pool selections in Glitchless and No Logic, both directions of each
+pair, the retained source rules, fixed routes, reachability, spoiler names, reconstruction in
+Universal Tracker, invalid slot data, and decoupling of eligible pairs. The 0.17 fixture exercises
+the old four-pool mix with Decouple Entrances enabled. Its entrance graph and assignments match
+0.18.0 with `grottos` absent from the selection.
+
+- The full local pytest suite passed **950 tests and 164,096 subtests**, including all **78**
+  unchanged Golden fingerprints. The first run reported
+  `TypeError: item_names() takes 1 positional argument but 2 were given` in the new grotto
+  source-rule test. The fixed test passed on its own and in the full rerun.
+- Random generation passed **100/100** with all five mixed pools and **100/100** with
+  all fork options, including NPC souls, door keys, Epona riding, bean planting, rocks,
+  signs, owl warps, cycle spawn and Decouple Entrances. The second run checked 1,069
+  critical directed arrivals and left 1,000 of them coupled.
+- Rebuilt native logic parity matched **1,200/1,200**. The Check Tracker comparison matched
+  **600 graphs, 4,800 inventory snapshots and 32 targeted snapshots** with zero differences.
+  The profiles covered separate pools, the four original mixed pools and the five-pool mix,
+  each with and without Decouple Entrances, cycle spawn and owl warp shuffle as a group.
+- The native transition harness passed **1,260 grotto–door, 2,340 grotto–land and 324
+  grotto–grotto pairs** in both directions, rejected **12,184 invalid attempts** (4,148
+  grotto–door), and passed 3,906 death/void passages and four targeted boss warps. The
+  **15 AP-generated 0.18.0 slots** added 880 coupled grotto passages and validated 1,908
+  directed overrides. Earlier save and transition fixtures passed in the same run.
+- The Windows x64 Release client built with local `/Z7` and `/DEBUG:NONE` flags. clang-format
+  and Git whitespace checks passed.
+
+#### In-game checklist — not tested in game
+
+- Take the exit from the foreign side of each eligible hole without first visiting that hole.
+  Cover Termina Field grotto IDs **0, 1, 2, 3, 7, 9, 11, 13, 17, 18 and 19**, Road to Southern
+  Swamp **20**, Southern Swamp **21** in both states, Goron Village ramp **24** in winter and
+  spring, upper Path to Snowhead **25**, Fisherman **26**, Ikana Canyon **29** and Ikana Graveyard
+  **30**. Check the room, landing, nearby collision and the walkable way onward.
+- Use a house, temple and land transition into a grotto. Verify the regular return spawn, chest
+  flag and cow identity in rooms shared by several grottos. Enter a building through a different
+  door and take its mixed exit back to the hole.
+- In a cave reached through a door or a land exit, void out, die, and save/reload offline. Check
+  the return point, grotto identity on reload and discovery behavior. Ride Epona through a mixed
+  land source and verify she stays outside.
+- Take a first and repeat blue warp from a temple behind a hole. Check the destination and clear
+  flags. Exercise a door key, a daytime interior and a water route. With Decouple Entrances,
+  check that both sides of a grotto pair stay coupled while nearby eligible routes can split.
+- Compare the spoiler, Entrance Tracker, Check Tracker and Universal Tracker in a 0.18 seed.
+  Try a 0.17 mixed seed and an older save with the separate grotto pool.

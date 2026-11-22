@@ -490,6 +490,33 @@ def check_grottos(rows: list[dict], grotto_of: dict, rc_table: dict, out_regions
                     raise SystemExit(f"grottoEntrances {r['into']}: chest flag of {chests} is not {data & 0x1F:#x}")
 
 
+def read_grotto_returns(source, ent, mixed_grottos, grotto_of, entrance_scenes, root):
+    body = re.search(r"grottoReturnPoints\[\]\s*=\s*\{(.*?)\n\};", source, re.S).group(1)
+    rows = re.findall(rf"\{{\s*({ent}),\s*({ent}),\s*(\d+),\s*\{{\s*(-?\d+),\s*(-?\d+),\s*(-?\d+)\s*\}},\s*(-?\d+)\s*\}}",
+                      body)
+    keys = [entrance_key(into) for into, *_ in rows]
+    if len(rows) != body.count("ENTRANCE") // 2 or len(keys) != len(set(keys)) or set(keys) != mixed_grottos.keys():
+        raise SystemExit("grottoReturnPoints must cover every mixed grotto once")
+    engine = (root / "mm" / "src" / "code" / "z_scene_table.c").read_text(encoding="utf-8")
+    groups = {int(index, 16): table for index, table in re.findall(
+        r"/\*\s*0x([0-9A-Fa-f]+)\s*\*/\s*SCENE_ENTRANCE\((\w+),", engine)}
+    engine = strip_comments(engine)
+    points = {}
+    for into, landing, room, x, y, z, yaw in rows:
+        into, landing = entrance_key(into), entrance_key(landing)
+        scene, spawn = landing.split(":")
+        table = groups.get(entrance_scenes.get(f"ENTR_SCENE_{scene}"))
+        group = re.search(rf"\b{table}\[\]\s*=\s*\{{(.*?)\}};", engine, re.S)
+        entries = re.findall(r"\w+", group[1]) if group else []
+        entry = re.search(rf"\b{entries[int(spawn)]}\[\]\s*=\s*\{{\s*\{{\s*(SCENE_\w+)",
+                          engine) if int(spawn) < len(entries) else None
+        if (grotto_of[into]["kind"] != "HOLE" or entry is None or entry[1] != mixed_grottos[into]
+                or int(room) > 127 or any(not -32768 <= int(n) <= 32767 for n in (x, y, z, yaw))):
+            raise SystemExit(f"grottoReturnPoints: invalid hole or exterior spawn for {into}: {landing}")
+        points[into] = (landing, int(room), (int(x), int(y), int(z)), int(yaw))
+    return points
+
+
 def check_interiors(rows: list[dict], hours_of: dict, out_regions: list) -> None:
     """Interiors are dead ends behind knob doors: every way out of an interior scene to another scene is the way back
     of one of its interior rows, and no interior door stands inside another interior (no nesting)."""
@@ -752,10 +779,12 @@ def main() -> int:
             or sorted(bit for _, _, bit in mix_rows) != [1 << i for i in range(len(mix_rows))]
             or not mix_rows or len(mix_rows) > 31):
         raise SystemExit("entranceMixPools needs unique names, options and consecutive bits")
-    if {opt for _, opt, _ in mix_rows} != {"RO_SHUFFLE_DUNGEON_ENTRANCES", "RO_SHUFFLE_INTERIORS",
-                                          "RO_SHUFFLE_OVERWORLD", "RO_SHUFFLE_SPECIAL_AREAS"}:
+    grotto_option = "RO_SHUFFLE_GROTTOS"
+    mix_options = {opt for _, opt, _ in mix_rows}
+    if mix_options != {"RO_SHUFFLE_DUNGEON_ENTRANCES", "RO_SHUFFLE_INTERIORS", "RO_SHUFFLE_OVERWORLD",
+                       "RO_SHUFFLE_SPECIAL_AREAS", grotto_option}:
         raise SystemExit("entranceMixPools contains an unsupported pool or omits a mixed pool")
-    if set(decouple_pools) != {option for _, option, _ in mix_rows}:
+    if set(decouple_pools) != mix_options - {grotto_option}:
         raise SystemExit("decouplePools is limited to the land, temple, interior and special area pools")
     mix_fixed_body = re.search(r"entranceMixFixed\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
     mix_fixed = [entrance_key(a) for a in re.findall(ent, mix_fixed_body)]
@@ -983,9 +1012,14 @@ def main() -> int:
     entrance_names = check_entrance_names(es_src, ent, entrance_shuffle, out_regions)
     for into in mix_fixed:
         row = by_into.get(into)
+        if row is not None and row["option"] == grotto_option:
+            continue
         if row is None or (row["hours"] != "ALWAYS_OPEN" and
                            (row["option"] != "RO_SHUFFLE_OVERWORLD" or row["water"] or row["out"] not in mix_fixed)):
             raise SystemExit(f"entranceMixFixed: {into} must be an always-open interior or both sides of a land path")
+    mixed_grottos = {into: outside for opt, into, _, _, outside, *_ in es_rows
+                     if opt == grotto_option and into not in mix_fixed}
+    grotto_returns = read_grotto_returns(es_src, ent, mixed_grottos, grotto_of, entr_scene, root)
     mixed_temple = by_into.get(mix_only)
     if (mixed_temple is None or mix_only in mix_fixed or mixed_temple["option"] != "RO_SHUFFLE_DUNGEON_ENTRANCES"
             or sum(r["temple_exit"] == mixed_temple["out"] for r in entrance_shuffle) != 1):
@@ -994,11 +1028,20 @@ def main() -> int:
     # represent a single exit; for other pools also validate their reverse selector.
     selectors = set()
     for opt, into, out, inside, outside, *_ in es_rows:
-        if opt not in {o for _, o, _ in mix_rows} or into in mix_fixed or into in water:
+        if opt not in mix_options or into in mix_fixed or into in water:
             continue
         if opt == "RO_SHUFFLE_INTERIORS" and hours_of[into] != "ALWAYS_OPEN":
             continue
-        for selector in [(outside, into)] + ([] if opt == "RO_SHUFFLE_OVERWORLD" else [(inside, out)]):
+        if opt == grotto_option:
+            grotto = grotto_of[into]
+            game, data = grotto["game_entrance"], grotto["data"]
+            # A unique entrance is recognized without data. The reverse is the 0xFFFF exit in that specific grotto.
+            if sum(other["game_entrance"] == game for other in grotto_of.values()) == 1:
+                data = None
+            sides = [(outside, game, data), (inside, "0xFFFF", game, data)]
+        else:
+            sides = [(outside, into)] + ([] if opt == "RO_SHUFFLE_OVERWORLD" else [(inside, out)])
+        for selector in sides:
             if selector in selectors:
                 raise SystemExit(f"mixed entrance endpoint is ambiguous: {selector}")
             selectors.add(selector)
@@ -1202,6 +1245,7 @@ def main() -> int:
         fh.write(f"ENTRANCE_MIX_POOLS = {dict((name, (opt, bit)) for name, opt, bit in mix_rows)!r}\n")
         fh.write(f"ENTRANCE_MIX_FIXED = {tuple(mix_fixed)!r}\n")
         fh.write(f"ENTRANCE_MIX_ONLY = {mix_only!r}\n")
+        fh.write(f"GROTTO_RETURN_POINTS = {grotto_returns!r}\n")
 
     names_seen = {}
     with open(OUT / "items_generated.py", "w", encoding="utf-8") as fh:

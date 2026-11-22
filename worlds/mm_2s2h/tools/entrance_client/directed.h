@@ -72,7 +72,7 @@ inline void TestDirectedEntrances() {
             const auto entry = std::find_if(slot.directedEntranceTargets.begin(), slot.directedEntranceTargets.end(),
                                             [&](const auto& pair) { return pair.second == templeInside; });
             if (entry != slot.directedEntranceTargets.end() && (entry->first != templeInside - 1 || bossDoor != boss)) {
-                assert(ShuffledBossExterior(boss) == EndpointArrival(entry->first));
+                assert(ShuffledBossExterior(boss)->entrance == EndpointArrival(entry->first));
                 ++bossReturns;
             }
         }

@@ -139,7 +139,8 @@ def test_real_010_slot_data_defaults_abilities_off():
     slot = json.loads((DATA / "slot_data_0_10_0_mixed.json").read_text(encoding="utf-8"))
     assert slot["apworld_version"] == "0.10.0"
     world = rebuilt_from(slot, 4242)
-    current = build(ALL_OWN | {"mix_entrance_pools": list(ENTRANCE_MIX_POOLS)}, 610, fill=False).worlds[1]
+    pools = [pool for pool in ENTRANCE_MIX_POOLS if pool != "grottos"]
+    current = build(ALL_OWN | {"mix_entrance_pools": pools}, 610, fill=False).worlds[1]
     for opt, _ in ABILITIES.values():
         assert opt not in slot["options"] and world.ro[opt] == 0
     assert world.entrance_pairs == current.entrance_pairs == list(map(tuple, slot["entrance_pairs"]))

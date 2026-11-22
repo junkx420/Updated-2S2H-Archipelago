@@ -5,7 +5,7 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 ## Downloads
 
 The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages NPC souls,
-temple entrances and boss entrances with a matching client. The current source is **apworld 0.17.0**.
+temple entrances and boss entrances with a matching client. The current source is **apworld 0.18.0**.
 The new mechanics are **not tested in game**. Platform builds and preview publication run on GitHub Actions.
 See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago#choose-your-download),
 [changelog](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/main/CHANGELOG.md) and
@@ -36,6 +36,13 @@ off, the current region remains an additional starting point. See the
 ## Additions that are not in 2S2H
 
 The generator has to run on the **client fork** (branch `client`), not on upstream 2S2H, because these live there:
+
+- **Mixed Grottos** (apworld 0.18.0). Enable `shuffle_grottos` and add `grottos` to
+  `mix_entrance_pools` with at least one other enabled pool. Eighteen holes can lead to buildings,
+  dungeons, special areas or land exits, and those transitions can lead into grottos. Eight grottos
+  stay fixed in this mode. Each mixed hole uses a fixed return point even if Link reaches the exit
+  from elsewhere. Every pair that touches a grotto stays coupled with Decouple Entrances enabled.
+  [Exceptions and in-game checklist](docs/testing.md#stage-12--mixed-grottos-apworld-0180).
 
 - **Decouple Entrances** (`decouple_entrances`, apworld 0.17.0, default off) can assign the two directions
   independently in enabled land, interior, temple and special-area pools. Assignments must preserve reachability
@@ -126,16 +133,16 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   entrance behind the door decides, so ways out are never locked. Like `shuffleAreaRules`, the in-game check tracker
   does not know the keys. 0.1–0.4 seeds/saves remain supported. Since 0.7.0 a 26th key, the Zora Hall Rooms Key,
   opens the five Zora Hall doors (see Interiors below). **Not tested in game.**
-- **Grottos** (`shuffle_grottos`, apworld 0.6.0, default off): the 26 grottos of the logic (holes and the two
-  scene-exit grottos, Deku Palace bean salesman and Lone Peak Shrine) are shuffled among each other and coupled:
-  through hole A into grotto X, and out of X back at A. They are appended rows of `shuffleEntrances`; the game side
+- **Grottos** (`shuffle_grottos`, apworld 0.6.0, default off). The separate pool shuffles all 26 grottos,
+  including the Deku Palace bean salesman and Lone Peak Shrine. The pairing couples each hole A to a
+  grotto X whose exit returns to A. The rows are in `shuffleEntrances`. The game side
   is `grottoEntrances` (`EntranceShuffle.cpp`): real entrance, grotto data and kind. A grotto is the pair of real
   entrance and grotto data (`respawn[RESPAWN_MODE_UNK_3].data`), since 15 grottos share `GROTTOS:4`/`GROTTOS:10`;
   the client sets both to X's values and keeps A's respawn point as the way back. The generator proves each shared
   pair against the chest flag and `chestGrottoMap`/`cowGrottoMap`. Hole rules (bombs, songs, day, season) stay at
   the hole; no grotto needs an area rule. With the option on, grotto 27's way back leads to its hole's region (Great
-  Bay Coast cliffside), as in game; off, the logic is exactly 2S2H's. The in-game check tracker shows the grotto you
-  are in, but its reachability does not know shuffled entrances (also for temples and boss rooms). The save field
+  Bay Coast cliffside), as in game; off, the logic is exactly 2S2H's. The in-game check tracker identifies the
+  current grotto by the same entrance and data. The save field
   `entrancePairs` is now `u16[512]` (was `u8[32]`, loaded unchanged). 0.1–0.5 seeds/saves remain supported.
   See `docs/testing.md`. **Not tested in game.**
 - **Interiors** (`shuffle_interiors`, apworld 0.7.0, default off): the knob doors from outside into 32 building doors
@@ -182,11 +189,11 @@ The generator has to run on the **client fork** (branch `client`), not on upstre
   - Stage 6b left 62 two-way exits fixed. The current inventory after stage 6c is in
     [testing.md](docs/testing.md#exits-that-stay-fixed-60). **Not tested in game.**
 - **apworld 0.10.0 adds mixed entrance pools.** `mix_entrance_pools` takes any two or more of `dungeons`, `interiors`,
-  `overworld` and `special_areas` whose shuffle switches are on. The empty list keeps the 0.9 pairings and generation
-  behavior. Inverted Stone Tower Temple joins when `dungeons` is selected. Its exit and Twinmold's blue warp use the
+  `overworld`, `special_areas` and, since 0.18.0, `grottos` whose shuffle switches are on. The empty list keeps
+  the pools separate. Inverted Stone Tower Temple joins when `dungeons` is selected. Its exit and Twinmold's blue warp use the
   coupled return point, including when the temple is reached through a shop or a land exit.
   - The [copyable YAML block](docs/example.yaml) enables every entrance shuffle and mixes all eligible pools.
-    Boss rooms and grottos each keep their own pool. Water pairs only with water. Of the interiors, 24 join the
+    Boss rooms keep their own pool. Water pairs only with water. Of the interiors, 24 join the
     mixed pool, nine daytime entrances shuffle within their hours class and six with their own hours stay fixed.
     Trading Post and Swordsman's School also stay fixed when interiors are mixed.
   - Clock Town's gates (including the Bombers' passage) stay coupled to land exits outside town. Milk Road and

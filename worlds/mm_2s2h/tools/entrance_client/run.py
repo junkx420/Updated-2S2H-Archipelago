@@ -216,7 +216,7 @@ for name in ("all_own", "overworld"):
     "inline const size_t rows08 = 134; // shuffleEntrances rows of apworld 0.8\n"
     "inline const std::vector<LegacySlot> legacy08 = {" + ", ".join(legacy) + "};\n", encoding="utf-8")
 
-from worlds.mm_2s2h.enums_generated import ENTRANCE_MIX_POOLS  # noqa: E402
+from worlds.mm_2s2h.enums_generated import ENTRANCE_MIX_POOLS, GROTTO_RETURN_POINTS  # noqa: E402
 from worlds.mm_2s2h.test.test_pool_trim import build as build_world  # noqa: E402
 from worlds.mm_2s2h.test.test_special_areas import ALL_OWN, DATA  # noqa: E402
 
@@ -224,19 +224,32 @@ legacy09 = (DATA / "slot_data_0_9_0_all_pools.json").read_text(encoding="utf-8")
 legacy10 = (DATA / "slot_data_0_10_0_mixed.json").read_text(encoding="utf-8")
 world_version = json.loads((here.parents[1] / "archipelago.json").read_text(encoding="utf-8"))["world_version"]
 assert all(key in old10["RandoOptionId"] for key in json.loads(legacy10)["options"])
+legacy_pools = [pool for pool in ENTRANCE_MIX_POOLS if pool != "grottos"]
+pool_combinations = [pools for count in range(1, len(legacy_pools) + 1)
+                     for pools in combinations(legacy_pools, count)]
 mixed_slots = [build_world(ALL_OWN | {"mix_entrance_pools": pools}, 610, fill=False).worlds[1].fill_slot_data()
-               for count in range(2, 5) for pools in combinations(ENTRANCE_MIX_POOLS, count)]
+               for pools in pool_combinations if len(pools) >= 2]
+grotto_mixed_slots = [build_world(ALL_OWN | {"mix_entrance_pools": (*pools, "grottos"), "decouple_entrances": True},
+                                 610, fill=False).worlds[1].fill_slot_data() for pools in pool_combinations]
 directed_slots = [build_world(ALL_OWN | {"decouple_entrances": True, "shuffle_spawn": True,
                                         "mix_entrance_pools": mixed}, 5, fill=False).worlds[1].fill_slot_data()
-                  for mixed in ([], list(ENTRANCE_MIX_POOLS))]
+                  for mixed in ([], legacy_pools)]
 (build / "mixed_slots.h").write_text(
     '#pragma once\ninline const char* legacy09Slot = R"slot(' + legacy09 + ')slot";\n'
     'inline const char* legacy10Slot = R"slot(' + legacy10 + ')slot";\n'
     f'inline constexpr const char* mixedSlotVersion = {json.dumps(world_version)};\n'
     'inline const char* mixedSlots[] = {\n' +
     "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in mixed_slots) + '\n};\n'
+    'inline const char* grottoMixedSlots[] = {\n' +
+    "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in grotto_mixed_slots) + '\n};\n'
     'inline const char* directedSlots[] = {\n' +
     "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in directed_slots) + '\n};\n', encoding="utf-8")
+(build / "grotto_returns.h").write_text(
+    "#pragma once\ninline const Rando::EntranceShuffle::GrottoReturnPoint generatedGrottoReturns[] = {\n"
+    + "".join(f"{{ {entrance_value(into)}, {entrance_value(landing)}, {room}, "
+              f"{{ {x}, {y}, {z} }}, {yaw} }},\n"
+              for into, (landing, room, (x, y, z), yaw) in GROTTO_RETURN_POINTS.items())
+    + "};\n", encoding="utf-8")
 json_include = root / "build/x64/vcpkg/installed/x64-windows-static/include"
 for name in ("Rando/Rando.h", "Rando/Types.h", "Rando/Logic/Logic.h", "2s2h/Rando/Rando.h", "2s2h/Rando/Types.h",
              "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h", "z64horse.h"):

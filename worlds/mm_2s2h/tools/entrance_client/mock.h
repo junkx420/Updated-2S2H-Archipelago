@@ -17,9 +17,17 @@ using s16 = int16_t;
 using s32 = int32_t;
 using f32 = float;
 #include "rando_save.h" // verbatim from z64save.h
-struct RespawnData { u16 entrance = 0; s8 data = 0; int position = 0; };
 struct Vec3f { float x = 0, y = 0, z = 0; };
 struct Vec3s { s16 x = 0, y = 0, z = 0; };
+struct RespawnData {
+    u16 entrance = 0;
+    s8 data = 0;
+    int position = 0;
+    Vec3f pos;
+    s16 yaw = 0, playerParams = 0;
+    u8 roomIndex = 0;
+    u32 tempSwitchFlags = 0, unk_18 = 0, tempCollectFlags = 0;
+};
 struct HorseData { s16 sceneId = 0; Vec3s pos; s16 yaw = 0; }; // z64save.h
 struct SaveContext {
     struct Save {

@@ -196,8 +196,9 @@ ShuffleSpecialAreas = _shuffle("ShuffleSpecialAreas", "RO_SHUFFLE_SPECIAL_AREAS"
 
 class MixEntrancePools(OptionSet):
     """Combine two or more enabled entrance pools. An empty list keeps each pool separate.
-    Only unrestricted interiors and land entrances participate. Boss rooms, grottos, underwater paths
-    and daytime interiors keep their own pools. The inverted Stone Tower Temple joins when dungeons are selected."""
+    When grottos are selected, 18 verified holes join and eight grottos stay fixed.
+    Boss rooms, underwater paths and daytime interiors keep their own pools.
+    The inverted Stone Tower Temple joins when dungeons are selected."""
     display_name = "Mix Entrance Pools"
     valid_keys = frozenset(ENTRANCE_MIX_POOLS)
 

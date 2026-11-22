@@ -15,6 +15,7 @@
 #include "owl_warps.h"
 #include "cycle_spawn.h"
 #include "directed.h"
+#include "mixed_grottos.h"
 
 using namespace Rando::EntranceShuffle;
 
@@ -191,4 +192,6 @@ int main(int argc, char** argv) {
     TestOwlWarps();
     TestCycleSpawn();
     TestDirectedEntrances();
+    MixedGrottoTest::Run();
+    MixedGrottoTest::GeneratedSlots();
 }

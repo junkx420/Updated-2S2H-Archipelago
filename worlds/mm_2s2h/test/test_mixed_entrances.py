@@ -1,3 +1,4 @@
+import hashlib
 import json
 from itertools import combinations
 
@@ -5,7 +6,8 @@ import pytest
 from Options import OptionError
 
 from .. import CLOCK_TOWN_SCENES, ENTRANCE_ROW_INDEX, MIX_OPTION, OVERWORLD, region_name
-from ..enums_generated import ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_SHUFFLE
+from ..enums_generated import (ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_NAMES,
+                               ENTRANCE_SHUFFLE, GROTTO_RETURN_POINTS)
 from ..regions_generated import REGIONS
 from .test_door_keys import state_without
 from .test_entrance_shuffle import BOSSES, BY_VALUE, connected, item_names, vanilla_target
@@ -13,7 +15,9 @@ from .test_pool_trim import build
 from .test_special_areas import ALL_OWN, DATA, rebuilt_from
 
 
-COMBINATIONS = [pools for count in range(2, 5) for pools in combinations(ENTRANCE_MIX_POOLS, count)]
+COMBINATIONS = [pools for count in range(2, len(ENTRANCE_MIX_POOLS) + 1)
+                for pools in combinations(ENTRANCE_MIX_POOLS, count)]
+FIXED_GROTTOS = {f"GROTTOS:{i}" for i in (5, 12, 16, 22, 23, 27, 28, 31)}
 
 
 def exit_key(endpoint):
@@ -35,7 +39,12 @@ def check_warps(world):
 
 def test_mix_table_inventory():
     assert ENTRANCE_ROW_INDEX[ENTRANCE_MIX_ONLY] == 157
-    assert set(ENTRANCE_MIX_FIXED) == {"TRADING_POST:0", "SWORDMANS_SCHOOL:0", "ROMANI_RANCH:0", "MILK_ROAD:1"}
+    assert set(ENTRANCE_MIX_FIXED) == FIXED_GROTTOS | {
+        "TRADING_POST:0", "SWORDMANS_SCHOOL:0", "ROMANI_RANCH:0", "MILK_ROAD:1",
+    }
+    assert len(GROTTO_RETURN_POINTS) == 18
+    assert set(GROTTO_RETURN_POINTS) == {row["into"] for row in ENTRANCE_SHUFFLE if row["grotto"]} - FIXED_GROTTOS
+    assert len(COMBINATIONS) == 26
     assert sum(row["hours"] == "ALWAYS_OPEN" and row["into"] not in ENTRANCE_MIX_FIXED
                for row in ENTRANCE_SHUFFLE) == 24
 
@@ -61,6 +70,9 @@ def test_mixed_pool_combinations(pools, logic):
         for source, target in (pair, pair[::-1]):
             assert connected(world, *exit_key(source)) == region_name(exit_key(target)[0])
             row = ENTRANCE_SHUFFLE[source // 2]
+            source_name = ENTRANCE_NAMES[row["into"]][1 + source % 2]
+            target_name = ENTRANCE_NAMES[ENTRANCE_SHUFFLE[target // 2]["into"]][1 + target % 2]
+            assert mw.spoiler.entrances[source_name, "entrance", 1]["exit"] == target_name
             if row["option"] == OVERWORLD and REGIONS[row["door_region"]][1] in CLOCK_TOWN_SCENES:
                 if REGIONS[row["inside_region"]][1] not in CLOCK_TOWN_SCENES:
                     assert ENTRANCE_SHUFFLE[target // 2]["option"] == OVERWORLD
@@ -101,6 +113,48 @@ def test_legacy_09_and_mix_off():
     assert connected(rebuilt, inverted["inside_region"], inverted["out"]) == region_name(inverted["door_region"])
 
 
+def test_legacy_017_with_four_mixed_pools_and_decouple():
+    slot = json.loads((DATA / "slot_data_0_17_0_mixed.json").read_text(encoding="utf-8"))
+    assert slot["apworld_version"] == "0.17.0"
+    pools = [name for name in ENTRANCE_MIX_POOLS if name != "grottos"]
+    current = build(ALL_OWN | {"mix_entrance_pools": pools, "decouple_entrances": True}, 610, fill=False).worlds[1]
+    rebuilt = rebuilt_from(slot, 4242)
+    for key in ("entrance_pairs", "mixed_entrance_pairs", "directed_entrance_targets"):
+        assert current.fill_slot_data()[key] == rebuilt.fill_slot_data()[key] == slot[key]
+    for world in (current, rebuilt):
+        graph = sorted((key, exit_.connected_region.name) for key, exit_ in world.exit_entrances.items())
+        assert hashlib.sha256(json.dumps(graph).encode()).hexdigest() == (
+            "f3d4fd6dd8d22fbda0c47cc8346936c0c33d5f2fa740e15887663b2acddda9b6")
+
+
+def test_key_and_bombs_stay_at_the_source_with_a_shared_grotto():
+    world = build(ALL_OWN | {"mix_entrance_pools": ["grottos", "interiors"]}, 610, fill=False).worlds[1]
+    slot = world.fill_slot_data()
+    hole = 2 * ENTRANCE_ROW_INDEX["GROTTOS:30"]
+    shop = 2 * ENTRANCE_ROW_INDEX["BOMB_SHOP:0"]
+    outsides = sorted(end for pair in world.mixed_entrance_pairs for end in pair if end % 2 == 0)
+    slot["mixed_entrance_pairs"] = [(end, end + 1) for end in outsides if end not in (shop, hole)] + [
+        (shop, hole + 1), (hole, shop + 1)]
+    rebuilt = rebuilt_from(slot, 4242)
+    hole_rule = rebuilt.exit_entrances[exit_key(hole)].access_rule
+    door_rule = rebuilt.exit_entrances[exit_key(shop)].access_rule
+    no_key = state_without(rebuilt, item_names("RI_DOOR_KEY_BOMB_SHOP"))
+    assert hole_rule(no_key) and not door_rule(no_key)
+    no_explosives = item_names("RI_PROGRESSIVE_BOMB_BAG") | item_names("RI_MASK_BLAST")
+    assert not hole_rule(state_without(rebuilt, no_explosives))
+    assert connected(rebuilt, *exit_key(shop)) == region_name(exit_key(hole + 1)[0])
+    assert connected(rebuilt, *exit_key(shop + 1)) == region_name(exit_key(hole)[0])
+
+
+@pytest.mark.parametrize("empty", [False, True])
+def test_tracker_rejects_incomplete_grotto_mixed_slot(empty):
+    world = build(ALL_OWN | {"mix_entrance_pools": ["grottos", "interiors"]}, 610, fill=False).worlds[1]
+    slot = world.fill_slot_data()
+    slot["mixed_entrance_pairs"] = [] if empty else slot["mixed_entrance_pairs"][:-1]
+    with pytest.raises(OptionError, match="incomplete mixed entrance pairing"):
+        rebuilt_from(slot, 4242)
+
+
 def test_inverted_stone_tower_behind_a_shop():
     world = build(ALL_OWN | {"mix_entrance_pools": ["dungeons", "interiors"]}, 610, fill=False).worlds[1]
     inverted = 2 * ENTRANCE_ROW_INDEX[ENTRANCE_MIX_ONLY]
@@ -121,7 +175,8 @@ def test_inverted_stone_tower_behind_a_shop():
 @pytest.mark.parametrize("options", [
     {"mix_entrance_pools": ["dungeons"], "shuffle_dungeon_entrances": True},
     {"mix_entrance_pools": ["dungeons", "interiors"], "shuffle_dungeon_entrances": True},
+    {"mix_entrance_pools": ["dungeons", "grottos"], "shuffle_dungeon_entrances": True},
 ])
 def test_mix_requires_two_enabled_pools(options):
-    with pytest.raises(OptionError, match="at least two pools|enable shuffle_interiors"):
+    with pytest.raises(OptionError, match="at least two pools|enable shuffle_(interiors|grottos)"):
         build(options, 610, fill=False)
