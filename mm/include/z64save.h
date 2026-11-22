@@ -398,6 +398,7 @@ typedef struct RandoSaveInfo {
     u16 mixedEntrancePairs[1024]; // two endpoints per entrance row; partner + 1, or zero
     u8 owlWarpTargets[10];        // indexed by the selected owl; destination ID + 1, or zero
     u8 owlWarpsDiscovered[2];
+    u8 cycleSpawn[2]; // start ID + 1 (zero is vanilla), then discovery flag
     // Entrance tracker (apworld 0.11.1): bit per endpoint (2 * row = door side, 2 * row + 1 = inside side), set when
     // Link goes through either side of its pairing
     u8 entrancesDiscovered[128];

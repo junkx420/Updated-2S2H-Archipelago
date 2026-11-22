@@ -54,6 +54,17 @@ extern const std::array<OwlWarp, 10> owlWarps;
 size_t OwlWarpTarget(size_t source);
 void SetOwlWarpTargets(const std::vector<int32_t>& targets);
 
+struct CycleSpawn {
+    u16 entrance;
+    u16 exitToSouth;
+    const char* name;
+    RandoRegionId region;
+};
+
+const CycleSpawn* SelectedCycleSpawn();
+void SetCycleSpawn(int32_t target);
+void QueueCycleSpawnOnLoad();
+
 struct TrackerExit {
     RandoRegionId target;
     const std::function<bool()>* areaCondition = nullptr;

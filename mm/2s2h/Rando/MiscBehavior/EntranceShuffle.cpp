@@ -1,4 +1,6 @@
 #include "EntranceShuffle.h"
+#include "ClockShuffle.h"
+#include "CycleSpawnHooks.h"
 #include "OwlWarpHooks.h"
 #include "Rando/Logic/Logic.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
@@ -32,6 +34,13 @@ const std::array<OwlWarp, 10> owlWarps = {{
     { OWL_WARP_SOUTHERN_SWAMP,    ENTRANCE(SOUTHERN_SWAMP_POISONED, 10),"Southern Swamp",  RR_SOUTHERN_SWAMP_NORTH,              [] { return true; } },
     { OWL_WARP_IKANA_CANYON,      ENTRANCE(IKANA_CANYON, 4),          "Ikana Canyon",     RR_IKANA_CANYON_UPPER,                [] { return true; } },
     { OWL_WARP_STONE_TOWER,       ENTRANCE(STONE_TOWER, 3),           "Stone Tower",      RR_STONE_TOWER_TOP,                   [] { return CAN_PLAY_SONG(TIME) || HAS_ITEM(ITEM_HOOKSHOT); } },
+}};
+
+// The entrance and the exit to South Clock Town belong to one always-open path.
+const std::array<CycleSpawn, 3> cycleSpawns = {{
+    { ENTRANCE(NORTH_CLOCK_TOWN, 2), ENTRANCE(SOUTH_CLOCK_TOWN, 4), "North Clock Town", RR_CLOCK_TOWN_NORTH },
+    { ENTRANCE(WEST_CLOCK_TOWN, 1),  ENTRANCE(SOUTH_CLOCK_TOWN, 5), "West Clock Town",  RR_CLOCK_TOWN_WEST },
+    { ENTRANCE(EAST_CLOCK_TOWN, 1),  ENTRANCE(SOUTH_CLOCK_TOWN, 7), "East Clock Town",  RR_CLOCK_TOWN_EAST },
 }};
 // clang-format on
 
@@ -611,9 +620,20 @@ static bool FixedWhenMixed(size_t row) {
            entranceMixFixed.end();
 }
 
+const CycleSpawn* SelectedCycleSpawn() {
+    const auto value = gSaveContext.save.shipSaveInfo.rando.cycleSpawn[0];
+    return RANDO_SAVE_OPTIONS[RO_SHUFFLE_SPAWN] && value != 0 && value <= cycleSpawns.size() ? &cycleSpawns[value - 1]
+                                                                                             : nullptr;
+}
+
+static bool IsCycleSpawnRoute(size_t row) {
+    const auto* spawn = SelectedCycleSpawn();
+    return spawn && (shuffleEntrances[row].into == spawn->entrance || shuffleEntrances[row].into == spawn->exitToSouth);
+}
+
 static bool IsMixedRow(size_t row) {
     return MixSelected(shuffleEntrances[row].option) && !FixedWhenMixed(row) && !IsWaterRow(row) &&
-           (!IsInteriorRow(row) || HoursOf(row) == INTERIOR_ALWAYS_OPEN);
+           !IsCycleSpawnRoute(row) && (!IsInteriorRow(row) || HoursOf(row) == INTERIOR_ALWAYS_OPEN);
 }
 
 static bool IsClockTownScene(s16 scene) {
@@ -667,6 +687,9 @@ static bool CanPair(size_t door, size_t inside) {
         return false;
     }
     if (MixSelected(shuffleEntrances[door].option) && (FixedWhenMixed(door) || FixedWhenMixed(inside))) {
+        return door == inside;
+    }
+    if (IsCycleSpawnRoute(door) || IsCycleSpawnRoute(inside)) {
         return door == inside;
     }
     return !IsInteriorRow(door) ||
@@ -755,15 +778,39 @@ void SetOwlWarpTargets(const std::vector<int32_t>& targets) {
     }
 }
 
+static bool pendingCycleSpawnLoad = false;
+static bool pendingCycleSpawnArrival = false;
+
+void SetCycleSpawn(int32_t target) {
+    auto& saved = gSaveContext.save.shipSaveInfo.rando.cycleSpawn;
+    const u8 value =
+        RANDO_SAVE_OPTIONS[RO_SHUFFLE_SPAWN] && target >= 0 && (size_t)target < cycleSpawns.size() ? target + 1 : 0;
+    if (saved[0] != value) {
+        saved[0] = value;
+        saved[1] = 0;
+    }
+}
+
+void QueueCycleSpawnOnLoad() {
+    const auto entrance = gSaveContext.save.entrance;
+    pendingCycleSpawnLoad = SelectedCycleSpawn() && !gSaveContext.save.isOwlSave &&
+                            (entrance == ENTRANCE(SOUTH_CLOCK_TOWN, 0) || entrance == ENTRANCE(CUTSCENE, 0));
+    pendingCycleSpawnArrival = false;
+}
+
 // ---- Entrance tracker: discoveries ----
 
 static constexpr size_t MAX_DISCOVERED = 8 * sizeof(RandoSaveInfo::entrancesDiscovered);
+static constexpr size_t CYCLE_SPAWN_TRACKER_ID = MAX_ENDPOINTS + std::tuple_size_v<decltype(owlWarps)>;
 
 static u8* Discovered() {
     return gSaveContext.save.shipSaveInfo.rando.entrancesDiscovered;
 }
 
 bool IsDiscovered(size_t endpoint) {
+    if (endpoint == CYCLE_SPAWN_TRACKER_ID) {
+        return gSaveContext.save.shipSaveInfo.rando.cycleSpawn[1] != 0;
+    }
     if (endpoint >= MAX_ENDPOINTS && endpoint - MAX_ENDPOINTS < owlWarps.size()) {
         const size_t owl = endpoint - MAX_ENDPOINTS;
         return (gSaveContext.save.shipSaveInfo.rando.owlWarpsDiscovered[owl / 8] & (1 << (owl % 8))) != 0;
@@ -858,6 +905,13 @@ static std::optional<size_t> pendingOwlWarp;
 static u16 PlaceOf(u16 entrance);
 
 void OnSceneInit(s16 sceneId, s8 spawnNum) {
+    if (pendingCycleSpawnArrival) {
+        pendingCycleSpawnArrival = false;
+        const auto* spawn = SelectedCycleSpawn();
+        if (spawn && PlaceOf(gSaveContext.save.entrance) == spawn->entrance) {
+            gSaveContext.save.shipSaveInfo.rando.cycleSpawn[1] = 1;
+        }
+    }
     if (pendingOwlWarp) {
         const size_t source = *pendingOwlWarp;
         pendingOwlWarp.reset();
@@ -1389,6 +1443,10 @@ std::vector<TrackedEntrance> TrackedEntrances() {
                               (s16)Entrance_GetSceneIdAbsolute(owlWarps[owl].entrance) });
         }
     }
+    if (SelectedCycleSpawn()) {
+        lines.push_back(
+            { CYCLE_SPAWN_TRACKER_ID, CYCLE_SPAWN_TRACKER_ID, RO_SHUFFLE_SPAWN, false, false, SCENE_CLOCKTOWER });
+    }
     return lines;
 }
 
@@ -1414,6 +1472,9 @@ static std::string RowName(size_t row) {
 // The spoiler log's entrance column: a door pool's door, "Region -> Place" for an overworld exit (__init__.py
 // connect_entrances), the Archipelago exit for a mixed endpoint.
 std::string FromName(const TrackedEntrance& line) {
+    if (line.pool == RO_SHUFFLE_SPAWN) {
+        return "Cycle Start";
+    }
     if (line.pool == RO_SHUFFLE_OWL_WARPS) {
         return std::string("Song of Soaring: ") + owlWarps[line.from - MAX_ENDPOINTS].name;
     }
@@ -1428,6 +1489,10 @@ std::string FromName(const TrackedEntrance& line) {
 }
 
 std::string ToName(const TrackedEntrance& line) {
+    if (line.pool == RO_SHUFFLE_SPAWN) {
+        const auto* spawn = SelectedCycleSpawn();
+        return spawn ? spawn->name : "?";
+    }
     if (line.pool == RO_SHUFFLE_OWL_WARPS) {
         return owlWarps[line.to - MAX_ENDPOINTS].name;
     }
@@ -1435,6 +1500,10 @@ std::string ToName(const TrackedEntrance& line) {
 }
 
 s16 TrackedArrivalScene(const TrackedEntrance& line) {
+    if (line.pool == RO_SHUFFLE_SPAWN) {
+        const auto* spawn = SelectedCycleSpawn();
+        return spawn ? (s16)Entrance_GetSceneIdAbsolute(spawn->entrance) : SCENE_MAX;
+    }
     if (line.pool == RO_SHUFFLE_OWL_WARPS) {
         return Entrance_GetSceneIdAbsolute(owlWarps[line.to - MAX_ENDPOINTS].entrance);
     }
@@ -1480,4 +1549,44 @@ extern "C" uint16_t Rando_ResolveOwlWarp(int32_t source, uint16_t vanillaEntranc
         return ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 8);
     }
     return entrance;
+}
+
+extern "C" bool Rando_PrepareCycleSpawn() {
+    using namespace Rando;
+    using namespace EntranceShuffle;
+    const bool fromFile = pendingCycleSpawnLoad;
+    pendingCycleSpawnLoad = false;
+    const auto* spawn = IS_RANDO ? SelectedCycleSpawn() : nullptr;
+    const bool fromSong =
+        gSaveContext.nextCutsceneIndex == 0xFFF7 &&
+        (gSaveContext.save.entrance == ENTRANCE(CUTSCENE, 0) || gSaveContext.save.entrance == ENTRANCE(CUTSCENE, 1));
+    if (!spawn || gSaveContext.gameMode != GAMEMODE_NORMAL || (!fromFile && !fromSong)) {
+        return false;
+    }
+
+    // This runs before Play_Init acts on any entrance cutscene or spawns actors.
+    gSaveContext.save.entrance = spawn->entrance;
+    gSaveContext.nextCutsceneIndex = 0xFFEF;
+    gSaveContext.save.cutsceneIndex = 0;
+    gSaveContext.save.eventDayCount = 0;
+    gSaveContext.respawnFlag = 0;
+    pendingCycleSpawnArrival = true;
+
+    const int halfDay =
+        RANDO_SAVE_OPTIONS[RO_CLOCK_SHUFFLE] ? ClockItems::FindOwnedHalfDay(false) : ClockItems::HALF_DAY1_DAY;
+    if (halfDay == ClockItems::INVALID) {
+        gSaveContext.save.day = 3;
+        gSaveContext.save.time = CLOCK_TIME(0, RANDO_SAVE_OPTIONS[RO_CLOCK_TERMINAL_TIME]);
+        return false;
+    }
+    if (halfDay % 2 != 0) {
+        ClockShuffle::SetTimeToHalfDayStart(halfDay);
+        return false;
+    }
+
+    // DayTelop_Init increments the day and performs the standard dawn reset. Use it
+    // before loading the new district, without relying on a scene's Day 0 actor.
+    gSaveContext.save.day = halfDay / 2;
+    gSaveContext.save.time = CLOCK_TIME(6, 0);
+    return true;
 }

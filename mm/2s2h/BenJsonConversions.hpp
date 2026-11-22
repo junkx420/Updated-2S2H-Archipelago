@@ -69,6 +69,7 @@ inline void to_json(json& j, const RandoSaveInfo& rando) {
         { "mixedEntrancePairs", rando.mixedEntrancePairs },
         { "owlWarpTargets", rando.owlWarpTargets },
         { "owlWarpsDiscovered", rando.owlWarpsDiscovered },
+        { "cycleSpawn", rando.cycleSpawn },
         { "entrancesDiscovered", rando.entrancesDiscovered },
     };
     if (rando.apStartingClockItemLimit != 0) {
@@ -103,6 +104,7 @@ inline void from_json(const json& j, RandoSaveInfo& rando) {
     GetGrownArray(j.value("mixedEntrancePairs", json::array()), rando.mixedEntrancePairs);
     GetGrownArray(j.value("owlWarpTargets", json::array()), rando.owlWarpTargets);
     GetGrownArray(j.value("owlWarpsDiscovered", json::array()), rando.owlWarpsDiscovered);
+    GetGrownArray(j.value("cycleSpawn", json::array()), rando.cycleSpawn);
     // Added with the entrance tracker (apworld 0.11.1); older saves load without discoveries
     GetGrownArray(j.value("entrancesDiscovered", json::array()), rando.entrancesDiscovered);
 }

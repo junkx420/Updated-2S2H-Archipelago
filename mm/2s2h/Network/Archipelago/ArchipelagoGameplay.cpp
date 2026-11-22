@@ -66,6 +66,7 @@ void ApplySlotOptions(const ApSlot::SlotData& options) {
         RANDO_SAVE_OPTIONS[optionId] = value;
     }
     // Stored in the save, so the shuffled doors work right after loading, before reconnecting.
+    Rando::EntranceShuffle::SetCycleSpawn(options.spawnTarget);
     Rando::EntranceShuffle::SetPairs(options.entrancePairs, options.mixedEntrancePairs);
     Rando::EntranceShuffle::SetOwlWarpTargets(options.owlWarpTargets);
     // apworld 0.7 added the Zora Hall Rooms key. Older seeds have none in their pool: their Zora Hall doors stay open.
@@ -421,6 +422,9 @@ void RegisterArchipelagoGameplay() {
     REGISTER_VB_SHOULD(VB_FILE_SELECT_START_GAME, {
         bool firstAttempt = va_arg(args, int) != 0;
         *should = ApplyStartingClocks();
+        if (*should) {
+            Rando::EntranceShuffle::QueueCycleSpawnOnLoad();
+        }
         if (!*should && firstAttempt) {
             Notification::Emit({ .message = "Waiting for Archipelago items", .suffix = "B: Return to file select" });
         }

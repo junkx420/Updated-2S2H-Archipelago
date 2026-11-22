@@ -42,6 +42,7 @@ u8 sMotionBlurStatus;
 #include "debug.h"
 #include "BenPort.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "2s2h/Rando/MiscBehavior/CycleSpawnHooks.h"
 #include "2s2h/Enhancements/FrameInterpolation/FrameInterpolation.h"
 #include "2s2h/Enhancements/Graphics/Graphics.h"
 #include "2s2h/DeveloperTools/CollisionViewer.h"
@@ -2229,6 +2230,12 @@ void Play_Init(GameState* thisx) {
     s32 scene;
     u8 sceneLayer;
     s32 pad2;
+
+    if (Rando_PrepareCycleSpawn()) {
+        STOP_GAMESTATE(&this->state);
+        SET_NEXT_GAMESTATE(&this->state, DayTelop_Init, sizeof(DayTelopState));
+        return;
+    }
 
     if ((gSaveContext.respawnFlag == -4) || (gSaveContext.respawnFlag == -0x63)) {
         if (CHECK_EVENTINF(EVENTINF_TRIGGER_DAYTELOP)) {

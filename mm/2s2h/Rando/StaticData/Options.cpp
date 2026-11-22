@@ -64,6 +64,7 @@ std::map<RandoOptionId, RandoStaticOption> Options = {
     RO(RO_SHUFFLE_ROCKS,               RO_GENERIC_OFF),
     RO(RO_SHUFFLE_SIGNS,               RO_GENERIC_OFF),
     RO(RO_SHUFFLE_OWL_WARPS,           RO_GENERIC_OFF),
+    RO(RO_SHUFFLE_SPAWN,               RO_GENERIC_OFF),
     RO(RO_SHUFFLE_FREESTANDING_ITEMS,  RO_GENERIC_OFF),
     RO(RO_SHUFFLE_FROGS,               RO_GENERIC_OFF),
     RO(RO_SHUFFLE_GOLD_SKULLTULAS,     RO_GENERIC_OFF),

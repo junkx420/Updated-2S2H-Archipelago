@@ -32,6 +32,8 @@ const char* PoolName(RandoOptionId pool, bool mixed) {
             return "Special Areas";
         case RO_SHUFFLE_OWL_WARPS:
             return "Owl Warps";
+        case RO_SHUFFLE_SPAWN:
+            return "Cycle Start";
         default:
             return "Other";
     }
