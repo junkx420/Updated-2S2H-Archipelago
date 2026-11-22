@@ -80,6 +80,38 @@ successful build used the restored pinned header and ran outside the sandbox.
 
 These checks have **not been tested in game**.
 
+### Check Tracker saved entrance pairs (part B)
+
+The in-game tracker follows `entrancePairs` and `mixedEntrancePairs` from the save. The source exit retains its
+condition and door key. A foreign arrival applies its `shuffleAreaRules` condition. Grotto returns lead to the
+region of the paired hole. Blue boss warps compose the boss and temple pairings through the same helper used for
+the actual scene transition. With AP fork rules enabled, the tracker starts at `RR_MAX`. With them off, it also
+starts in the current region as before. The check list still refreshes at most once every 20 frames while its
+out-of-logic display is enabled.
+
+Run `python worlds/mm_2s2h/tools/parity/compare_tracker.py 50 --entrances` after rebuilding the parity shim. Each
+seed sends the apworld's pairs through the client's real `SetPairs`. The harness compares the target of every exit
+and the complete set of open shuffled checks for each inventory. The timed section includes graph construction and
+check evaluation. It excludes process startup, scenario parsing and result printing.
+
+All **100 entrance graphs** and **800 inventory snapshots** agreed, with 50 separate and 50 mixed seeds. The
+100-seed run with entrance shuffle off also passed all **800 inventory snapshots**. All **19 focused cases**
+passed, including a save physically inside a locked building. The shim measured a **0.552 ms**
+median, **1.516 ms** p95 and **1.630 ms** maximum for separate pools, and a **0.586 ms** median, **1.488 ms** p95
+and **1.709 ms** maximum for mixed pools. Parity passed **1,200/1,200**. The Windows x64 Release build and
+clang-format passed. Pytest passed **861 tests** and **159,979 subtests**. The native entrance harness passed,
+including **92,160** boss warps, **110** mixed boss warps and the 0.9 and 0.10 save tests.
+
+The first four-seed smoke test reported `14 differences` for separate pools and `13 differences` for mixed pools.
+The AP side had precollected starting items, so the harness now includes the same items in the mocked save.
+The native entrance harness initially reported `C2061: syntax error: identifier 'RandoCheckId'` and then
+`Assertion failed: slot.apworldVersion == "0.11.1"`. Its mock now includes the real check enum, and its generated
+fixtures take the expected version from `archipelago.json`.
+
+Use the in-game checklist above. For the entrance test, use the same inventory and the same seed in the in-game
+Check Tracker and the Universal Tracker. Check a route through a swapped entrance and a return through a mixed
+pool. **Not tested in game.**
+
 ## 2. Archipelago test suites
 
 `pytest test/general worlds/mm_2s2h/test`: **433 passed, 0 failed** (all worlds, includes ours).

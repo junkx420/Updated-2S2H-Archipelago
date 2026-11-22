@@ -30,7 +30,11 @@ typedef int DungeonSceneIndex;
 #define ENTRANCE(scene, spawn) (((ENTR_SCENE_##scene & 0x7F) << 9) | (((spawn) & 0x1F) << 4))
 
 struct Actor;
-struct RandoSaveInfo {};
+struct RandoSaveInfo {
+    int foundDungeonKeys[4] = {};
+    u16 entrancePairs[512] = {};
+    u16 mixedEntrancePairs[1024] = {};
+};
 struct MockSaveCheck {
     u16 price = 0;
     bool shuffled = false;
@@ -49,9 +53,7 @@ struct MockSave {
             } inventory;
         } saveInfo;
         struct {
-            struct {
-                int foundDungeonKeys[4] = {};
-            } rando;
+            RandoSaveInfo rando;
         } shipSaveInfo;
         int playerForm = PLAYER_FORM_HUMAN;
     } save;

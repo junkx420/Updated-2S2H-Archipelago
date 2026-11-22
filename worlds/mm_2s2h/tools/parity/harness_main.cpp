@@ -6,6 +6,7 @@
 //   week <WEEKEVENTREG_*> / owl <OWL_WARP_*> / sword|shield|quiver|bombbag|wallet|magic|health|bottle <v>
 //   key <DUNGEON_SCENE_INDEX_*> <v> / fairy <DUNGEON_SCENE_INDEX_*> <v> / token <SCENE_*> <v>
 //   ditem <DUNGEON_*> <DUNGEON_SCENE_INDEX_*> / end
+#include <chrono>
 #include <iostream>
 #include <sstream>
 
@@ -43,10 +44,12 @@ bool HaveEnemySoul(ActorId enemyId) { // Souls.cpp, verbatim logic
 #include "timelogic.inc"
 #include "abilities.inc"
 #include "doors.inc"
+#include "entrances.inc"
 #include "extra_cpp.inc"
 #include "2s2h/Rando/Logic/TrackerLogic.cpp"
 
-// Logic.cpp asks EntranceShuffle.cpp (not part of the harness) for a shuffled grotto; parity runs with it off.
+// The tracker reads graph exits as logical IDs. Live grotto identification needs
+// the game state and is covered by the separate entrance_client harness.
 namespace Rando::EntranceShuffle {
 bool LogicGrottoEntrance(s32, s32*) {
     return false;
@@ -100,6 +103,18 @@ static void PrintResult(const std::string& name, const TrackerReachability& resu
     std::cout << "end\n";
 }
 
+static void PrintTrackerGraph() {
+    static const auto names = Reverse(RRByName());
+    const auto exits = Rando::EntranceShuffle::BuildTrackerExits();
+    for (const auto& [regionId, region] : Regions) {
+        for (const auto& [exit, _] : region.exits) {
+            const auto changed = exits.find({ regionId, exit });
+            const auto target = changed != exits.end() ? changed->second.target : GetRegionIdFromLogicEntrance(exit);
+            std::cout << "edge " << names.at(regionId) << " " << exit << " " << names.at(target) << "\n";
+        }
+    }
+}
+
 static void Solve(const std::string& name) {
     std::set<RandoRegionId> regionsInLogic = { RR_MAX };
     std::set<std::pair<RandoEvent, std::function<bool()>>*> eventsInLogic;
@@ -150,7 +165,9 @@ int main() {
     RegisterExtraChecks();
     std::string line, name;
     bool tracker = false;
+    bool printGraph = false;
     RandoRegionId currentRegion = RR_MAX;
+    std::vector<std::pair<int32_t, int32_t>> pairs, mixedPairs;
     while (std::getline(std::cin, line)) {
         std::istringstream ss(line);
         std::string kw, a, b;
@@ -158,6 +175,9 @@ int main() {
         if (kw == "scenario") {
             name = a;
             tracker = false;
+            printGraph = false;
+            pairs.clear();
+            mixedPairs.clear();
             gMock = MockState{};
             gSaveContext = MockSave{};
             for (int i = 0; i < RO_MAX; i++) {
@@ -173,6 +193,12 @@ int main() {
         } else if (kw == "tracker") {
             tracker = true;
             currentRegion = static_cast<RandoRegionId>(N(RRByName(), a));
+        } else if (kw == "graph") {
+            printGraph = true;
+        } else if (kw == "pair") {
+            pairs.emplace_back(std::stoi(a), std::stoi(b));
+        } else if (kw == "mixed") {
+            mixedPairs.emplace_back(std::stoi(a), std::stoi(b));
         } else if (kw == "shuffled") {
             RANDO_SAVE_CHECKS[N(RCByName(), a)].shuffled = true;
         } else if (kw == "obtained") {
@@ -213,7 +239,15 @@ int main() {
             gMock.dungeonItems.insert({ C(a), C(b) });
         } else if (kw == "end") {
             if (tracker) {
-                PrintResult(name, EvaluateTrackerReachability(currentRegion, TrackerHasForkRules()));
+                Rando::EntranceShuffle::SetPairs(pairs, mixedPairs);
+                const auto start = std::chrono::steady_clock::now();
+                const auto result = EvaluateTrackerReachability(currentRegion, TrackerHasForkRules());
+                const auto elapsed = std::chrono::steady_clock::now() - start;
+                PrintResult(name, result);
+                std::cout << "elapsed_us " << std::chrono::duration<double, std::micro>(elapsed).count() << "\n";
+                if (printGraph) {
+                    PrintTrackerGraph();
+                }
             } else {
                 Solve(name);
             }

@@ -15,8 +15,10 @@ Use the client and apworld from the same release; the release manifest records t
 ## In-game Check Tracker
 
 The client applies NPC souls, door keys, Epona riding and bean planting to check reachability. It shows shuffled rocks
-with their region, time and layout rules. The current region remains an additional starting point for this update.
-See the [tracker comparison and in-game checklist](docs/testing.md#check-tracker-fork-rules-part-a).
+with their region, time and layout rules. For AP saves with fork rules enabled, it starts from the same root as the
+apworld and follows the saved entrance pairings, including coupled returns and blue boss warps. With the fork rules
+off, the current region remains an additional starting point. See the
+[tracker comparison and in-game checklist](docs/testing.md#check-tracker-saved-entrance-pairs-part-b).
 
 ## Files
 

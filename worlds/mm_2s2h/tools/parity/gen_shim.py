@@ -11,6 +11,7 @@ Writes into <build-dir>:
   timelogic.inc     TimeLogic.cpp body, verbatim
   souls.inc         enemySoulMap and NPC soul rules from Souls.cpp, verbatim
   abilities.inc, doors.inc, extra_cpp.inc, ExtraChecks.inc  fork tables and their evaluators
+  entrances.inc     shuffle tables, save pairing and warp composition from EntranceShuffle.cpp
   regions/*.cpp     copies of Logic/Regions/*.cpp with the same ability header used by the client
 """
 import pathlib
@@ -49,6 +50,13 @@ abilities = (rando / "MiscBehavior" / "Abilities.cpp").read_text(encoding="utf-8
 for name, source in (("doors.inc", "MiscBehavior/DoorKeys.cpp"), ("extra_cpp.inc", "Logic/ExtraChecks.cpp")):
     code = (rando / source).read_text(encoding="utf-8")
     (out / name).write_text(body_from(code, "namespace Rando"), encoding="utf-8")
+entrances = (rando / "MiscBehavior" / "EntranceShuffle.cpp").read_text(encoding="utf-8")
+tables = entrances[entrances.index("// Time macros"):entrances.index("const std::vector<GrottoEntrance>")]
+pairing = entrances[entrances.index("const std::vector<ShuffleAreaRule>"):
+                    entrances.index("// ---- Entrance tracker: discoveries")]
+set_pairs = entrances[entrances.index("void SetPairs("):entrances.index("// The clear flags")]
+entrance_logic = "namespace Rando::EntranceShuffle {\n" + tables + pairing + set_pairs + "}\n"
+(out / "entrances.inc").write_text(entrance_logic, encoding="utf-8")
 shutil.copy(rando / "Logic" / "ExtraChecks.inc", out / "ExtraChecks.inc")
 for f in (rando / "Logic" / "Regions").glob("*.cpp"):
     (out / "regions" / f.name).write_text(
@@ -61,7 +69,8 @@ sources = "".join(p.read_text(encoding="utf-8") for p in
                   + list((rando / "Logic" / "Regions").glob("*.cpp")))
 prefixes = ["ITEM", "ACTOR", "SCENE", "QUEST", "OWL_WARP", "DUNGEON_SCENE_INDEX", "EQUIP_TYPE", "EQUIP_VALUE", "UPG",
             "WEEKEVENTREG", "OCARINA_SONG", "PLAYER_FORM", "DUNGEON", "RESPAWN_MODE"]
-used = {n for n in re.findall(r"\b(?:%s)_[A-Z0-9_]+\b" % "|".join(prefixes), sources) if not n.endswith("_")}
+used = {n for n in re.findall(r"\b(?:%s)_[A-Z0-9_]+\b" % "|".join(prefixes), sources + entrance_logic)
+        if not n.endswith("_")}
 
 
 def enum_block(text: str, start_pat: str, end_pat: str) -> list[str]:

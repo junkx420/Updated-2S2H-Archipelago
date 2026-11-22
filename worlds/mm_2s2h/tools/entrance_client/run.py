@@ -31,10 +31,9 @@ enums = {}
 for path in (root / "mm/include/z64scene.h", root / "mm/2s2h/Rando/Types.h"):
     enums.update(parse_enums(strip_comments(path.read_text(encoding="utf-8"))))
 lines = []
-for name in ("RandoOptionId", "EntranceSceneId", "RandoItemId", "RandoInf", "RandoEvent", "RandoRegionId"):
+for name in ("RandoOptionId", "EntranceSceneId", "RandoItemId", "RandoInf", "RandoEvent", "RandoRegionId", "RandoCheckId"):
     lines.append("enum " + name + " {" + ",".join(f"{k}={v}" for k, v in enums[name].items()) + "};")
 lines.append("constexpr int RO_GENERIC_OFF = 0;")
-lines.append(f"constexpr int RC_MAX = {enums['RandoCheckId']['RC_MAX']};")
 scene_table = (root / "mm/include/tables/scene_table.h").read_text(encoding="utf-8")
 scenes = re.findall(r"DEFINE_SCENE\(\w+,\s*(SCENE_\w+)|DEFINE_SCENE_UNSET\((SCENE_\w+)", scene_table)
 lines.append("enum SceneId {" + ",".join(a or b for a, b in scenes) + ",SCENE_MAX};")
@@ -206,12 +205,14 @@ from worlds.mm_2s2h.test.test_special_areas import ALL_OWN, DATA  # noqa: E402
 
 legacy09 = (DATA / "slot_data_0_9_0_all_pools.json").read_text(encoding="utf-8")
 legacy10 = (DATA / "slot_data_0_10_0_mixed.json").read_text(encoding="utf-8")
+world_version = json.loads((here.parents[1] / "archipelago.json").read_text(encoding="utf-8"))["world_version"]
 assert all(key in old10["RandoOptionId"] for key in json.loads(legacy10)["options"])
 mixed_slots = [build_world(ALL_OWN | {"mix_entrance_pools": pools}, 610, fill=False).worlds[1].fill_slot_data()
                for count in range(2, 5) for pools in combinations(ENTRANCE_MIX_POOLS, count)]
 (build / "mixed_slots.h").write_text(
     '#pragma once\ninline const char* legacy09Slot = R"slot(' + legacy09 + ')slot";\n'
     'inline const char* legacy10Slot = R"slot(' + legacy10 + ')slot";\n'
+    f'inline constexpr const char* mixedSlotVersion = {json.dumps(world_version)};\n'
     'inline const char* mixedSlots[] = {\n' +
     "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in mixed_slots) + '\n};\n', encoding="utf-8")
 json_include = root / "build/x64/vcpkg/installed/x64-windows-static/include"
