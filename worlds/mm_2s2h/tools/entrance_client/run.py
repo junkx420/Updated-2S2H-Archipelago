@@ -226,12 +226,17 @@ world_version = json.loads((here.parents[1] / "archipelago.json").read_text(enco
 assert all(key in old10["RandoOptionId"] for key in json.loads(legacy10)["options"])
 mixed_slots = [build_world(ALL_OWN | {"mix_entrance_pools": pools}, 610, fill=False).worlds[1].fill_slot_data()
                for count in range(2, 5) for pools in combinations(ENTRANCE_MIX_POOLS, count)]
+directed_slots = [build_world(ALL_OWN | {"decouple_entrances": True, "shuffle_spawn": True,
+                                        "mix_entrance_pools": mixed}, 5, fill=False).worlds[1].fill_slot_data()
+                  for mixed in ([], list(ENTRANCE_MIX_POOLS))]
 (build / "mixed_slots.h").write_text(
     '#pragma once\ninline const char* legacy09Slot = R"slot(' + legacy09 + ')slot";\n'
     'inline const char* legacy10Slot = R"slot(' + legacy10 + ')slot";\n'
     f'inline constexpr const char* mixedSlotVersion = {json.dumps(world_version)};\n'
     'inline const char* mixedSlots[] = {\n' +
-    "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in mixed_slots) + '\n};\n', encoding="utf-8")
+    "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in mixed_slots) + '\n};\n'
+    'inline const char* directedSlots[] = {\n' +
+    "\n".join('R"slot(' + json.dumps(slot) + ')slot",' for slot in directed_slots) + '\n};\n', encoding="utf-8")
 json_include = root / "build/x64/vcpkg/installed/x64-windows-static/include"
 for name in ("Rando/Rando.h", "Rando/Types.h", "Rando/Logic/Logic.h", "2s2h/Rando/Rando.h", "2s2h/Rando/Types.h",
              "2s2h/GameInteractor/GameInteractor.h", "variables.h", "functions.h", "z64horse.h"):

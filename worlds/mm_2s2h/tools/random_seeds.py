@@ -9,6 +9,7 @@ and a summary; failing yamls and logs are kept in <work-dir>/failed/.
 import json
 import pathlib
 import random
+import re
 import runpy
 import shutil
 import subprocess
@@ -55,7 +56,7 @@ def main():
     mix = forced.pop("mix_entrance_pools", None)
     pools = runpy.run_path(str(pathlib.Path(__file__).resolve().parents[1] / "enums_generated.py"))["ENTRANCE_MIX_POOLS"] if mix else {}
     mix_rng = random.Random(610)
-    ok = fail = 0
+    ok = fail = critical = coupled = 0
     t0 = time.time()
     for i in range(n):
         abilities = {name: bool(ability_rng.getrandbits(1)) for name in ("shuffle_epona_riding", "shuffle_bean_planting")}
@@ -82,6 +83,11 @@ def main():
         good = r.returncode == 0 and "Done. Enjoy." in r.stdout + r.stderr
         if good:
             ok += 1
+            for tested, kept in re.findall(
+                    r"checked (\d+) critical directed arrivals \((\d+) kept with their coupled return\)",
+                    r.stdout + r.stderr):
+                critical += int(tested)
+                coupled += int(kept)
         else:
             fail += 1
             shutil.copy(pdir / "p.yaml", work / "failed" / f"seed{i}.yaml")
@@ -91,6 +97,8 @@ def main():
         shutil.rmtree(pdir)
         shutil.rmtree(work / "out", ignore_errors=True)
     print(f"\n{ok}/{n} ok, {fail} failed, {time.time() - t0:.0f}s total")
+    if critical:
+        print(f"{critical} critical arrivals checked, {coupled} kept coupled")
 
 
 if __name__ == "__main__":

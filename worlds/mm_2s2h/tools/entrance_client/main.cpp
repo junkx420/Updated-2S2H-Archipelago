@@ -14,6 +14,7 @@
 #include "tracker.h"
 #include "owl_warps.h"
 #include "cycle_spawn.h"
+#include "directed.h"
 
 using namespace Rando::EntranceShuffle;
 
@@ -189,4 +190,5 @@ int main(int argc, char** argv) {
     TestEntranceTracker();
     TestOwlWarps();
     TestCycleSpawn();
+    TestDirectedEntrances();
 }

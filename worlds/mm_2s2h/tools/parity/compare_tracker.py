@@ -56,6 +56,7 @@ def compare_seed(mw, snapshots: list[Snapshot], *, zora_hall_key: bool = True,
     setup = "\n".join(f"shuffled {check}" for check in sorted(domain))
     setup += "\n" + "\n".join(f"pair {a} {b}" for a, b in world.entrance_pairs)
     setup += "\n" + "\n".join(f"mixed {a} {b}" for a, b in world.mixed_entrance_pairs)
+    setup += "\n" + "\n".join(f"directed {a} {b}" for a, b in world.directed_entrance_targets)
     setup += "\n" + "\n".join(f"owl_target {target}" for target in world.owl_warp_targets)
     if world.spawn_target is not None:
         setup += f"\nspawn_target {world.spawn_target}"
@@ -212,6 +213,7 @@ def main() -> int:
     parser.add_argument("--entrances", action="store_true", help="Run this many seeds for each entrance pool mode")
     parser.add_argument("--owl-warps", action="store_true", help="Also compare shuffled owl destinations")
     parser.add_argument("--spawn", action="store_true", help="Also compare shuffled cycle starts")
+    parser.add_argument("--decouple", action="store_true", help="Compare directed entrances with owl warps and spawn")
     args = parser.parse_args()
     rng = random.Random(0x2A02)
     count, focused_diffs = targeted_cases()
@@ -226,6 +228,12 @@ def main() -> int:
         modes += [(f"{mode} with owl warps", options | {"shuffle_owl_warps": True}) for mode, options in modes]
     if args.spawn:
         modes += [(f"{mode} with spawn", options | {"shuffle_spawn": True}) for mode, options in modes]
+    if args.decouple:
+        for name, options in modes[:2]:
+            options = (options or ENTRANCE_OPTIONS) | {
+                "shuffle_owl_warps": True, "shuffle_spawn": True, "decouple_entrances": True,
+            }
+            modes.append((f"{name} with all three options", options))
     differences = focused_diffs + native_diffs
     print(f"{count} targeted snapshots: {len(focused_diffs)} differences; native: {len(native_diffs)} differences")
     for mode, options in modes:

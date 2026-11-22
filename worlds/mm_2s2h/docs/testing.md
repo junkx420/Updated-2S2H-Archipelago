@@ -1643,3 +1643,63 @@ saves, void, death, the midnight festival transition and the moon crash keep the
   opened tower, the rooftop and the Moon. The remaining travel time depends on the chosen terminal time.
 - Save at an owl or using the pause menu, reload and die or void out. Verify that only the next cycle start uses
   the shuffled district and that the tracker reveals it after actual arrival.
+
+### Stage 11c – Decouple Entrances
+
+`decouple_entrances` defaults to off. The C++ `decouplePools` table names the four eligible pools. For enabled
+pools the apworld first establishes a coupled layout, then uses Archipelago's one-way entrance shuffle to propose
+directed destinations. It accepts cycles of the proposed permutation only if they preserve full-inventory
+reachability and add no arrival whose escape cannot be verified. Each direction retains its source requirement
+and door key and gains the foreign arrival's `shuffleAreaRules` condition. The stored directed map is authoritative
+in the client, both trackers and the spoiler. The Entrance Tracker discovers only the direction actually used.
+The existing versioned pair fields remain the basis for the excluded exits and for older saves.
+
+#### Escape checks
+
+The escape check uses the generated physical graph in Glitchless and No Logic. It first looks for a route back
+to the source or to South Clock Town or Termina Field without equipment. If that fails, the arrival is critical.
+It then tests a route with only the equipment and event flags that the physical source rule and its door key imply.
+A choice between two items supplies neither unless every way through the source needs it. Supplemental area logic
+does not grant equipment for this check. The search excludes save and boss warps and rules that depend on waiting
+for another time window. If the coupled layout already has an unproven escape, both directions of that pair
+are reserved. A proposed change that fails the check is discarded. All twelve test seeds with only temple
+entrances shuffled kept their temple returns coupled. These returns can land on ledges that
+need a form, a song or the Hookshot. A count of coupled fallbacks is reported with the number of critical arrivals.
+
+#### Coupled and fixed exits
+
+- **Clock Town gates and their partners** stay paired to their assigned land exits. This includes the Bombers'
+  passage. The reservation keeps the city's outbound route and its matching route back.
+- **Bosses** keep their boss-door pairing because the blue warp also drives completion scenes and flags.
+  The exterior blue warp follows the entrance into the temple, including from a mixed pool. It ignores the
+  temple's independently drawn walking exit.
+- **Grottos** return to the recorded entry hole. Multiple grottos share a scene entrance and use grotto data
+  plus the entry position. A generic independent return cannot reconstruct that position.
+- **Water** keeps the existing coast-to-dead-end pairing. The moat and Zora Hall require water-safe arrivals
+  and a way back to the coast. Underwater arrivals stay out of the land and mixed pools.
+- **Fixed exits and the protected Spawn route** keep their current behavior. The fixed-exit inventory above
+  gives the individual reasons. The Spawn route preserves item-free access to South Clock Town.
+
+#### Verification
+
+- Pytest passed 915 tests and 164,102 subtests. All 78 Golden fingerprints were unchanged. Parity matched
+  1,200/1,200, and the tracker comparison matched 500 graphs, 4,000 inventory snapshots and 29 targeted cases.
+- Random generation passed 100/100 with Decouple Entrances enabled, 100/100 with all fork options, and
+  30/30 in No Logic with all fork options and an empty requested starting inventory. These runs checked
+  768, 1,287 and 362 critical arrivals respectively. They kept 753, 1,200 and 335 of those arrivals coupled.
+- The native harness passed 296 passages, including 164 independent directions and 7 blue warps. It checked
+  void, death, one-direction discoveries, incomplete slot data, and save compatibility. Windows x64 Release
+  and clang-format for the changed lines passed. The first client build was interrupted at `Generating code`.
+  The repeated build linked the executable and copied the assets successfully.
+
+#### In-game checklist — not tested in game
+
+- Use a directed entrance and its way back in both separate and mixed pools. Check that the directions have
+  separate tracker rows, that the reverse remains hidden until used, and that the Universal Tracker and spoiler
+  carry the same assignments.
+- Try a keyed door and a daytime interior. Check the key and opening time at the source. Try the placements
+  with both Glitchless and No Logic.
+- Void out and die after a directed transition. Confirm the spawned scene is used once and neither respawn
+  discovers a fresh exit. Save, reload offline and check the same directions.
+- Take the blue warp after a temple entered from a mixed pool. It should follow the door into the temple and set
+  the defeated boss's own flags. Walk through a reserved town gate and try a grotto and the underwater ways.

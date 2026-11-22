@@ -15,7 +15,9 @@ class TestOptionDefaults(MM2S2HTestBase):
 
     def test_slot_data_omits_disabled_compatibility_options(self):
         world: MM2S2HWorld = self.multiworld.worlds[self.player]
-        expected = set(OPTION_DEFAULTS) - {"RO_SHUFFLE_SIGNS", "RO_SHUFFLE_OWL_WARPS", "RO_SHUFFLE_SPAWN"}
+        expected = set(OPTION_DEFAULTS) - {
+            "RO_SHUFFLE_SIGNS", "RO_SHUFFLE_OWL_WARPS", "RO_SHUFFLE_SPAWN", "RO_DECOUPLE_ENTRANCES",
+        }
         self.assertEqual(set(world.fill_slot_data()["options"]), expected)
 
 

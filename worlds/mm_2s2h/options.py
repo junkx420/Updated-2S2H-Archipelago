@@ -116,6 +116,8 @@ ShuffleOwlWarps = _shuffle("ShuffleOwlWarps", "RO_SHUFFLE_OWL_WARPS", "Shuffle O
                            "Song of Soaring destinations are shuffled. Some flights require a way to leave the destination.")
 ShuffleSpawn = _shuffle("ShuffleSpawn", "RO_SHUFFLE_SPAWN", "Shuffle Spawn",
                         "Start each cycle in North, West or East Clock Town at a fixed point per seed.")
+DecoupleEntrances = _shuffle("DecoupleEntrances", "RO_DECOUPLE_ENTRANCES", "Decouple Entrances",
+                             "Shuffle both directions independently where safe in the enabled entrance pools.")
 ShuffleShops = _shuffle("ShuffleShops", "RO_SHUFFLE_SHOPS", "Shops", "Items sold in shops are checks, with randomized prices.")
 ShuffleTingleShops = _shuffle("ShuffleTingleShops", "RO_SHUFFLE_TINGLE_SHOPS", "Tingle Maps", "Maps sold by Tingle are checks.")
 ShuffleBossRemains = _shuffle("ShuffleBossRemains", "RO_SHUFFLE_BOSS_REMAINS", "Boss Remains", "Temple bosses give a shuffled item instead of their remains.")
@@ -333,6 +335,7 @@ class MM2S2HOptions(PerGameCommonOptions):
     shuffle_owl_statues: ShuffleOwlStatues
     shuffle_owl_warps: ShuffleOwlWarps
     shuffle_spawn: ShuffleSpawn
+    decouple_entrances: DecoupleEntrances
     shuffle_shops: ShuffleShops
     shuffle_tingle_shops: ShuffleTingleShops
     shuffle_boss_remains: ShuffleBossRemains

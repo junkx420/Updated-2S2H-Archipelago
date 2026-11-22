@@ -17,7 +17,7 @@ from Fill import fill_restrictive
 from Options import OptionError
 from worlds.AutoWorld import LogicMixin, WebWorld, World
 
-from .enums_generated import (ABILITIES, CYCLE_SPAWNS, DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_NAMES,
+from .enums_generated import (ABILITIES, CYCLE_SPAWNS, DECOUPLE_POOLS, DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_NAMES,
                               ENTRANCE_SHUFFLE, NPC_SOULS,
                               OPTION_DEFAULTS, OWL_WARPS, RC_ID, RI_ID)
 from .items_generated import ITEMS
@@ -87,6 +87,7 @@ MIX_DOOR_GROUP, MIX_INSIDE_GROUP = 1002, 1003
 MIX_OPTION = "RO_MIX_ENTRANCE_POOLS"
 OWL_WARP_OPTION = "RO_SHUFFLE_OWL_WARPS"
 SPAWN_OPTION = "RO_SHUFFLE_SPAWN"
+DECOUPLE_OPTION = "RO_DECOUPLE_ENTRANCES"
 ENTRANCE_ROW_INDEX = {row["into"]: i for i, row in enumerate(ENTRANCE_SHUFFLE)}
 
 
@@ -205,6 +206,9 @@ class MM2S2HWorld(World):
         self.owl_warp_targets: list[int] = []
         self.ut_owl_warp_targets: list[int] | None = None
         self.spawn_target: int | None = None
+        self.directed_entrance_targets: list[tuple[int, int]] = []
+        self.ut_directed_targets: list[tuple[int, int]] = []
+        self.directed_escape_checks = 0
         # The Zora Hall Rooms key exists since 0.7; the client keeps those doors open for older seeds (DoorKeys.cpp).
         self.door_keys = list(DOOR_KEYS)
 
@@ -223,6 +227,7 @@ class MM2S2HWorld(World):
             self.ut_entrance_pairs = [tuple(pair) for pair in passthrough.get("entrance_pairs", [])]
             self.ut_owl_warp_targets = list(passthrough.get("owl_warp_targets", []))
             self.spawn_target = passthrough.get("spawn_target")
+            self.ut_directed_targets = [tuple(pair) for pair in passthrough.get("directed_entrance_targets", [])]
             if version >= (0, 10):
                 self.ut_mixed_entrance_pairs = [tuple(pair) for pair in passthrough.get("mixed_entrance_pairs", [])]
             else:
@@ -347,6 +352,8 @@ class MM2S2HWorld(World):
         self.event_count = 0
         # connections & exits; exits by (region, game entrance) for the entrance shuffle
         self.exit_entrances: dict[tuple[str, str], Entrance] = {}
+        self.traversal_rules = {}
+        self.arrival_rules = {}
         for rr, (_, _, _, conns, exits, events, _) in REGIONS.items():
             src = regions[rr]
             seen = Counter()
@@ -354,6 +361,8 @@ class MM2S2HWorld(World):
                 seen[tgt] += 1
                 name = f"{src.name} -> {regions[tgt].name}" + (f" #{seen[tgt]}" if seen[tgt] > 1 else "")
                 exit_ = src.connect(regions[tgt], name, self._with_door_key(self._rule(f), door_key_for.get(key)))
+                if self.ro[DECOUPLE_OPTION]:
+                    self.traversal_rules[exit_] = (f, RI_BY_NAME.get(door_key_for.get(key)), exit_.access_rule)
                 if key is not None:
                     self.exit_entrances[(rr, key)] = exit_
             for i, (re_id, f) in enumerate(events):
@@ -671,12 +680,17 @@ class MM2S2HWorld(World):
                 rr = destination["inside_region"] if target % 2 else destination["door_region"]
                 self._reconnect(source_exit, rr)
                 arrival = destination["into"] if target % 2 else destination["out"]
-                if arrival != (row["out"] if source % 2 else row["into"]):
-                    area = self._rule(ENTRANCE_AREA_RULES.get(arrival))
-                    if area is not None:
-                        own = source_exit.access_rule
-                        source_exit.access_rule = lambda state, own=own, area=area: own(state) and area(state)
+                self._add_arrival_rule(source_exit, row["out"] if source % 2 else row["into"], arrival)
                 self.multiworld.spoiler.set_entrance(source_exit.name, endpoints[target].name, "entrance", self.player)
+
+    def _add_arrival_rule(self, exit_: Entrance, vanilla: str, arrival: str) -> None:
+        raw = ENTRANCE_AREA_RULES.get(arrival) if arrival != vanilla else None
+        if self.ro[DECOUPLE_OPTION]:
+            self.arrival_rules[exit_] = raw
+        area = self._rule(raw)
+        if area is not None:
+            own = exit_.access_rule
+            exit_.access_rule = lambda state, own=own, area=area: own(state) and area(state)
 
     def connect_entrances(self) -> None:
         """Entrance shuffle (EntranceShuffle.cpp rows whose option is on): coupled, so a door's way back is the exit
@@ -830,11 +844,7 @@ class MM2S2HWorld(World):
             self.entrance_pairs.append((row["into_value"], inside["into_value"]))
             self.multiworld.spoiler.set_entrance(_door_name(row), _door_name(inside), "both", self.player)
             # The source door keeps its key/form/event rule. Only a foreign area adds its guaranteed items.
-            if inside is not row:
-                area = self._rule(ENTRANCE_AREA_RULES.get(inside["into"]))
-                if area is not None:
-                    own = door.access_rule
-                    door.access_rule = lambda state, own=own, area=area: own(state) and area(state)
+            self._add_arrival_rule(door, row["into"], inside["into"])
         for k, (row, exit_) in enumerate(zip(over, over_exits)):
             target = over[over_to.get(k, k)]
             if exit_.connected_region is not self.regions_by_rr[target["inside_region"]]:
@@ -842,12 +852,10 @@ class MM2S2HWorld(World):
             self.entrance_pairs.append((row["into_value"], target["into_value"]))
             self.multiworld.spoiler.set_entrance(f"{region_name(row['door_region'])} -> {_place_name(row['into'])}",
                                                  _place_name(target["into"]), "entrance", self.player)
-            if target is not row:
-                area = self._rule(ENTRANCE_AREA_RULES.get(target["into"]))
-                if area is not None:
-                    own = exit_.access_rule
-                    exit_.access_rule = lambda state, own=own, area=area: own(state) and area(state)
+            self._add_arrival_rule(exit_, row["into"], target["into"])
         self._apply_mixed_pairs(mixed, mixed_pairs)
+        if self.ro[DECOUPLE_OPTION]:
+            self._decouple_entrances()
         self._connect_boss_warps()
 
     def _connect_owl_warps(self) -> None:
@@ -870,11 +878,212 @@ class MM2S2HWorld(World):
                 exit_.access_rule = lambda state, own=own, escape=escape: own(state) and escape(state)
             self.multiworld.spoiler.set_entrance(f"Song of Soaring: {name}", destination_name, "entrance", self.player)
 
+    @staticmethod
+    def _endpoint(endpoint: int) -> tuple[str, str, str]:
+        row = ENTRANCE_SHUFFLE[endpoint // 2]
+        if endpoint % 2:
+            return row["inside_region"], row["out"], row["into"]
+        return row["door_region"], row["into"], row["out"]
+
+    def _directed_groups(self) -> tuple[dict[int, int], dict[int, tuple]]:
+        baseline, groups = {}, {}
+        by_value = {row["into_value"]: row for row in ENTRANCE_SHUFFLE}
+        for first, second in self.entrance_pairs:
+            row, target = by_value[first], by_value[second]
+            option = row["option"]
+            if option not in DECOUPLE_POOLS or row["water"] or row["hours"] == "OWN_HOURS":
+                continue
+            a = 2 * ENTRANCE_ROW_INDEX[row["into"]]
+            if option == OVERWORLD:
+                b = 2 * ENTRANCE_ROW_INDEX[target["out"]]
+                if self._town_gate(row) or self._town_gate(ENTRANCE_SHUFFLE[b // 2]):
+                    continue
+                baseline[a] = b
+                groups[a] = (option, "", 0)
+            else:
+                b = 2 * ENTRANCE_ROW_INDEX[target["into"]] + 1
+                baseline.update({a: b, b: a})
+                groups[a], groups[b] = (option, row["hours"] or "", 0), (option, row["hours"] or "", 1)
+        for a, b in self.mixed_entrance_pairs:
+            if any(self._town_gate(ENTRANCE_SHUFFLE[end // 2]) for end in (a, b)):
+                continue
+            baseline.update({a: b, b: a})
+            # Keep two complementary sides. A land end may serve either side, as in the coupled placement.
+            if a % 2 or (not b % 2 and ENTRANCE_SHUFFLE[b // 2]["option"] != OVERWORLD):
+                a, b = b, a
+            groups[a], groups[b] = ("mixed", "", 0), ("mixed", "", 1)
+        return baseline, groups
+
+    def _apply_directed(self, targets: dict[int, int]) -> None:
+        for source, target in targets.items():
+            rr, key, _ = self._endpoint(source)
+            destination, _, arrival = self._endpoint(target)
+            exit_ = self.exit_entrances[rr, key]
+            exit_.access_rule = self.traversal_rules[exit_][2]
+            self._reconnect(exit_, destination)
+            self._add_arrival_rule(exit_, key, arrival)
+
+    def _escape_failures(self, targets: dict[int, int], witnesses: dict[int, SaveView | None]) -> tuple[set[int], int]:
+        # An escape must use an ordinary traversable path. Menu/save warps and boss warps cannot prove a way out.
+        excluded = {(rr, warp) for row in ENTRANCE_SHUFFLE if row["temple_exit"] for rr, warp in row["boss_warps"]}
+        protected = {self.regions_by_rr[rr] for rr in ("RR_MAX", "RR_MOON", "RR_CLOCK_TOWER_ROOF")}
+        hubs = {self.regions_by_rr[rr] for rr in ("RR_CLOCK_TOWN_SOUTH", "RR_TERMINA_FIELD")}
+        excluded_exits = {self.exit_entrances[key] for key in excluded}
+        time_calls = {"AT", "BEFORE", "AFTER", "BETWEEN", "IS_DAY", "IS_NIGHT", "FIRST_DAY", "SECOND_DAY",
+                      "FINAL_DAY", "MIDNIGHT", "IS_DAY1", "IS_DAY2", "IS_DAY3", "IS_NIGHT1", "IS_NIGHT2", "IS_NIGHT3"}
+        walking = defaultdict(list)
+        for exit_, (condition, key, _) in self.traversal_rules.items():
+            arrival = self.arrival_rules.get(exit_)
+            if (exit_ not in excluded_exits and exit_.parent_region not in protected
+                    and exit_.connected_region not in protected and exit_.connected_region is not None
+                    and not any(time_calls.intersection(rule.__code__.co_names) for rule in (condition, arrival) if rule)):
+                walking[exit_.parent_region].append((exit_.connected_region, condition, key, arrival))
+
+        def clear(rule, key, view):
+            return (key is None or key in view.ri) and (rule is None or rule(view))
+
+        # Only abilities available without a shuffle item are assumed on every visit.
+        openings = Counter()
+        if not self.ro["RO_SHUFFLE_SWIM"]:
+            openings["RI_ABILITY_SWIM"] = 1
+        if not self.ro["RO_SHUFFLE_OCARINA_BUTTONS"]:
+            openings.update(ri for ri in RI_ID if ri.startswith("RI_OCARINA_BUTTON_"))
+        bare = SaveView(openings, Counter(), self)
+        cache = {}
+
+        def reachable(region, view):
+            cache_key = (region, id(view))
+            if cache_key not in cache:
+                seen, todo = {region}, [region]
+                while todo:
+                    for next_region, condition, key, arrival in walking[todo.pop()]:
+                        if (next_region not in seen and clear(condition, key, view)
+                                and (arrival is None or arrival(view))):
+                            seen.add(next_region)
+                            todo.append(next_region)
+                cache[cache_key] = seen
+            return cache[cache_key]
+
+        missing, critical = set(), 0
+        for source, target in targets.items():
+            rr, key, _ = self._endpoint(source)
+            arrival = self.regions_by_rr[self._endpoint(target)[0]]
+            goals = hubs | {self.regions_by_rr[rr]}
+            if reachable(arrival, bare) & goals:
+                continue
+            critical += 1
+            if source not in witnesses:
+                physical, key_item, _ = self.traversal_rules[self.exit_entrances[rr, key]]
+                inventory = Counter({ri: 9 for ri in LOGIC_ITEMS if ri not in openings}) | openings
+                events = Counter({event: 1 for region in REGIONS.values() for event, _ in region[5]})
+
+                def usable(items, active_events):
+                    return clear(physical, key_item, SaveView(items, active_events, self))
+
+                witnesses[source] = None
+                if usable(inventory, events):
+                    # Grant only equipment implied by the physical source rule. For an OR condition,
+                    # each alternative is tested with the other gear present, so none is assumed.
+                    # The area's supplemental logic condition is not a physical lock.
+                    required_items, required_events = openings.copy(), Counter()
+                    for available, required in ((inventory, required_items), (events, required_events)):
+                        for item in sorted(available.keys() - openings.keys()):
+                            count = available.pop(item)
+                            if not usable(inventory, events):
+                                for minimum in range(1, count + 1):
+                                    available[item] = minimum
+                                    if usable(inventory, events):
+                                        required[item] = minimum
+                                        break
+                            available[item] = count
+                    witnesses[source] = SaveView(required_items, required_events, self)
+            view = witnesses[source]
+            if view is None or not reachable(arrival, view) & goals:
+                missing.add(source)
+        return missing, critical
+
+    def _decouple_entrances(self) -> None:
+        baseline, groups = self._directed_groups()
+        if not baseline:
+            return
+        if self.ut_entrance_pairs is not None:
+            targets = dict(self.ut_directed_targets)
+            if (len(targets) != len(self.ut_directed_targets) or targets.keys() != baseline.keys()
+                    or set(targets.values()) != set(baseline)
+                    or any(groups[source] != groups[baseline[target]] for source, target in targets.items())):
+                raise OptionError(f"{self.player_name}: invalid directed entrance destinations")
+        else:
+            self._apply_directed(baseline)
+            self.directed_entrance_targets = sorted(baseline.items())
+            self._connect_boss_warps()
+            baseline_reach = self._reachable_regions()
+            witnesses = {}
+            base_failures, _ = self._escape_failures(baseline, witnesses)
+            moving = sorted(set(baseline) - base_failures - {baseline[end] for end in base_failures})
+            targets = dict(baseline)
+            if moving:
+                group_ids = {group: i for i, group in enumerate(sorted({groups[end] for end in moving}), 1)}
+                names, exits = {}, []
+                for end in moving:
+                    rr, key, _ = self._endpoint(end)
+                    exit_ = self.exit_entrances[rr, key]
+                    names[exit_.name] = end
+                    exit_.randomization_type = EntranceType.ONE_WAY
+                    exit_.randomization_group = group_ids[groups[end]]
+                    disconnect_entrance_for_randomization(exit_, one_way_target_name=str(baseline[end]))
+                    exits.append(exit_)
+                placement = randomize_entrances(self, False, {g: [g] for g in group_ids.values()}, exits=exits)
+                choices = {names[source]: int(target) for source, target in placement.pairings}
+                self._apply_directed(baseline)
+                inverse = {target: source for source, target in baseline.items()}
+                pending = set(moving)
+                while pending:
+                    end = min(pending)
+                    cycle = {}
+                    while end in pending:
+                        pending.remove(end)
+                        cycle[end] = choices[end]
+                        end = inverse[choices[end]]
+                    if all(baseline[end] == target for end, target in cycle.items()):
+                        continue
+                    proposed = targets | cycle
+                    self._apply_directed(cycle)
+                    self.directed_entrance_targets = sorted(proposed.items())
+                    self._connect_boss_warps()
+                    unsafe, _ = self._escape_failures(proposed, witnesses)
+                    if unsafe - base_failures or not baseline_reach <= self._reachable_regions():
+                        self._apply_directed({end: targets[end] for end in cycle})
+                        self.directed_entrance_targets = sorted(targets.items())
+                        self._connect_boss_warps()
+                    else:
+                        targets = proposed
+            unproved, critical = self._escape_failures(targets, witnesses)
+            self.directed_escape_checks = critical
+            logging.info("%s: checked %d critical directed arrivals (%d kept with their coupled return)",
+                         self.player_name, critical, len(unproved))
+
+        self._apply_directed(targets)
+        self.directed_entrance_targets = sorted(targets.items())
+        spoilers = self.multiworld.spoiler.entrances
+        for source, target in self.directed_entrance_targets:
+            row = ENTRANCE_SHUFFLE[source // 2]
+            rr, key, _ = self._endpoint(source)
+            exit_ = self.exit_entrances[rr, key]
+            target_rr, target_key, _ = self._endpoint(target)
+            if groups[source][0] != "mixed":
+                if row["option"] == OVERWORLD:
+                    spoilers.pop((f"{region_name(rr)} -> {_place_name(row['into'])}", "entrance", self.player), None)
+                elif source % 2 == 0:
+                    spoilers.pop((_door_name(row), "both", self.player), None)
+            self.multiworld.spoiler.set_entrance(exit_.name, self.exit_entrances[target_rr, target_key].name,
+                                                 "entrance", self.player)
+
     def _connect_boss_warps(self) -> None:
         by_value = {row["into_value"]: row for row in ENTRANCE_SHUFFLE}
         door_for = {inside: by_value[door] for door, inside in self.entrance_pairs}
         temples = {row["out"]: row for row in ENTRANCE_SHUFFLE if row["option"] == "RO_SHUFFLE_DUNGEON_ENTRANCES"}
         mixed_partner = {a: b for pair in self.mixed_entrance_pairs for a, b in (pair, pair[::-1])}
+        directed_sources = {target: source for source, target in self.directed_entrance_targets}
         for boss in ENTRANCE_SHUFFLE:
             if boss["temple_exit"] is None:
                 continue
@@ -887,7 +1096,11 @@ class MM2S2HWorld(World):
                 exterior = temple_door["door_region"]
                 moved |= temple_door is not temple
                 endpoint = 2 * ENTRANCE_ROW_INDEX[temple["into"]] + 1
-                if endpoint in mixed_partner:
+                if endpoint in directed_sources:
+                    source = directed_sources[endpoint]
+                    exterior = self._endpoint(source)[0]
+                    moved |= source != endpoint - 1
+                elif endpoint in mixed_partner:
                     partner = mixed_partner[endpoint]
                     exterior = ENTRANCE_SHUFFLE[partner // 2]["door_region"]
                     moved |= partner != endpoint - 1
@@ -915,6 +1128,8 @@ class MM2S2HWorld(World):
             del options[OWL_WARP_OPTION]
         if not options[SPAWN_OPTION]:
             del options[SPAWN_OPTION]
+        if not options[DECOUPLE_OPTION]:
+            del options[DECOUPLE_OPTION]
         return {
             "version_2s2h": VERSION_2S2H,
             "apworld_version": self.world_version.as_simple_string(),
@@ -928,6 +1143,8 @@ class MM2S2HWorld(World):
                if self.mixed_entrance_pairs else {}),
             **({"owl_warp_targets": self.owl_warp_targets} if self.owl_warp_targets else {}),
             **({"spawn_target": self.spawn_target} if self.ro[SPAWN_OPTION] and self.spawn_target is not None else {}),
+            **({"directed_entrance_targets": [list(pair) for pair in self.directed_entrance_targets]}
+               if self.directed_entrance_targets else {}),
             "death_link": bool(self.options.death_link.value),
             "seed": self.random.getrandbits(32),
         }

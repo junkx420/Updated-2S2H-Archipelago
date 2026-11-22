@@ -739,6 +739,11 @@ def main() -> int:
     mixed_slots = int(re.search(r"\bu16\s+mixedEntrancePairs\[(\d+)\]", save_h).group(1))
     if 2 * pair_slots != mixed_slots or mixed_slots > 65535:
         raise SystemExit("mixedEntrancePairs must hold two u16 endpoints per entrancePairs slot")
+    directed_slots = int(re.search(r"\bu16\s+directedEntranceTargets\[(\d+)\]", save_h).group(1))
+    decouple_body = re.search(r"decouplePools\[\]\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
+    decouple_pools = re.findall(r"RO_\w+", decouple_body)
+    if directed_slots != mixed_slots or len(set(decouple_pools)) != len(decouple_pools):
+        raise SystemExit("decouplePools needs distinct pools and the same space as mixedEntrancePairs")
     mix_body = re.search(r"entranceMixPools\[\]\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
     mix_rows = [(name, option, int(bit)) for name, option, bit in re.findall(
         r'\{\s*"([a-z_]+)"\s*,\s*(RO_\w+)\s*,\s*(\d+)\s*\}', mix_body)]
@@ -750,6 +755,8 @@ def main() -> int:
     if {opt for _, opt, _ in mix_rows} != {"RO_SHUFFLE_DUNGEON_ENTRANCES", "RO_SHUFFLE_INTERIORS",
                                           "RO_SHUFFLE_OVERWORLD", "RO_SHUFFLE_SPECIAL_AREAS"}:
         raise SystemExit("entranceMixPools contains an unsupported pool or omits a mixed pool")
+    if set(decouple_pools) != {option for _, option, _ in mix_rows}:
+        raise SystemExit("decouplePools is limited to the land, temple, interior and special area pools")
     mix_fixed_body = re.search(r"entranceMixFixed\s*=\s*\{(.*?)\n\};", es_src, re.S).group(1)
     mix_fixed = [entrance_key(a) for a in re.findall(ent, mix_fixed_body)]
     if len(mix_fixed) != mix_fixed_body.count("ENTRANCE") or len(set(mix_fixed)) != len(mix_fixed):
@@ -1164,6 +1171,7 @@ def main() -> int:
         fh.write(f"ENTRANCE_NAMES = {entrance_names!r}\n")
         fh.write(f"OWL_WARPS = {owl_warps!r}\n")
         fh.write(f"CYCLE_SPAWNS = {spawns!r}\n")
+        fh.write(f"DECOUPLE_POOLS = {tuple(decouple_pools)!r}\n")
         fh.write("# buildings locked by Shuffle Door Keys (DoorKeys.cpp), in enum order: exits `into` (door_regions ->\n"
                  "# inside_regions) need the key; `into_values` = game entrances\n")
         fh.write(f"DOOR_KEYS = {door_keys!r}\n")

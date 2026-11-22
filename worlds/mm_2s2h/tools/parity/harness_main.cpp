@@ -168,6 +168,7 @@ int main() {
     bool printGraph = false;
     RandoRegionId currentRegion = RR_MAX;
     std::vector<std::pair<int32_t, int32_t>> pairs, mixedPairs;
+    std::vector<std::pair<int32_t, int32_t>> directedTargets;
     std::vector<int32_t> owlTargets;
     int32_t spawnTarget = -1;
     while (std::getline(std::cin, line)) {
@@ -180,6 +181,7 @@ int main() {
             printGraph = false;
             pairs.clear();
             mixedPairs.clear();
+            directedTargets.clear();
             owlTargets.clear();
             spawnTarget = -1;
             gMock = MockState{};
@@ -203,6 +205,8 @@ int main() {
             pairs.emplace_back(std::stoi(a), std::stoi(b));
         } else if (kw == "mixed") {
             mixedPairs.emplace_back(std::stoi(a), std::stoi(b));
+        } else if (kw == "directed") {
+            directedTargets.emplace_back(std::stoi(a), std::stoi(b));
         } else if (kw == "owl_target") {
             owlTargets.push_back(std::stoi(a));
         } else if (kw == "spawn_target") {
@@ -249,6 +253,7 @@ int main() {
             if (tracker) {
                 Rando::EntranceShuffle::SetCycleSpawn(spawnTarget);
                 Rando::EntranceShuffle::SetPairs(pairs, mixedPairs);
+                Rando::EntranceShuffle::SetDirectedTargets(directedTargets);
                 Rando::EntranceShuffle::SetOwlWarpTargets(owlTargets);
                 const auto start = std::chrono::steady_clock::now();
                 const auto result = EvaluateTrackerReachability(currentRegion, TrackerHasForkRules());

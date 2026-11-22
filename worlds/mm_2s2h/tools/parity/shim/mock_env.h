@@ -37,6 +37,7 @@ struct RandoSaveInfo {
     u8 owlWarpTargets[10] = {};
     u8 owlWarpsDiscovered[2] = {};
     u8 cycleSpawn[2] = {};
+    u16 directedEntranceTargets[1024] = {};
 };
 struct MockSaveCheck {
     u16 price = 0;
