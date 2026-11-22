@@ -3560,6 +3560,7 @@ void Message_StartTextbox(PlayState* play, u16 textId, Actor* actor) {
     msgCtx->stateTimer = 0;
     msgCtx->textDelayTimer = 0;
     play->msgCtx.ocarinaMode = OCARINA_MODE_NONE;
+    GameInteractor_ExecuteOnStartTextbox(actor, textId);
 }
 
 void Message_ContinueTextbox(PlayState* play, u16 textId) {

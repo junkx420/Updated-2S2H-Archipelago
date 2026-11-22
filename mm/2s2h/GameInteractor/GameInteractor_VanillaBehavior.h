@@ -2576,6 +2576,8 @@ typedef enum {
 
     // Whether the opened file is ready to start gameplay. Args: int firstAttempt.
     VB_FILE_SELECT_START_GAME,
+    // Whether the original post of a cut sign can still be read. Args: Actor*.
+    VB_READ_CUT_SIGN,
 } GIVanillaBehavior;
 
 #endif

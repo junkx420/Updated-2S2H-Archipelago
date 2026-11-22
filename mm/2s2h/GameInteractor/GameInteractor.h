@@ -538,6 +538,7 @@ void GameInteractor_ExecuteOnCameraChangeSettingsFlags(Camera* camera);
 void GameInteractor_ExecuteOnPassPlayerInputs(Input* input);
 
 void GameInteractor_ExecuteOnOpenText(u16* textId, bool* loadFromMessageTable);
+void GameInteractor_ExecuteOnStartTextbox(Actor* actor, u16 textId);
 
 bool GameInteractor_ShouldItemGive(u8 item);
 void GameInteractor_ExecuteOnItemGive(u8 item);

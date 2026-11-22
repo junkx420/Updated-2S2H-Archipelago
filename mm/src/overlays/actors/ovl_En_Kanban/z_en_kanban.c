@@ -7,8 +7,10 @@
 #include "z_en_kanban.h"
 #include "objects/object_kanban/object_kanban.h"
 #include "objects/gameplay_keep/gameplay_keep.h"
+#include "2s2h/GameInteractor/GameInteractor.h"
 
 #define FLAGS (ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY | ACTOR_FLAG_UPDATE_CULLING_DISABLED)
+#define ENKANBAN_DEFER_TARGET_DISABLE (-1)
 
 void EnKanban_Init(Actor* thisx, PlayState* play);
 void EnKanban_Destroy(Actor* thisx, PlayState* play);
@@ -211,12 +213,15 @@ void EnKanban_Update(Actor* thisx, PlayState* play) {
     this->frameCount++;
 
     switch (this->actionState) {
-        case ENKANBAN_SIGN:
+        case ENKANBAN_SIGN: {
+            bool canReadCutSign =
+                (this->partFlags != 0xFFFF) && GameInteractor_Should(VB_READ_CUT_SIGN, false, &this->actor);
+
             if (this->invincibilityTimer != 0) {
                 this->invincibilityTimer--;
             }
 
-            if (this->zTargetTimer != 0) {
+            if (this->zTargetTimer > 0) {
                 this->zTargetTimer--;
             }
 
@@ -225,10 +230,19 @@ void EnKanban_Update(Actor* thisx, PlayState* play) {
             }
 
             if (this->zTargetTimer == 1) {
-                this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+                if (canReadCutSign) {
+                    this->zTargetTimer = ENKANBAN_DEFER_TARGET_DISABLE;
+                } else {
+                    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+                }
+            } else if (this->zTargetTimer == ENKANBAN_DEFER_TARGET_DISABLE && !canReadCutSign) {
+                if ((this->partFlags & 0x3FF) == 0) {
+                    this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
+                }
+                this->zTargetTimer = 0;
             }
 
-            if (this->partFlags == 0xFFFF) {
+            if (this->partFlags == 0xFFFF || canReadCutSign) {
                 func_80954BE8(this, play);
             }
 
@@ -419,6 +433,7 @@ void EnKanban_Update(Actor* thisx, PlayState* play) {
                 this->cutMarkTimer--;
             }
             break;
+        }
 
         case ENKANBAN_AIR:
         case ENKANBAN_UNUSED: {

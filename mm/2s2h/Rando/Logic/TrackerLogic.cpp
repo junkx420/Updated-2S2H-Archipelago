@@ -120,7 +120,8 @@ bool TrackerHasForkRules() {
     // compatibility flag for every version that supports Shuffle Rocks.
     return RANDO_SAVE_OPTIONS[RO_SHUFFLE_NPC_SOULS] || RANDO_SAVE_OPTIONS[RO_SHUFFLE_DOOR_KEYS] ||
            RANDO_SAVE_OPTIONS[RO_SHUFFLE_EPONA_RIDING] || RANDO_SAVE_OPTIONS[RO_SHUFFLE_BEAN_PLANTING] ||
-           (RANDO_SAVE_OPTIONS[RO_SHUFFLE_ROCKS] && Flags_GetRandoInf(RANDO_INF_DOOR_KEYS_ZORA_HALL)) ||
+           ((RANDO_SAVE_OPTIONS[RO_SHUFFLE_ROCKS] || RANDO_SAVE_OPTIONS[RO_SHUFFLE_SIGNS]) &&
+            Flags_GetRandoInf(RANDO_INF_DOOR_KEYS_ZORA_HALL)) ||
            EntranceShuffle::HasActiveShuffle();
 }
 

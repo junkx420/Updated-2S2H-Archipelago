@@ -9,6 +9,8 @@ namespace ActorBehavior {
 
 void Init();
 void OnFileLoad();
+void InitSignBehavior();
+bool IsReadingSign();
 
 RandoCheckId GetObjectRandoCheckId(void* actor);
 void SetObjectRandoCheckId(const void* object, RandoCheckId rc);

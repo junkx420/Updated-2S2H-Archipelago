@@ -265,6 +265,10 @@ void GameInteractor_ExecuteOnOpenText(u16* textId, bool* loadFromMessageTable) {
     GameInteractor::Instance->ExecuteHooksForFilter<GameInteractor::OnOpenText>(textId, loadFromMessageTable);
 }
 
+void GameInteractor_ExecuteOnStartTextbox(Actor* actor, u16 textId) {
+    GameInteractor::Instance->ExecuteHooks<GameInteractor::OnStartTextbox>(actor, textId);
+}
+
 bool GameInteractor_ShouldItemGive(u8 item) {
     bool result = true;
     GameInteractor::Instance->ExecuteHooks<GameInteractor::ShouldItemGive>(item, &result);
@@ -542,6 +546,11 @@ void ProcessEvents(Actor* actor) {
                 }
             },
             e->drawItem);
+        if (enItem00 == nullptr) {
+            // Leave the queued event in place so the next update can retry the spawn.
+            GameInteractor::Instance->currentEvent = GIEventNone{};
+            return;
+        }
         enItem00->actor.destroy = [](Actor* actor, PlayState* play) {
             if (!(CUSTOM_ITEM_FLAGS & CustomItem::CALLED_ACTION)) {
                 // Event was not handled, requeue it

@@ -48,6 +48,7 @@ DEFINE_HOOK(OnCameraChangeSettingsFlags, (Camera * camera))
 DEFINE_HOOK(OnPassPlayerInputs, (Input * input))
 
 DEFINE_HOOK(OnOpenText, (u16 * textId, bool* loadFromMessageTable))
+DEFINE_HOOK(OnStartTextbox, (Actor * actor, u16 textId))
 
 DEFINE_HOOK(ShouldItemGive, (u8 item, bool* should))
 DEFINE_HOOK(OnItemGive, (u8 item))

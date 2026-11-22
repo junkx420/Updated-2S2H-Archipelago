@@ -1,6 +1,7 @@
 #include "CustomItem.h"
 #include "2s2h/CustomMessage/CustomMessage.h"
 #include "2s2h/GameInteractor/GameInteractor.h"
+#include "2s2h/Rando/ActorBehavior/ActorBehavior.h"
 
 extern "C" {
 #include "z64actor.h"
@@ -124,6 +125,11 @@ void CustomItem00_Update(Actor* actor, PlayState* play) {
 
     if (CUSTOM_ITEM_FLAGS & CustomItem::KEEP_ON_PLAYER) {
         Math_Vec3f_Copy(&actor->world.pos, &GET_PLAYER(play)->actor.world.pos);
+    }
+
+    if ((CUSTOM_ITEM_FLAGS & CustomItem::KEEP_ON_PLAYER) && enItem00->unk152 == -1 &&
+        Rando::ActorBehavior::IsReadingSign() && !Actor_HasParent(actor, play)) {
+        return;
     }
 
     // Player range check accounting for goron rolling behavior. Matches EnItem00 range check.

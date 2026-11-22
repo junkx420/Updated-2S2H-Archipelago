@@ -128,6 +128,11 @@ void GeneratePools(RandoSaveInfo& saveInfo, std::vector<RandoCheckId>& checkPool
                 continue;
             }
 
+            if (randoStaticCheck.randoCheckType == RCTYPE_SIGN &&
+                saveInfo.randoSaveOptions[RO_SHUFFLE_SIGNS] == RO_GENERIC_NO) {
+                continue;
+            }
+
             if (randoStaticCheck.randoCheckType == RCTYPE_FROG &&
                 saveInfo.randoSaveOptions[RO_SHUFFLE_FROGS] == RO_GENERIC_NO) {
                 continue;

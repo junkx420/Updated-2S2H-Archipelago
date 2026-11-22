@@ -31,6 +31,7 @@
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/BenGui/Notification.h"
 #include "2s2h/Rando/Rando.h"
+#include "2s2h/Rando/ActorBehavior/ActorBehavior.h"
 #include "2s2h/Rando/StaticData/StaticData.h"
 #include "2s2h/Rando/MiscBehavior/ClockShuffle.h"
 #include "2s2h/Rando/MiscBehavior/EntranceShuffle.h"
@@ -327,7 +328,9 @@ void ProcessFrame() {
         return; // don't hand out items before the check table is filled
     }
     SendNewlyObtainedChecks(client);
-    ApplyNextPendingItem(client);
+    if (!Rando::ActorBehavior::IsReadingSign()) {
+        ApplyNextPendingItem(client);
+    }
     ProcessDeathLink(client);
 }
 
