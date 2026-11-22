@@ -667,9 +667,11 @@ def parse_abilities(src, enums, items, regions, macros):
 
     by_region = {r["id"]: r for r in regions}
     direct_rules = {}
-    for item, region, target, branch in rows(
-            "abilityRules", r'(RI_ABILITY_\w+)\s*,\s*(RR_\w+)\s*,\s*"((?:RC|RR)_\w+)"\s*,\s*"([^"]+)"'):
+    for item, region, target, is_check, branch in rows(
+            "abilityRules", r'(RI_ABILITY_\w+)\s*,\s*(RR_\w+)\s*,\s*((?:RC|RR)_\w+)\s*,\s*(true|false)\s*,\s*"([^"]+)"'):
         key = region, target
+        if target.startswith("RC_") != (is_check == "true"):
+            raise SystemExit(f"abilityRules: {region} -> {target} has the wrong target type")
         kind = "checks" if target.startswith("RC_") else "connections"
         matches = [cond for name, cond, _ in by_region.get(region, {}).get(kind, []) if name == target]
         if key in direct_rules or len(matches) != 1 or matches[0].count(branch) != 1:

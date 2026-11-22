@@ -46,6 +46,40 @@ worlds\mm_2s2h\tools\parity\build.bat
 python worlds/mm_2s2h/tools/parity/compare.py 150
 ```
 
+### Check Tracker fork rules (part A)
+
+`TrackerLogic.cpp` is called by the in-game tracker and the C++ harness. The tracker uses the NPC soul lists for
+checks and events, the door key on the source exit, and the ability requirements on the original branches. Rocks
+use the existing registered conditions from `ExtraChecks.inc`. The current region remains an additional starting
+point. This comparison starts in South Clock Town and uses the original entrance graph.
+
+`python worlds/mm_2s2h/tools/parity/compare_tracker.py 100` compares the open shuffled check IDs for 100 seeded
+worlds and eight inventories each. The focused cases cover souls and events, door keys including the old Zora Hall
+exception, each ability and its alternatives, rock hours and layouts, and obtained checks. The harness evaluates
+the native loop with both ability options on and off at the same inventory. The ability header invokes the original
+expressions in native evaluation because only the tracker enters an ability rule context. The 1,200-scenario parity
+run compares the native loop and the tracker with the fork rules off against the apworld.
+
+The comparison passed **800/800** inventory snapshots and **18/18** focused cases, with identical native output
+for both ability settings. Parity passed **1,200/1,200**. The local pytest suite passed **861 tests** and
+**159,983 subtests** after setting `TEMP` and `TMP` to a workspace directory. The first run hit
+`PermissionError: [Errno 13] Permission denied` writing `host.yaml.tmp` in the sandbox's default temp directory.
+The Windows x64 Release build and clang-format check passed. Initial builds hit MSVC `C1902` in the sandbox and
+`C2065`/`C3861` after the interrupted dependency download left an empty `stb_image.h` in the build cache. The
+successful build used the restored pinned header and ran outside the sandbox.
+
+#### In-game checklist
+
+- In **Out of Logic Checks**, select a mode that distinguishes out-of-logic checks. At the bank, the otherwise
+  accessible Adult Wallet should be out of logic without the Banker Soul. It should be in logic after receiving
+  the soul.
+- With Shuffle Rocks on, check that a rock requiring the spring layout appears in the list and becomes in logic
+  once the route, form and Snowhead clear requirements are satisfied.
+- After part B, compare open checks in the in-game Check Tracker and Universal Tracker with the same inventory and
+  shuffled entrance pairs.
+
+These checks have **not been tested in game**.
+
 ## 2. Archipelago test suites
 
 `pytest test/general worlds/mm_2s2h/test`: **433 passed, 0 failed** (all worlds, includes ours).

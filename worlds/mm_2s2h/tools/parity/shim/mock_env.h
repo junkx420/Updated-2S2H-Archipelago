@@ -1,6 +1,7 @@
 // Mocked game environment for compiling 2S2H's real logic outside the game.
 // Only the save-file reads the logic does are mocked; their contents come from the scenario file.
 #pragma once
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <functional>
@@ -25,19 +26,15 @@ typedef int DungeonSceneIndex;
 #include "Rando/Types.h"
 #include "consts.h"
 
-// ENTRANCE() must stay a constant expression (used as switch cases in Logic.cpp).
-constexpr int EntranceHash(const char* s, int spawn) {
-    uint32_t h = 2166136261u;
-    while (*s) {
-        h = (h ^ (uint8_t)*s++) * 16777619u;
-    }
-    return (int)((h & 0x3FFFFF) << 5 | (spawn & 0x1F));
-}
-#define ENTRANCE(scene, spawn) EntranceHash(#scene, spawn)
+// Use the game's indices so that the same saved entrance IDs identify door rules.
+#define ENTRANCE(scene, spawn) (((ENTR_SCENE_##scene & 0x7F) << 9) | (((spawn) & 0x1F) << 4))
 
+struct Actor;
 struct RandoSaveInfo {};
 struct MockSaveCheck {
     u16 price = 0;
+    bool shuffled = false;
+    bool obtained = false;
 };
 struct MockSave {
     struct {

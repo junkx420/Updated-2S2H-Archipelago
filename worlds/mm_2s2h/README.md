@@ -12,6 +12,12 @@ See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago
 [publication progress](https://github.com/junkx420/Updated-2S2H-Archipelago/actions/workflows/publish-preview.yml).
 Use the client and apworld from the same release; the release manifest records their exact commits.
 
+## In-game Check Tracker
+
+The client applies NPC souls, door keys, Epona riding and bean planting to check reachability. It shows shuffled rocks
+with their region, time and layout rules. The current region remains an additional starting point for this update.
+See the [tracker comparison and in-game checklist](docs/testing.md#check-tracker-fork-rules-part-a).
+
 ## Files
 
 | File | Origin |

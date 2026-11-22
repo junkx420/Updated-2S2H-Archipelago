@@ -151,10 +151,14 @@ def main() -> int:
             total += 1
             py_regions, py_checks, py_ev = python_side(mw, world, inv)
             c_regions, c_checks, c_ev = cpp[name]
+            tracker_regions, tracker_checks, tracker_events = cpp[name + "_tracker"]
+            c_matches_tracker = (c_regions, c_checks, c_ev) == (tracker_regions, tracker_checks, tracker_events)
             c_checks &= domain
             stats["checks_reachable"] += len(py_checks)
             stats["checks_domain"] += len(domain)
             diffs = []
+            if not c_matches_tracker:
+                diffs.append("tracker differs from 2S2H with fork rules off")
             if py_regions != c_regions:
                 diffs.append(f"regions only C++ {sorted(c_regions - py_regions)[:5]} only AP {sorted(py_regions - c_regions)[:5]}")
             if py_checks != c_checks:

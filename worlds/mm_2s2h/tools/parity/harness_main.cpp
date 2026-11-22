@@ -11,6 +11,10 @@
 
 #include "2s2h/ShipInit.hpp"
 #include "2s2h/Rando/Logic/Logic.h"
+#include "2s2h/Rando/Logic/TrackerLogic.h"
+#include "2s2h/Rando/MiscBehavior/Abilities.h"
+#include "2s2h/Rando/MiscBehavior/DoorKeys.h"
+#include "2s2h/Rando/ActorBehavior/Souls.h"
 #include "names.h"
 
 MockSave gSaveContext;
@@ -37,6 +41,10 @@ bool HaveEnemySoul(ActorId enemyId) { // Souls.cpp, verbatim logic
 
 #include "logic_cpp.inc"
 #include "timelogic.inc"
+#include "abilities.inc"
+#include "doors.inc"
+#include "extra_cpp.inc"
+#include "2s2h/Rando/Logic/TrackerLogic.cpp"
 
 // Logic.cpp asks EntranceShuffle.cpp (not part of the harness) for a shuffled grotto; parity runs with it off.
 namespace Rando::EntranceShuffle {
@@ -75,6 +83,23 @@ static int N(const std::unordered_map<std::string, int>& m, const std::string& n
 }
 
 // The outer loop of ApplyGlitchlessLogicToSaveContext for a fixed inventory (no placement).
+static void PrintResult(const std::string& name, const TrackerReachability& result) {
+    static auto rr = Reverse(RRByName()), rc = Reverse(RCByName()), re = Reverse(REByName());
+    std::cout << "scenario " << name << "\n";
+    for (RandoRegionId r : result.regions) {
+        std::cout << "region " << rr.at(r) << "\n";
+    }
+    for (RandoCheckId check : result.checks) {
+        std::cout << "check " << rc.at(check) << "\n";
+    }
+    for (int i = 0; i < RE_MAX; i++) {
+        if (RANDO_EVENTS[i]) {
+            std::cout << "event " << re.at(i) << " " << RANDO_EVENTS[i] << "\n";
+        }
+    }
+    std::cout << "end\n";
+}
+
 static void Solve(const std::string& name) {
     std::set<RandoRegionId> regionsInLogic = { RR_MAX };
     std::set<std::pair<RandoEvent, std::function<bool()>>*> eventsInLogic;
@@ -104,42 +129,35 @@ static void Solve(const std::string& name) {
             break;
         }
     }
-    static auto rr = Reverse(RRByName()), rc = Reverse(RCByName()), re = Reverse(REByName());
-    std::set<std::string> checks;
-    for (RandoRegionId regionId : regionsInLogic) {
+    TrackerReachability result;
+    result.regions = std::move(regionsInLogic);
+    for (RandoRegionId regionId : result.regions) {
         SetCurrentRegionTime(regionTimeStates, regionId);
         for (auto& [checkId, logic] : Regions[regionId].checks) {
             if (logic.first()) {
-                checks.insert(rc[checkId]);
+                result.checks.insert(checkId);
             }
         }
     }
-    std::cout << "scenario " << name << "\n";
-    for (RandoRegionId r : regionsInLogic) {
-        std::cout << "region " << rr[r] << "\n";
-    }
-    for (auto& c : checks) {
-        std::cout << "check " << c << "\n";
-    }
-    for (int i = 0; i < RE_MAX; i++) {
-        if (RANDO_EVENTS[i]) {
-            std::cout << "event " << re[i] << " " << RANDO_EVENTS[i] << "\n";
-        }
-    }
-    std::cout << "end" << std::endl;
+    PrintResult(name, result);
+    PrintResult(name + "_tracker", EvaluateTrackerReachability(RR_MAX, false, false));
 }
 
 int main() {
     for (auto& f : ShipInitFuncs()) {
         f();
     }
+    RegisterExtraChecks();
     std::string line, name;
+    bool tracker = false;
+    RandoRegionId currentRegion = RR_MAX;
     while (std::getline(std::cin, line)) {
         std::istringstream ss(line);
         std::string kw, a, b;
         ss >> kw >> a >> b;
         if (kw == "scenario") {
             name = a;
+            tracker = false;
             gMock = MockState{};
             gSaveContext = MockSave{};
             for (int i = 0; i < RO_MAX; i++) {
@@ -152,6 +170,13 @@ int main() {
             RANDO_SAVE_OPTIONS[N(ROByName(), a)] = std::stoi(b);
         } else if (kw == "price") {
             RANDO_SAVE_CHECKS[N(RCByName(), a)].price = (u16)std::stoi(b);
+        } else if (kw == "tracker") {
+            tracker = true;
+            currentRegion = static_cast<RandoRegionId>(N(RRByName(), a));
+        } else if (kw == "shuffled") {
+            RANDO_SAVE_CHECKS[N(RCByName(), a)].shuffled = true;
+        } else if (kw == "obtained") {
+            RANDO_SAVE_CHECKS[N(RCByName(), a)].obtained = true;
         } else if (kw == "inv") {
             gMock.inv.insert(C(a));
         } else if (kw == "quest") {
@@ -187,7 +212,11 @@ int main() {
         } else if (kw == "ditem") {
             gMock.dungeonItems.insert({ C(a), C(b) });
         } else if (kw == "end") {
-            Solve(name);
+            if (tracker) {
+                PrintResult(name, EvaluateTrackerReachability(currentRegion, TrackerHasForkRules()));
+            } else {
+                Solve(name);
+            }
         }
     }
 }
