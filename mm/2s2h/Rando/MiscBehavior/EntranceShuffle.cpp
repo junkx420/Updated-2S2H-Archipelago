@@ -629,7 +629,7 @@ static bool CanMix(size_t first, size_t second) {
     return a.option == RO_SHUFFLE_OVERWORLD || b.option == RO_SHUFFLE_OVERWORLD || (first % 2 != second % 2);
 }
 
-static size_t MixedPartner(size_t endpoint) {
+size_t MixedPartner(size_t endpoint) {
     u16 value = SavedMixedPairs()[endpoint];
     if (value != 0 && CanMix(endpoint, value - 1) && SavedMixedPairs()[value - 1] == endpoint + 1) {
         return value - 1;
@@ -637,7 +637,7 @@ static size_t MixedPartner(size_t endpoint) {
     return endpoint;
 }
 
-static u16 EndpointArrival(size_t endpoint) {
+u16 EndpointArrival(size_t endpoint) {
     const auto& row = shuffleEntrances[endpoint / 2];
     return endpoint % 2 == 0 ? row.outOf : row.into;
 }
@@ -664,7 +664,7 @@ static bool SameDoor(u16 a, u16 b) {
 }
 
 // Row of the area behind this door.
-static size_t InsideBehind(size_t door) {
+size_t InsideBehind(size_t door) {
     if (RANDO_SAVE_OPTIONS[shuffleEntrances[door].option] == RO_GENERIC_OFF) {
         return door;
     }
@@ -672,13 +672,38 @@ static size_t InsideBehind(size_t door) {
     return (value == 0 || value > shuffleEntrances.size() || !CanPair(door, value - 1)) ? door : value - 1;
 }
 
-static size_t DoorForInside(size_t inside) {
+size_t DoorForInside(size_t inside) {
     for (size_t door = 0; door < shuffleEntrances.size() && door < MAX_ROWS; door++) {
         if (shuffleEntrances[door].option == shuffleEntrances[inside].option && InsideBehind(door) == inside) {
             return door;
         }
     }
     return inside;
+}
+
+// Compose the two inverse pairings, preserving the vanilla warp for fixed points.
+std::optional<u16> ShuffledBossExterior(size_t boss) {
+    const size_t bossDoor = DoorForInside(boss);
+    u16 exterior = shuffleEntrances[bossDoor].templeExit;
+    bool moved = bossDoor != boss;
+    for (size_t temple = 0; temple < shuffleEntrances.size() && temple < MAX_ROWS; temple++) {
+        if (shuffleEntrances[temple].option != RO_SHUFFLE_DUNGEON_ENTRANCES ||
+            shuffleEntrances[temple].outOf != exterior) {
+            continue;
+        }
+        size_t endpoint = 2 * temple + 1;
+        size_t partner = MixedPartner(endpoint);
+        if (partner != endpoint) {
+            exterior = EndpointArrival(partner);
+            moved |= partner != 2 * temple;
+        } else {
+            size_t templeDoor = DoorForInside(temple);
+            exterior = shuffleEntrances[templeDoor].outOf;
+            moved |= templeDoor != temple;
+        }
+        break;
+    }
+    return moved ? std::optional{ exterior } : std::nullopt;
 }
 
 // ---- Entrance tracker: discoveries ----
@@ -1210,28 +1235,11 @@ void OnBeforeTransitionSetup() {
         if (bossRow.templeExit == 0 || scene != bossRow.insideScene) {
             continue;
         }
-        size_t bossDoor = DoorForInside(boss);
-        u16 exterior = shuffleEntrances[bossDoor].templeExit;
-        bool moved = bossDoor != boss;
-        for (size_t temple = 0; temple < shuffleEntrances.size() && temple < MAX_ROWS; temple++) {
-            if (shuffleEntrances[temple].option == RO_SHUFFLE_DUNGEON_ENTRANCES &&
-                shuffleEntrances[temple].outOf == exterior) {
-                size_t endpoint = 2 * temple + 1;
-                size_t partner = MixedPartner(endpoint);
-                if (partner != endpoint) {
-                    exterior = EndpointArrival(partner);
-                    moved |= partner != 2 * temple;
-                } else {
-                    size_t templeDoor = DoorForInside(temple);
-                    exterior = shuffleEntrances[templeDoor].outOf;
-                    moved |= templeDoor != temple;
-                }
-                break;
-            }
-        }
-        if (!moved) {
+        const auto shuffledExterior = ShuffledBossExterior(boss);
+        if (!shuffledExterior) {
             return; // Preserve vanilla warp destinations and cutscenes for fixed points.
         }
+        const u16 exterior = *shuffledExterior;
 
         // First warp: it heads for the Giants' Chamber, and SkipGiantsChamber swaps in the transition that
         // HandleGiantsCutsceneSkip queued (tagged with the boss scene). Point that one at the door instead.

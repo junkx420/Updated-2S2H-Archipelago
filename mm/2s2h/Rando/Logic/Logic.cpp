@@ -8,11 +8,6 @@
 
 namespace Rando {
 
-namespace EntranceShuffle {
-// MiscBehavior/EntranceShuffle.cpp; false unless Shuffle Grottos is on.
-bool LogicGrottoEntrance(s32 entrance, s32* logicEntrance);
-} // namespace EntranceShuffle
-
 namespace Logic {
 
 std::map<RandoRegionId, RandoRegion> Regions = {};
@@ -38,7 +33,7 @@ uint64_t gCurrentRegionTime = 0;
 // ENTRANCE(GROTTOS, 30) = RR_IKANA_GRAVEYARD_GROTTO
 // ENTRANCE(GROTTOS, 31) = RR_ROAD_TO_IKANA_GROTTO
 
-RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
+RandoRegionId GetRegionIdFromLogicEntrance(s32 entrance) {
     static std::map<s32, RandoRegionId> entranceToRegionId;
     if (entranceToRegionId.empty()) {
         for (auto& [randoRegionId, randoRegion] : Regions) {
@@ -54,6 +49,11 @@ RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
         }
     }
 
+    auto found = entranceToRegionId.find(entrance);
+    return found != entranceToRegionId.end() ? found->second : RR_MAX;
+}
+
+RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
     s32 modifiedEntrance = entrance;
     if (EntranceShuffle::LogicGrottoEntrance(entrance, &modifiedEntrance)) {
         // Shuffle Grottos: decided by the real entrance and the grotto data, since the place outside (respawn DOWN)
@@ -109,11 +109,7 @@ RandoRegionId GetRegionIdFromEntrance(s32 entrance) {
         }
     }
 
-    if (entranceToRegionId.contains(modifiedEntrance)) {
-        return entranceToRegionId[modifiedEntrance];
-    }
-
-    return RR_MAX;
+    return GetRegionIdFromLogicEntrance(modifiedEntrance);
 }
 
 // Helper: Convert runtime game time to TimeSlice enum for dynamic time checking
@@ -172,11 +168,12 @@ void EnsureRegionTimeState(std::unordered_map<RandoRegionId, RegionTimeState>& r
 // Stop permanently if any timeStayRestrictions check fails
 void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& reachableRegions,
                           std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates) {
-    FindReachableRegions(currentRegion, reachableRegions, regionTimeStates, false);
+    FindReachableRegions(currentRegion, reachableRegions, regionTimeStates, nullptr);
 }
 
 void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& reachableRegions,
-                          std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates, bool useForkRules) {
+                          std::unordered_map<RandoRegionId, RegionTimeState>& regionTimeStates,
+                          const EntranceShuffle::TrackerExits* trackerExits) {
     // Ensure current region has time state
     EnsureRegionTimeState(regionTimeStates, currentRegion);
 
@@ -195,7 +192,7 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
         // Set global time for check evaluation
         gCurrentRegionTime = currentTime;
 
-        if (useForkRules ? Abilities::EvaluateTrackerRule(currentRegion, connectedRegionId, condition.first)
+        if (trackerExits ? Abilities::EvaluateTrackerRule(currentRegion, connectedRegionId, condition.first)
                          : condition.first()) {
             auto& targetRegion = Regions[connectedRegionId];
             RegionTimeState incomingState = { .timeSlices = currentTime,
@@ -215,7 +212,7 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
                 regionTimeStates[connectedRegionId] = incomingState;
             }
 
-            FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates, useForkRules);
+            FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates, trackerExits);
         }
     }
 
@@ -224,30 +221,45 @@ void FindReachableRegions(RandoRegionId currentRegion, std::set<RandoRegionId>& 
         // Set global time for check evaluation
         gCurrentRegionTime = currentTime;
 
-        RandoRegionId connectedRegionId = GetRegionIdFromEntrance(exitId);
-        if (useForkRules ? !DoorKeys::IsEntranceLocked(exitId) &&
-                               Abilities::EvaluateTrackerRule(currentRegion, RR_MAX, regionExit.condition)
-                         : regionExit.condition()) {
-            auto& targetRegion = Regions[connectedRegionId];
-            RegionTimeState incomingState = { .timeSlices = currentTime,
-                                              .canStayOverTime = targetRegion.canStayOverTime };
-
-            auto existingIt = regionTimeStates.find(connectedRegionId);
-            if (existingIt != regionTimeStates.end()) {
-                // Region already visited - check if we have new time to add
-                if (TimeStateCovers(existingIt->second, incomingState)) {
-                    continue; // Skip - existing state already covers incoming
-                }
-                // Merge time states for re-exploration
-                existingIt->second = MergeTimeStates(existingIt->second, incomingState);
-            } else {
-                // First visit to this region
-                reachableRegions.insert(connectedRegionId);
-                regionTimeStates[connectedRegionId] = incomingState;
+        RandoRegionId connectedRegionId;
+        if (trackerExits) {
+            if (DoorKeys::IsEntranceLocked(exitId) ||
+                !Abilities::EvaluateTrackerRule(currentRegion, RR_MAX, regionExit.condition)) {
+                continue;
             }
-
-            FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates, useForkRules);
+            const auto override = trackerExits->find({ currentRegion, exitId });
+            if (override != trackerExits->end()) {
+                if (override->second.areaCondition && !(*override->second.areaCondition)()) {
+                    continue;
+                }
+                connectedRegionId = override->second.target;
+            } else {
+                connectedRegionId = GetRegionIdFromLogicEntrance(exitId);
+            }
+        } else {
+            connectedRegionId = GetRegionIdFromEntrance(exitId);
+            if (!regionExit.condition()) {
+                continue;
+            }
         }
+        auto& targetRegion = Regions[connectedRegionId];
+        RegionTimeState incomingState = { .timeSlices = currentTime, .canStayOverTime = targetRegion.canStayOverTime };
+
+        auto existingIt = regionTimeStates.find(connectedRegionId);
+        if (existingIt != regionTimeStates.end()) {
+            // Region already visited - check if we have new time to add
+            if (TimeStateCovers(existingIt->second, incomingState)) {
+                continue; // Skip - existing state already covers incoming
+            }
+            // Merge time states for re-exploration
+            existingIt->second = MergeTimeStates(existingIt->second, incomingState);
+        } else {
+            // First visit to this region
+            reachableRegions.insert(connectedRegionId);
+            regionTimeStates[connectedRegionId] = incomingState;
+        }
+
+        FindReachableRegions(connectedRegionId, reachableRegions, regionTimeStates, trackerExits);
     }
 }
 

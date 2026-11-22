@@ -3,6 +3,8 @@
 
 #include "Rando/Rando.h"
 #include <functional>
+#include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +32,7 @@ extern const std::vector<ShuffleEntrance> shuffleEntrances;
 
 // Items the vanilla way to an area's door guarantees, which the area's own logic may silently rely on. The apworld adds
 // the condition to a door's rule when this area (named by its "into") lies behind another door. Logic only: read by
-// the apworld generator, not evaluated in game (the in-game check tracker does not know it).
+// the apworld generator and evaluated by the check tracker.
 struct ShuffleAreaRule {
     RandoOptionId option;
     u16 into;
@@ -38,6 +40,20 @@ struct ShuffleAreaRule {
 };
 
 extern const std::vector<ShuffleAreaRule> shuffleAreaRules;
+
+struct TrackerExit {
+    RandoRegionId target;
+    const std::function<bool()>* areaCondition = nullptr;
+};
+
+using TrackerExits = std::map<std::pair<RandoRegionId, s32>, TrackerExit>;
+bool HasActiveShuffle();
+TrackerExits BuildTrackerExits();
+size_t InsideBehind(size_t door);
+size_t DoorForInside(size_t inside);
+size_t MixedPartner(size_t endpoint);
+u16 EndpointArrival(size_t endpoint);
+std::optional<u16> ShuffledBossExterior(size_t boss);
 
 // How the game enters the area of a grotto row (option RO_SHUFFLE_GROTTOS).
 enum GrottoKind : u8 {
