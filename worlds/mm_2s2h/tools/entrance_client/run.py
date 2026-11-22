@@ -29,9 +29,10 @@ def historical_source(revision: str, path: str) -> str:
 
 enums = {}
 for path in (root / "mm/include/z64scene.h", root / "mm/2s2h/Rando/Types.h"):
-    enums.update(parse_enums(strip_comments(path.read_text(encoding="utf-8"))))
+    enums.update(parse_enums(strip_comments(path.read_text(encoding="utf-8")).replace("typedef enum OwlWarpId", "typedef enum")))
 lines = []
-for name in ("RandoOptionId", "EntranceSceneId", "RandoItemId", "RandoInf", "RandoEvent", "RandoRegionId", "RandoCheckId"):
+for name in ("RandoOptionId", "RandoOptionLogic", "EntranceSceneId", "RandoItemId", "RandoInf", "RandoEvent",
+             "RandoRegionId", "RandoCheckId", "OwlWarpId"):
     lines.append("enum " + name + " {" + ",".join(f"{k}={v}" for k, v in enums[name].items()) + "};")
 lines.append("constexpr int RO_GENERIC_OFF = 0;")
 scene_table = (root / "mm/include/tables/scene_table.h").read_text(encoding="utf-8")

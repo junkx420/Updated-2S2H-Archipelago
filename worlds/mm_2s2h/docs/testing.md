@@ -1559,3 +1559,47 @@ text and cut wood. It disappears as soon as the check is obtained.
   and a grave. Check the tracker before and after the award and while out of logic, including with mixed entrances.
 - Verify the Woods, Gorman and Post Office half-days, Swamp and mountain variants, both Great Bay layouts, the
   swimming approaches to the beaver bank and Secret Shrine, Darmani in Goron form, and Mikau after healing.
+### Stage 11a – Shuffle Owl Warps
+
+`shuffle_owl_warps` defaults to off. With it on, the seed stores a permutation of the ten selectable owl
+destinations with no fixed points. Normal Soaring, Skip Soaring Cutscene and Pause Owl Warp resolve the same
+destination. Internal dungeon returns, owl stone activation, owl checks and physical owl saves use their existing
+paths. The target's swamp and mountain variants follow the cycle's completion flags. Each travel entry is
+discovered on arrival. Older saves load with no map or discoveries. The Universal Tracker replays the saved map.
+
+`StartingItems.default` in `options.py` includes the Song of Time, but `_starting_items` in `__init__.py` uses the
+supplied item dictionary. With an empty dictionary the song can be in the pool, including in No Logic.
+Button shuffle can also leave a player with the song but no way to play it (`Logic.h`, `canPlaySong`).
+A playable Song of Time lets Link leave every owl arrival. Four arrivals need an alternate escape when that song
+cannot be played. The Great Bay lab platform needs Swim, the Zora Cape platform needs Zora, the Woodfall owl
+platform needs Deku, and the Stone Tower owl needs Hookshot. These rules come from `owlWarps` in
+`EntranceShuffle.cpp`. The selection plays the usual error sound when the escape rule fails. It gives no destination
+hint. The generator checks the source song and activation rules against `Logic.cpp`. The C++ table supplies the
+Woodfall owl platform region, which the upstream logic leaves unassigned. The off path preserves that upstream graph.
+
+#### Verification
+
+- Pytest passed 901 tests and 164,105 subtests. The 78 Golden fingerprints are unchanged.
+  Random generation passed 100/100 seeds with Owl Warps
+  enabled and 100/100 with all fork options enabled, including the mixed entrance pools.
+- Parity agreed in 1,200/1,200 scenarios. The tracker comparison agreed on 200 entrance graphs,
+  1,600 inventory snapshots and 29 targeted cases.
+- The native entrance harness exercised 10 owl arrivals, 10 physical owl-save arrivals and 20 void/death
+  transitions. It also covered escape requirements in No Logic, discovery, JSON round-trips and a legacy save
+  without the new fields. Windows x64 Release built successfully. Clang-format passed on the changed lines in
+  17 files.
+- Initial runs hit Windows `PermissionError: [WinError 5] Access is denied` during tempfile cleanup and
+  MSVC `C1902: Program database manager mismatch` inside the sandbox. The retries used a workspace temp directory
+  for Python and an unsandboxed MSBuild invocation. An initial parity run exited with `3221226505` because
+  the harness's new warp-map field collided with the existing owl-inventory field. The fields now have distinct names.
+  The native harness needed a single shared mock for `CHECK_WEEKEVENTREG` after MSVC reported `C2143`.
+  The first full pytest run also found that the slot-data defaults test needed to accept the absent disabled option.
+
+#### In-game checklist — not tested in game
+
+- Travel using the normal song, the skipped sequence and the pause-menu override. Compare all three to the
+  seed's Entrance Tracker. Check unexplored rows, search and tooltips before and after the first arrival.
+- Warp into the cleared swamp and spring mountain village. Save at the actual owl, reload offline, then try
+  both a void and a death. Confirm the arrival is neither redirected again nor marked as a different discovery.
+- In a seed with empty starting items or shuffled buttons, try a blocked flight. Then acquire the appropriate
+  escape item or the playable Song of Time and try again. Repeat in No Logic and with the option off.

@@ -19,13 +19,13 @@ from worlds.AutoWorld import LogicMixin, WebWorld, World
 
 from .enums_generated import (ABILITIES, DOOR_KEYS, ENTRANCE_MIX_FIXED, ENTRANCE_MIX_ONLY, ENTRANCE_MIX_POOLS, ENTRANCE_NAMES,
                               ENTRANCE_SHUFFLE, NPC_SOULS,
-                              OPTION_DEFAULTS, RC_ID, RI_ID)
+                              OPTION_DEFAULTS, OWL_WARPS, RC_ID, RI_ID)
 from .items_generated import ITEMS
 from .locations_generated import LOCATIONS
 from .macros_generated import CAN_USE_SWORD
 from .options import MM2S2HOptions
 from .primitives import LOGIC_ITEMS, SaveView
-from .regions_generated import ENTRANCE_AREA_RULES, REGIONS
+from .regions_generated import ENTRANCE_AREA_RULES, OWL_WARP_ESCAPE_RULES, REGIONS
 from .time_logic import TimeContext
 
 GAME = "Majora's Mask (2 Ship 2 Harkinian)"
@@ -85,6 +85,7 @@ CLOCK_TOWN_SCENES = {"SCENE_CLOCKTOWER", "SCENE_TOWN", "SCENE_BACKTOWN", "SCENE_
 OW_GROUP = 1001
 MIX_DOOR_GROUP, MIX_INSIDE_GROUP = 1002, 1003
 MIX_OPTION = "RO_MIX_ENTRANCE_POOLS"
+OWL_WARP_OPTION = "RO_SHUFFLE_OWL_WARPS"
 ENTRANCE_ROW_INDEX = {row["into"]: i for i, row in enumerate(ENTRANCE_SHUFFLE)}
 
 
@@ -200,6 +201,8 @@ class MM2S2HWorld(World):
         self.entrance_pairs: list[tuple[int, int]] = []
         self.ut_mixed_entrance_pairs: list[tuple[int, int]] = []
         self.mixed_entrance_pairs: list[tuple[int, int]] = []
+        self.owl_warp_targets: list[int] = []
+        self.ut_owl_warp_targets: list[int] | None = None
         # The Zora Hall Rooms key exists since 0.7; the client keeps those doors open for older seeds (DoorKeys.cpp).
         self.door_keys = list(DOOR_KEYS)
 
@@ -216,6 +219,7 @@ class MM2S2HWorld(World):
             self.vanilla_skulltulas = {rc_by_id[int(i)] for i in passthrough["vanilla_skulltulas"]}
             self.starting = [ri_by_id[int(i)] for i in passthrough["starting_items"]]
             self.ut_entrance_pairs = [tuple(pair) for pair in passthrough.get("entrance_pairs", [])]
+            self.ut_owl_warp_targets = list(passthrough.get("owl_warp_targets", []))
             if version >= (0, 10):
                 self.ut_mixed_entrance_pairs = [tuple(pair) for pair in passthrough.get("mixed_entrance_pairs", [])]
             else:
@@ -674,6 +678,8 @@ class MM2S2HWorld(World):
         """Entrance shuffle (EntranceShuffle.cpp rows whose option is on): coupled, so a door's way back is the exit
         of the area behind it. An exit keeps its own rule, i.e. what it takes to use the door stays at the door."""
         self.entrance_pairs: list[tuple[int, int]] = []  # [door's "into", "into" of the area behind it] (slot data)
+        if self.ro[OWL_WARP_OPTION]:
+            self._connect_owl_warps()
         mixed = self._mixed_endpoints() if self.ro[MIX_OPTION] else {}
         mixed_pairs: list[tuple[int, int]] = []
         rows = [row for i, row in enumerate(ENTRANCE_SHUFFLE) if self.ro.get(row["option"]) and row["option"] != OVERWORLD
@@ -829,6 +835,26 @@ class MM2S2HWorld(World):
         self._apply_mixed_pairs(mixed, mixed_pairs)
         self._connect_boss_warps()
 
+    def _connect_owl_warps(self) -> None:
+        ids = list(range(len(OWL_WARPS)))
+        targets = self.ut_owl_warp_targets
+        if targets is None:
+            targets = ids.copy()
+            while any(source == target for source, target in zip(ids, targets)):
+                self.random.shuffle(targets)
+        elif sorted(targets) != ids or any(source == target for source, target in zip(ids, targets)):
+            raise OptionError(f"{self.player_name}: invalid owl warp destinations")
+        self.owl_warp_targets = targets
+        for (key, _, name), target in zip(OWL_WARPS, targets):
+            destination, region, destination_name = OWL_WARPS[target]
+            exit_ = self.exit_entrances["RR_MAX", key]
+            self._reconnect(exit_, region)
+            escape = self._rule(OWL_WARP_ESCAPE_RULES.get(destination))
+            if escape is not None:
+                own = exit_.access_rule
+                exit_.access_rule = lambda state, own=own, escape=escape: own(state) and escape(state)
+            self.multiworld.spoiler.set_entrance(f"Song of Soaring: {name}", destination_name, "entrance", self.player)
+
     def _connect_boss_warps(self) -> None:
         by_value = {row["into_value"]: row for row in ENTRANCE_SHUFFLE}
         door_for = {inside: by_value[door] for door, inside in self.entrance_pairs}
@@ -870,6 +896,8 @@ class MM2S2HWorld(World):
         # Off is also the default when the option is absent from an older slot.
         if not options["RO_SHUFFLE_SIGNS"]:
             del options["RO_SHUFFLE_SIGNS"]
+        if not options[OWL_WARP_OPTION]:
+            del options[OWL_WARP_OPTION]
         return {
             "version_2s2h": VERSION_2S2H,
             "apworld_version": self.world_version.as_simple_string(),
@@ -881,6 +909,7 @@ class MM2S2HWorld(World):
             "entrance_pairs": [list(pair) for pair in self.entrance_pairs],
             **({"mixed_entrance_pairs": [list(pair) for pair in self.mixed_entrance_pairs]}
                if self.mixed_entrance_pairs else {}),
+            **({"owl_warp_targets": self.owl_warp_targets} if self.owl_warp_targets else {}),
             "death_link": bool(self.options.death_link.value),
             "seed": self.random.getrandbits(32),
         }

@@ -5,7 +5,7 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 ## Downloads
 
 The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages NPC souls,
-temple entrances and boss entrances with a matching client. The current source is **apworld 0.14.0**.
+temple entrances and boss entrances with a matching client. The current source is **apworld 0.15.0**.
 The new mechanics are **not tested in game**. Platform builds and preview publication run on GitHub Actions.
 See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago#choose-your-download),
 [changelog](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/main/CHANGELOG.md) and
@@ -36,6 +36,11 @@ off, the current region remains an additional starting point. See the
 ## Additions that are not in 2S2H
 
 The generator has to run on the **client fork** (branch `client`), not on upstream 2S2H, because these live there:
+
+- **Shuffle Owl Warps** (`shuffle_owl_warps`, apworld 0.15.0, default off) sends each Song of Soaring selection to
+  a different owl for the whole seed. Activations, owl checks and owl saves keep their original statues. Some
+  flights need equipment for the way out or a playable Song of Time. The Entrance Tracker reveals each flight
+  after arrival. [Escape rules and in-game checklist](docs/testing.md#stage-11a--shuffle-owl-warps).
 
 - **Shuffle Signs** (`shuffle_signs`, apworld 0.14.0, default off) adds 87 checks to the `Signs` location group.
   Read a sign to collect its item after the text. Open wooden signs remain readable when chopped. Existing sign hints

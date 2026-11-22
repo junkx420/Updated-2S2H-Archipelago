@@ -1592,6 +1592,18 @@ def r528(s):
 def r529(s):
     return (h.ExtraCheckAvailable(s, 3, 'ANY') and True)
 
+def r530(s):
+    return (h.CAN_PLAY_SONG(s, 'TIME') or h.CAN_USE_ABILITY(s, 'SWIM'))
+
+def r531(s):
+    return (h.CAN_PLAY_SONG(s, 'TIME') or h.CAN_BE_ZORA(s))
+
+def r532(s):
+    return (h.CAN_PLAY_SONG(s, 'TIME') or h.CAN_BE_DEKU(s))
+
+def r533(s):
+    return (h.CAN_PLAY_SONG(s, 'TIME') or h.HAS_ITEM(s, 'ITEM_HOOKSHOT'))
+
 def ability_rule_0(s):
     return ((((not s.opt('RO_SHUFFLE_EPONA_RIDING')) or h.Flags_GetRandoInf(s, 'RANDO_INF_OBTAINED_ABILITY_RIDE_EPONA')) and h.CAN_PLAY_SONG(s, 'EPONA')) and h.IS_DAY(s))
 
@@ -1928,6 +1940,7 @@ REGIONS = {
 }
 # shuffleAreaRules (EntranceShuffle.cpp): door entrance `into` -> rule of the area behind it
 ENTRANCE_AREA_RULES = {'WOODFALL_TEMPLE:0': r52, 'GREAT_BAY_TEMPLE:0': r508, 'STONE_TOWER_TEMPLE:0': r192, 'STONE_TOWER_TEMPLE_INVERTED:0': r509, 'ODOLWAS_LAIR:0': r501, 'GOHTS_LAIR:0': r177, 'GYORGS_LAIR:0': r206, 'TWINMOLDS_LAIR:0': r193, 'MUSIC_BOX_HOUSE:0': r157, 'ZORA_HALL_ROOMS:3': r206, 'WOODFALL:0': r52, 'DEKU_PALACE:5': r52, 'GORON_RACETRACK:0': r309, 'PATH_TO_GORON_VILLAGE_WINTER:2': r309, 'MILK_ROAD:1': r251, 'ASTRAL_OBSERVATORY:0': r42, 'PIRATES_FORTRESS_EXTERIOR:0': r202, 'ZORA_HALL:0': r202, 'DEKU_KINGS_CHAMBER:0': r52, 'DEKU_KINGS_CHAMBER:1': r52, 'SWAMP_SPIDER_HOUSE:0': r383}
+OWL_WARP_ESCAPE_RULES = {'GREAT_BAY_COAST:11': r530, 'ZORA_CAPE:6': r531, 'WOODFALL:4': r532, 'STONE_TOWER:3': r533}
 # Extra check placement windows: allowed half-day bits and scene layout.
 EXTRA_CHECK_WINDOWS = {
     'RC_LONE_PEAK_SHRINE_ROCK_01': (63, 'ANY'),

@@ -108,8 +108,7 @@ for hx, name in re.findall(r"/\* (0x[0-9A-Fa-f]+) \*/ (QUEST_[A-Z0-9_]+)", z64it
 # keep every ITEM_ used and every ITEM_MASK_* (MoonMaskCount iterates the range)
 used |= {n for n in real if n.startswith(("ITEM_", "QUEST_", "OCARINA_SONG_"))}
 used |= {"ITEM_NONE", "ITEM_BOTTLE", "SCENE_MAX", "UPG_BOMB_BAG", "UPG_QUIVER", "UPG_WALLET"}
-for i, n in enumerate(sorted(x for x in used if x.startswith("OWL_WARP_"))):
-    real[n] = i  # used as shift amount
+real.update(parse_enums(strip_comments(scene_h).replace("typedef enum OwlWarpId", "typedef enum"))["OwlWarpId"])
 for i, n in enumerate(sorted(x for x in used if x.startswith("RESPAWN_MODE_"))):
     real[n] = i  # used as array index
 values, nxt = {}, 1000  # actor ids must fit int16 (enemySoulMap)

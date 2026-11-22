@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <string_view>
 #include <variant>
 #include <vector>
 #include "constants.h"
@@ -71,19 +72,22 @@ inline PlayState* gPlayState = &playState;
 inline int options[RO_MAX]{};
 inline unsigned flags = 0;
 #define RANDO_SAVE_OPTIONS options
-// Area rules are evaluated by the AP tests; the transition hook never evaluates them.
-#define CAN_BE_DEKU true
+inline bool canBeDeku = true, canBeZora = true, canSwim = true, hasHookshot = true, canPlayTime = true;
+inline bool isRando = true;
+#define IS_RANDO isRando
+#define CAN_BE_DEKU canBeDeku
 #define CAN_BE_GORON true
-#define CAN_BE_ZORA true
+#define CAN_BE_ZORA canBeZora
 #define HAS_MAGIC true
-#define HAS_ITEM(item) true
-#define CAN_PLAY_SONG(song) true
+#define HAS_ITEM(item) (std::string_view(#item) != "ITEM_HOOKSHOT" || hasHookshot)
+#define CAN_PLAY_SONG(song) (std::string_view(#song) != "TIME" || canPlayTime)
 #define CAN_USE_PROJECTILE true
-#define CAN_USE_ABILITY(ability) true
+#define CAN_USE_ABILITY(ability) (std::string_view(#ability) != "SWIM" || canSwim)
 #define CAN_LIGHT_TORCH_NEAR_ANOTHER true
 inline int randoEvents[RE_MAX + 1]{};
 #define RANDO_EVENTS randoEvents
 #define SET_WEEKEVENTREG(flag) (flags |= (flag))
+inline bool CHECK_WEEKEVENTREG(unsigned flag) { return (flags & flag) != 0; }
 enum { WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE = 1, WEEKEVENTREG_ENTERED_WOODFALL_TEMPLE_PRISON = 2,
        WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE = 4, WEEKEVENTREG_CLEARED_GREAT_BAY_TEMPLE = 8,
        WEEKEVENTREG_CLEARED_STONE_TOWER_TEMPLE = 16 };
@@ -92,6 +96,7 @@ enum { RESPAWN_MODE_DOWN = 0, RESPAWN_MODE_TOP = 2, RESPAWN_MODE_UNK_3 = 3 };
 enum { PLAYER_START_MODE_D, PLAYER_START_MODE_GROTTO };
 #define PLAYER_PARAMS(room, mode) (mode)
 #define ENTRANCE(scene, spawn) (((ENTR_SCENE_##scene & 0x7F) << 9) | ((spawn & 0x1F) << 4))
+inline s32 Entrance_GetSceneIdAbsolute(u16 entrance) { return entrance >> 9; }
 struct GIEventTransition { int entrance; int cutsceneIndex; int transitionType; };
 struct GameInteractor {
     std::vector<std::variant<GIEventTransition>> events;

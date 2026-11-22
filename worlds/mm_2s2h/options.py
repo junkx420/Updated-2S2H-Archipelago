@@ -112,6 +112,8 @@ def _shuffle(cls_name: str, ro_id: str, name: str, doc: str):
 
 
 ShuffleOwlStatues = _shuffle("ShuffleOwlStatues", "RO_SHUFFLE_OWL_STATUES", "Owl Statues", "Activating an owl statue is a check.")
+ShuffleOwlWarps = _shuffle("ShuffleOwlWarps", "RO_SHUFFLE_OWL_WARPS", "Shuffle Owl Warps",
+                           "Song of Soaring destinations are shuffled. Some flights require a way to leave the destination.")
 ShuffleShops = _shuffle("ShuffleShops", "RO_SHUFFLE_SHOPS", "Shops", "Items sold in shops are checks, with randomized prices.")
 ShuffleTingleShops = _shuffle("ShuffleTingleShops", "RO_SHUFFLE_TINGLE_SHOPS", "Tingle Maps", "Maps sold by Tingle are checks.")
 ShuffleBossRemains = _shuffle("ShuffleBossRemains", "RO_SHUFFLE_BOSS_REMAINS", "Boss Remains", "Temple bosses give a shuffled item instead of their remains.")
@@ -327,6 +329,7 @@ class MM2S2HOptions(PerGameCommonOptions):
     clock_shuffle_mode: ClockShuffleMode
     clock_terminal_time: ClockTerminalTime
     shuffle_owl_statues: ShuffleOwlStatues
+    shuffle_owl_warps: ShuffleOwlWarps
     shuffle_shops: ShuffleShops
     shuffle_tingle_shops: ShuffleTingleShops
     shuffle_boss_remains: ShuffleBossRemains

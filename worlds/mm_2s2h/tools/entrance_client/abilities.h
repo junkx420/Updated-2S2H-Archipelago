@@ -3,8 +3,6 @@
 
 enum { VB_RIDE_EPONA, VB_PLANT_MAGIC_BEAN, ABILITY_HOOK_COUNT };
 inline void (*abilityHooks[ABILITY_HOOK_COUNT])(bool*) = {};
-inline bool isRando = true;
-#define IS_RANDO isRando
 #define COND_VB_SHOULD(hook, condition, body) abilityHooks[hook] = condition ? +[](bool* should) body : nullptr
 inline bool GameInteractor_Should(int hook, bool result) {
     if (abilityHooks[hook]) {
@@ -14,7 +12,6 @@ inline bool GameInteractor_Should(int hook, bool result) {
 }
 #include "Rando/MiscBehavior/Abilities.cpp"
 #undef COND_VB_SHOULD
-#undef IS_RANDO
 
 enum { ACTOR_EN_HORSE, ACTOR_OBJ_AQUA };
 enum { ENHORSE_1, ENHORSE_2, ENHORSE_7, ENHORSE_11, ENHORSE_13, ENHORSE_PARAM_4000 = 0x4000 };
@@ -46,7 +43,6 @@ struct EnIn { Actor actor; unsigned unk4AC = 0; };
 constexpr unsigned WEEKEVENTREG_57_01 = 32;
 constexpr int NA_SE_SY_ERROR = 0;
 inline int raceText = 0;
-inline bool CHECK_WEEKEVENTREG(unsigned flag) { return (flags & flag) != 0; }
 inline void Rupees_ChangeBy(int delta) { gSaveContext.save.saveInfo.playerData.rupees += delta; }
 inline void Actor_ContinueText(PlayState*, Actor*, int text) { raceText = text; }
 inline void func_808F4108(EnIn*, PlayState*, int text) { raceText = text; }
