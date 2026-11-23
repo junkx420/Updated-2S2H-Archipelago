@@ -1,10 +1,28 @@
 # Testing mm_2s2h (Phase 3 results, 2S2H 5.0.1)
 
-Release channels (2026-11-17): **0.1.5** is the regular release (apworld **0.1.4**); **0.4.0** is the experimental
-pre-release. The results below describe the relevant source versions, not additional in-game testing.
-Preview packaging waits for the exact client commit's Windows/Linux/macOS builds and checks ZIP integrity,
-apworld version and package contents. Its manifest records source commits and SHA-256 hashes.
-[Publication progress](https://github.com/junkx420/Updated-2S2H-Archipelago/actions/workflows/publish-preview.yml).
+The regular release **0.18.0** bundles **apworld 0.18.0** with the Windows, Linux and macOS clients.
+The new mechanics and client packages are **not tested in game**.
+[Release packages and notes](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.18.0)
+
+## 0.18.0 platform build fix and packaging
+
+- The forced `TrackerAbilityMacros.h` include now declares the JSON dependency before loading the region
+  logic. Clang 23 checked all **16** region files with the forced include and without a precompiled header.
+  The local Windows x64 Release build compiled `TerminaField.cpp` again and linked successfully with `/Z7`
+  and `/DEBUG:NONE` appended via `_CL_` and `_LINK_`. Clang-format passed.
+- The plain Windows build failed with `C2855: command-line option '/Zi' inconsistent with precompiled header`.
+  A retry with the linker flag prepended reached `BenGui.obj: fatal error LNK1103: debugging information corrupt;
+  recompile module`. Appending the linker flag resolved the error.
+- Rebuilt parity matched **1200/1200** scenarios. The first shim build reported `C1083: Cannot open include file:
+  'nlohmann/json.hpp': No such file or directory`. `tools/parity/build.bat` now adds the client vcpkg include
+  directory automatically.
+- GitHub Actions built all three platforms for client `69cc31894`.
+  [Build run](https://github.com/junkx420/Updated-2S2H-Archipelago/actions/runs/45216918470)
+- The publish workflow completed successfully from main `2c3aa1986` using apworld `86c9901a`.
+  [Publication run](https://github.com/junkx420/Updated-2S2H-Archipelago/actions/runs/45226125029)
+- The release has six assets. Archipelago's `APWorldContainer` read version **0.18.0** from the published apworld.
+  The Linux ZIP contains one `2ship.appimage`. `BUILD-MANIFEST.json` matched the build run and both source
+  commits. The downloaded apworld and Linux ZIP matched their SHA-256 hashes.
 
 ## 1. Logic parity with 2S2H (`tools/parity/`)
 
@@ -15,7 +33,8 @@ The apworld's logic is compared against 2S2H's **own C++ logic**, compiled outsi
   `FindReachableRegions`, `RR_MAX`), `TimeLogic.cpp` and the enemy-soul map out of a 2S2H checkout. Only the save
   file reads are mocked (`shim/mock_env.h`).
 * `harness_main.cpp` runs the outer loop of `ApplyGlitchlessLogicToSaveContext` for a fixed save state (regions,
-  counted events, checks) and prints what is reachable. Build: `tools/parity/build.bat` (MSVC).
+  counted events, checks) and prints what is reachable. `tools/parity/build.bat` builds it with MSVC using the
+  JSON headers installed by the client build in `2s2h/build/x64/vcpkg/installed/x64-windows-static/include`.
 * `compare.py` builds the real AP world (regions, entrances, event locations, rules) for fixed option sets, rolls
   random inventories, feeds the same save state to both sides and compares reachable **regions**, **checks** and
   **event counts**.

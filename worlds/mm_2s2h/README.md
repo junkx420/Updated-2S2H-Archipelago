@@ -4,13 +4,10 @@ Unofficial fan project, see the `main` branch README of `junkx420/Updated-2S2H-A
 
 ## Downloads
 
-The regular release is **0.1.5** (bundled apworld **0.1.4**). The **0.4.0 pre-release** packages NPC souls,
-temple entrances and boss entrances with a matching client. The current source is **apworld 0.18.0**.
-The new mechanics are **not tested in game**. Platform builds and preview publication run on GitHub Actions.
-See the [download overview](https://github.com/junkx420/Updated-2S2H-Archipelago#choose-your-download),
-[changelog](https://github.com/junkx420/Updated-2S2H-Archipelago/blob/main/CHANGELOG.md) and
-[publication progress](https://github.com/junkx420/Updated-2S2H-Archipelago/actions/workflows/publish-preview.yml).
-Use the client and apworld from the same release; the release manifest records their exact commits.
+The regular release is **0.18.0**. It bundles **apworld 0.18.0** with clients for Windows, Linux and macOS.
+The client accepts seeds from apworld **0.1 to 0.18** and loads older saves. The new mechanics are **not tested in
+game**. Use the client and apworld from the same release. The manifest records their exact commits.
+[Release packages and notes](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.18.0)
 
 ## In-game Check Tracker
 
