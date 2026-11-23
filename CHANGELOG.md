@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.18.0 — Regular release (new mechanics experimental)
+
+Client and **apworld 0.18.0**. Generate new seeds with the bundled world. The client accepts apworld 0.1 to 0.18.
+
+- **Shuffle Signs** (`shuffle_signs`) adds 87 sign and grave checks. Read the original text to collect the check.
+  A chopped sign's stump stays readable while its check is open.
+- **Check Tracker** applies fork rules for NPC souls, door keys, abilities and extra checks. Reachability follows
+  the saved entrance assignments, including mixed pools, directed exits and blue boss warps.
+- **Shuffle Owl Warps** (`shuffle_owl_warps`) shuffles the ten Song of Soaring destinations. Activation, checks
+  and saves stay at their original statues.
+- **Shuffle Spawn** (`shuffle_spawn`) uses the same seed-assigned Clock Town district for a fresh save and after
+  each Song of Time rewind. The district has direct access to South Clock Town.
+- **Decouple Entrances** (`decouple_entrances`) lets eligible directions lead to different destinations while
+  preserving source rules and checking escapes.
+- **Mixed Grottos** lets `mix_entrance_pools` include 18 of the 26 grotto holes with `shuffle_grottos` enabled.
+  Grotto pairs stay coupled.
+- **Build fix** loads the JSON dependency before the forced tracker header loads the region logic. Windows,
+  Linux and macOS builds passed.
+- **Validation** passed 950 tests, 164,096 subtests, 1200/1200 parity scenarios and two runs of 100/100 seeds.
+  The new shuffle options are off by default. The changes are **not tested in game**.
+
+[Release notes and downloads](https://github.com/junkx420/Updated-2S2H-Archipelago/releases/tag/v0.18.0)
+
 ## 0.13.0 — Regular release (new mechanics experimental)
 
 Client and **apworld 0.13.0**. Generate new seeds with the bundled world. The client accepts apworld 0.1 to 0.13.
