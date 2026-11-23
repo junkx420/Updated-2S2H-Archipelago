@@ -1,6 +1,8 @@
 #ifndef RANDO_TRACKER_ABILITY_MACROS_H
 #define RANDO_TRACKER_ABILITY_MACROS_H
 
+#include <nlohmann/json.hpp>
+
 #include "2s2h/Rando/Logic/Logic.h"
 #include "2s2h/Rando/MiscBehavior/Abilities.h"
 
